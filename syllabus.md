@@ -31,7 +31,7 @@ We will primarily work in R Studio, which is a development environment for the o
 
 If you don't already have R and R Studio installed on your computers, please install both applications (which are free of charge) before the start of the first class. You can find instructions on how to install R and R Studio on this [page](https://datacarpentry.org/r-socialsci/setup.html); make sure to follow the instructions that correspond to your operating system. The course does not require any previous experience with R/R Studio, and if you are new to R, rest assured that it is fairly intuitive and you will be able to pick things up as we go. However, if you would like a brief primer on working in R Studio, this [tutorial](https://datacarpentry.org/r-intro-geospatial/), which takes about 4 hours to complete, would be a good place to start. 
 
-In Class 4, we will introduce you to [Google Earth Engine](https://earthengine.google.com/). GEE is free for academic researchers and students, but requires registration, and this process can take up to a week. Please start the registration process well in advance of Class 4 (April 21), so that you have access to the platform by the start of that class. To register, go to the website for the Earth Engine [code editor](https://code.earthengine.google.com/), sign in with a Gmail account, and follow the instructions. The registration process will likely go faster if you register using the Gmail account tied to your CU-Boulder email address, rather than a personal Gmail account (since this will allow Google to quickly verify that you are affiliated with an educational institution).
+In Class 4, we will introduce you to [Google Earth Engine](https://earthengine.google.com/). GEE is free for academic researchers and students, but requires registration, and this process can take up to a week. Please start the registration process well in advance of Class 4 (April 25), so that you have access to the platform by the start of that class. To register, go to the website for the Earth Engine [code editor](https://code.earthengine.google.com/), sign in with a Gmail account, and follow the instructions. The registration process will likely go faster if you register using the Gmail account tied to your CU-Boulder email address, rather than a personal Gmail account (since this will allow Google to quickly verify that you are affiliated with an educational institution).
 
 ## Communication and Office Hours
 
@@ -41,11 +41,11 @@ I am available by email, and encourage you to contact me in between classes if y
 
 The following is a brief outline of our five class modules. Please click on the relevant link below (or to the left) to view more details on the relevant module's dedicated page:
 
-* [Class One](class1.md) (March 31): Basic concepts; spatial thinking; mapping data
-* [Class Two](class2.md) (April 7): Vector data and geoprocessing
-* [Class Three](class3.md) (April 14): Raster data
-* [Class Four](class4.md) (April 21): Geospatial data ethics; Remote sensing and Google Earth Engine
-* [Class Five](class5.md) (April 28): Research Design and Wrap Up; Presentations
+* [Class One](class1.md) (April 4): Basic concepts; spatial thinking; mapping data
+* [Class Two](class2.md) (April 11): Vector data and geoprocessing
+* [Class Three](class3.md) (April 18): Raster data
+* [Class Four](class4.md) (April 25): Geospatial data ethics; Remote sensing and Google Earth Engine
+* [Class Five](class5.md) (April 2): Research Design and Wrap Up; Presentations
 
 ## Readings
 
@@ -57,9 +57,9 @@ All readings are available as PDF files at this [link](https://www.dropbox.com/s
 
 There will be 3 small assignments over the course of the semester: 
 
-* Assignment 1: Assigned in Class 1 (3/31), Due by Class 2 (4/7)
-* Assignment 2: Assigned in Class 2 (4/7), Due by Class 3 (4/14)
-* Assignment 3: Assigned in Class 3 (4/14), Due by Class 4 (4/21)
+* Assignment 1: Assigned in Class 1 (4/4), Due by Class 2 (4/11)
+* Assignment 2: Assigned in Class 2 (4/11), Due by Class 3 (4/18)
+* Assignment 3: Assigned in Class 3 (4/18), Due by Class 4 (4/25)
 
 Assignments will be discussed in class on the day they are assigned, and you can find assignment descriptions on that class's corresponding page by the start of class (for example, Assignment 1 will be introduced and discussed in Class 1, and you can find the Assignment 1 description on the Class 1 page at the beginning of that class). 
 
@@ -69,7 +69,7 @@ Assignments are graded Pass/Fail.
 
 ## Final project
 
-In addition to the assignments, you must submit a final project, which is due by **Wednesday, May 4, at 11:59 PM**. On our final day of class (**April 28**), you will give a brief (~7 minute) "lightning talk" on your project-in-progress, which will allow us to all learn from each other (and perhaps help you identify opportunities for future collaboration with your classmates). 
+In addition to the assignments, you must submit a final project, which is due by **Monday, May 6, at 5:00 PM**. On our final day of class (**May 2nd**), you will give a brief (~7 minute) "lightning talk" on your project-in-progress, which will allow us to all learn from each other (and perhaps help you identify opportunities for future collaboration with your classmates). 
 
 See below for various project options. The goal of the projects is to give you an opportunity to make progress on a project that will yield some tangible benefit to you in the future (i.e. a publication, a lesson plan, a dataset etc.). 
 
