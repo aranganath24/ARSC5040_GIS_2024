@@ -17,7 +17,7 @@ title: GIS Methods and Tools
 tagline: GIS Methods and Tools (ARSC5040)
 description: 
 author: 
-baseurl: '/ARSC5040_GIS/' # the subpath of your site, e.g. /blog
+baseurl: '/ARSC5040_GIS_2024/' # the subpath of your site, e.g. /blog
 url: 'https://aranganath24.github.io' # the base hostname & protocol for your site, e.g. http://example.com
 exclude: ["Gemfile", "Gemfile.lock", "LICENSE", "README.md"]
 
@@ -29,7 +29,7 @@ heading_anchors: true
 permalink: pretty
 aux_links:
   Course Repository on GitHub:
-    - 'https://github.com/aranganath24/ARSC5040_GIS'
+    - 'https://github.com/aranganath24/ARSC5040_GIS_2024'
 footer_content:
 
 # Collections for website data
