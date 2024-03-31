@@ -1,0 +1,141 @@
+---
+title: "Reading Spatial Data from Online Sources"
+author: "Aditya Ranganath"
+date: "3/12/2022"
+output: 
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    number_sections: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=F, warning=F}
+# Load libraries
+library(tidyverse)
+library(raster)
+library(sf)
+```
+
+# Reading raster data from an online source
+
+Data is from [https://hub.arcgis.com/maps/GRID3::grid3-mozambique-gridded-population-estimates-version-1-1/about](https://hub.arcgis.com/maps/GRID3::grid3-mozambique-gridded-population-estimates-version-1-1/about). 
+
+```{r}
+download.file(url="https://wopr.worldpop.org/download/237",
+              destfile="mozambique.tif")
+```
+
+```{r}
+mozambique<-raster("mozambique.tif")
+```
+
+```{r}
+mozambique
+```
+
+# Reading vector data from an online source
+
+```{r}
+download.file(url="https://electiondataarchive.org/wp-content/uploads/GRED_20190215/GRED_20190215_Australia.zip", destfile="australia.zip")
+```
+
+```{r}
+unzip(zipfile = "australia.zip")
+```
+
+```{r}
+australia_boundaries<-st_read(dsn="GRED_20190215_Australia/2010/GRED_20190215_Australia_2010.shp")
+```
+
+```{r}
+australia_boundaries
+```
+
+# Reading in multiple spatial datasets from an online source
+
+[https://electiondataarchive.org/data-and-documentation/georeferenced-electoral-districts-datasets/](https://electiondataarchive.org/data-and-documentation/georeferenced-electoral-districts-datasets/)
+
+## Wrap the code to read data into a function
+
+```{r}
+shapefile_read<-function(shapefile_url, shapefile_dest, shapefile_path, shapefile_name){
+  download.file(url=shapefile_url, destfile=shapefile_dest)
+  unzip(zipfile=shapefile_dest)
+  shapefile<-st_read(dsn=shapefile_path)
+  assign(shapefile_name, shapefile, envir=.GlobalEnv)
+}
+```
+
+Testing the function:
+
+```{r}
+shapefile_read("https://electiondataarchive.org/wp-content/uploads/GRED_20190215/GRED_20190215_Belize.zip","belize.zip", "GRED_20190215_Belize/2012/GRED_20190215_Belize_2012.shp", "belize")
+```
+
+```{r}
+belize
+```
+
+## Apply the function iteratively to read in multiple vector datasets
+
+```{r}
+inputs<-list(
+  shapefile_url=c("https://electiondataarchive.org/wp-content/uploads/GRED_20190215/GRED_20190215_Albania.zip","https://electiondataarchive.org/wp-content/uploads/GRED_20190215/GRED_20190215_Argentina.zip"),
+  shapefile_dest=c("albania.zip", "argentina.zip"),
+  shapefile_path=c("GRED_20190215_Albania/2009/GRED_20190215_Albania_2009.shp",
+                   "GRED_20190215_Argentina/2003/GRED_20190215_Argentina_2003.shp"),
+   shapefile_name=c("albania", "argentina"))
+
+```
+
+
+```{r}
+pwalk(inputs, shapefile_read)
+```
+
+```{r}
+albania
+```
+
+```{r}
+argentina
+```
+
+
+```{r}
+shapefile_list<-pmap(inputs, shapefile_read)
+```
+
+
+```{r}
+shapefile_list
+```
+
+# Read in data from cloud storage
+
+```{r}
+download.file(url="https://www.dropbox.com/s/lo6r8oxzvznjgij/GRED_20190215_Denmark.zip?dl=1", destfile="denmark.zip")
+```
+
+```{r}
+unzip(zipfile = "denmark.zip")
+```
+
+```{r}
+denmark_boundaries<-st_read(dsn="GRED_20190215_Denmark/2007/GRED_20190215_Denmark_2007.shp")
+```
+
+```{r}
+denmark_boundaries
+```
+
+```{r, echo=F}
+rm(list = ls(all.names = TRUE))
+```
+
+

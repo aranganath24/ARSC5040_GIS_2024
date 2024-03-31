@@ -1,0 +1,77 @@
+---
+title: "Extracting elevation data using the 'elevatr' package"
+author: "Aditya Ranganath"
+date: "3/16/2022"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    number_sections: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=F, warning=F}
+library(tmap)
+library(elevatr)
+library(raster)
+library(sf)
+library(tidycensus)
+library(tidyverse)
+```
+
+# Generating elevation rasters using "elevatr"
+
+```{r, message=F, warning=F, results=FALSE}
+CO_polygon<-get_decennial(geography = "state", 
+                          variables = "P001001",
+                          year = 2010,
+                          geometry=TRUE) %>% 
+                    filter(NAME=="Colorado")
+
+```
+
+```{r}
+tm_shape(CO_polygon)+
+  tm_polygons()
+```
+
+```{r}
+co_elevation<-get_elev_raster(locations=CO_polygon, proj=CO_polygon, z=9, clip="locations")
+```
+
+```{r}
+co_elevation
+```
+
+```{r}
+CO_elevation_map<-tm_shape(co_elevation)+
+                      tm_raster(title="Elevation in Colorado (m)")+
+                      tm_legend(outside=T)
+```
+
+```{r}
+CO_elevation_map
+```
+
+# Extracting elevations at points
+
+```{r}
+CO_points<-st_sample(CO_polygon, 20, type="random")
+
+CO_elevation_map+
+tm_shape(CO_points)+
+  tm_dots()
+```
+
+```{r}
+get_elev_point(locations=CO_points, proj=CO_points, src="aws")
+```
+
+Click [here](https://rspatialdata.github.io/elevation.html) for a more detailed tutorial published by *rspatialdata*. 
+
+
+

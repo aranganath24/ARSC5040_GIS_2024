@@ -1,0 +1,1082 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=F, warning=F, results=F}
+library(WDI)
+library(sf)
+library(tmap)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(tidyverse)
+library(tidycensus)
+library(raster)
+library(exactextractr)
+library(terra)
+```
+
+```{r, echo=F, warning=F, message=F}
+library(DT) 
+```
+
+```{r, echo=F, warning=F, message=F}
+tmap_mode("plot")
+```
+
+# Introduction
+
+In the course of working on a GIS project, you may have to perform certain tasks multiple times. For example, you may want to implement a spatial join (a procedure we learned about last class) between a point layer and several different polygon datasets that reflect different geographic scales. Or, you may want to quickly make multiple maps, to get a sense of how different variables are distributed across space before beginning a more in-depth study. 
+
+Dedicated GIS applications like ArcGIS and QGIS have built-in scripting windows that allow users to write Python scripts that can automate repetitive procedures. In addition, for users unfamiliar with Python, ArcGIS provides tools like Model Builder, and embeds batch-processing functions embedded in its menu-bused interface. 
+
+In this lesson, we'll become familiar with some basic scripting tools that can help you to automate some of the tasks we have already covered in the course with a minimal amount of programming. These tools will come in handy if you decide to work with GIS in a longer-term project and you want to save time on your geoprocessing tasks. 
+
+# Functions and Iteration
+
+Before diving into some GIS-specific examples, let's become familiar with some basic concepts and processes using a simple example. This section demonstrates how to write a basic function with a single argument/input, and then iteratively pass several different arguments to that function.
+
+## Writing functions with a single argument: A simple (non-GIS) example
+
+Let's say you have a large collection of temperature data, measured in Fahrenheit, and you want to convert these data to Celsius. Recall that the formula to convert between Fahrenheit and Celsius is as follows: 
+
+```{r}
+# fahrenheit to Celsius formula, where "F" is fahrenheit input
+(F-32)*(5/9)
+```
+
+At its most basic level, R is a calculator; if for example, one of our Fahrenheit measurements is 55 degrees; we can convert this to Celsius by plugging 55 into the conversion formula:
+
+```{r}
+# Converts 55 degrees fahrenheit to Celsius
+(55-32)*(5/9)
+```
+
+This is easy enough, but if we have a large amount of temperature data that requires processing, we wouldn't want to carry out this calculation for each measurement in our data collection. The first step in allowing us to carry out this conversion operation at scale is to write a function, which is simply a programming construct that takes a set of inputs (also known as arguments), manipulates those inputs/arguments in a specific way (the body of the function), and returns an output that is the product of how those inputs are manipulated in the body of the function. It is much like a recipe, where the recipe's ingredients are analogous to a function's inputs, the instructions about how to combine and process those ingredients are analogous to the body of the function, and the end product of the recipe (for example, a cake) is analogous to the function's output. 
+
+Let's see how we can wrap the Fahrenheit-Celsius formula above into a function:
+
+```{r}
+fahrenheit_to_celsius_converter<-function(fahrenheit_input){
+  celsius_output<-(fahrenheit_input-32)*(5/9)
+  return(celsius_output)
+}
+```
+
+Let's unpack the code above, which we used to create our function:
+
+* We declare that we are creating a new function with the word ```function```; within the parenthesis after ```function```, we specify the function's argument(s). Here, the function's argument is an input named ```fahrenheit_input```. The name of the argument(s) is arbitrary, and can be anything you like; ideally, its name should be informed by relevant context. Here, the argument/input to the function is a temperature value expressed in degrees Fahrenheit, so the name "fahrenheit_input" describes the nature of this input. 
+* After enclosing the function's arguments within parentheses, we print a right-facing curly brace ```{```, and then define the body of the function (i.e. the recipe), which specifies how we want to transform this input. In particular, we take ```fahrenheit_input```, subtract 32, and then multiply by 5/9, which transform the input to the celsius temperature scale. We'll tell R to assign this transformed value to a new object, named ```celsius_output```. 
+* In the function's final line, ```return(celsius_output)```, we specify the value we want the function to return. Here, we are saying that we want the function to return the value that was assigned to ```celsius_output```. We then close the function by typing a left-facing curly brace below the return statement ```}```.
+* Just as we can assign data or visualizations to objects that allow us to subsequently retrieve the outputs of our code, so too with functions. Here, we'll assign the function we have just return to an object named ```fahrenheit_to_celsius_converter```. 
+
+After running that code, we can use the newly created ```fahrenheit_to_celsius``` function to perform our Fahrenheit to Celsius transformations. Let's say we have a Fahrenheit value of 68, and want to transform it to Celsius: 
+
+```{r}
+fahrenheit_to_celsius_converter(fahrenheit_input=68)
+```
+
+Above, we passed the argument "fahrenheit_input=68" to the ```fahrenheit_to_celsius_converter``` function that we created; the function then took this value (68), plugged it into "fahrenheit_input" within the function and assigned the resulting value to "celsius_output"; it then returned the value of "celsius_output" (20) back to us. 
+
+Let's try another one: 
+
+```{r}
+fahrenheit_to_celsius_converter(fahrenheit_input=22)
+```
+
+In short, we can specify any value for the "fahrenheit_input" argument; this value will be substituted for "fahrenheit_input" in the expression ```celsius_output<-(fahrenheit_input-32)*(5/9)```, after which the value of ```celsius_output``` will be returned to us. 
+
+## Iteration with a single-input function
+
+Using this newly created function helps us to avoid manually converting each of our temperature values from the Fahrenheit scale to the Celsius scale; instead of repeating the calculation over and over manually, we could simply plug our Fahrenheit temperature values into the function, and let the function carry out the calculation for us. However, it is still time-consuming to plug our Fahrenheit values into the function one-by-one. For example, let's say we have a vector of Fahrenheit temperature values; below, we'll assign these values to an object named ```fahrenheit_input_vector```: 
+
+```{r}
+fahrenheit_input_vector<-c(45.6, 95.9, 67.8, 43)
+```
+
+If we wanted to convert all of these Fahrenheit values to the Celsius scale, we could do so individually, i.e. 
+
+```{r}
+fahrenheit_to_celsius_converter(fahrenheit_input=45.6)
+```
+
+And so on. 
+
+However, we can also iteratively apply our function to all of these vector elements, and deposit the transformed results into a new vector.  In programming languages, functions are typically applied to multiple inputs in an iterative fashion using a construct known as a for-loop, which some of you may already be familiar with. R users also frequently use specialized functions (instead of for-loops) to iterate over elements; this is often faster, or at the very least, makes R scripts more readable. One family of these iterative functions is the "Apply" family of functions. A more recent set of functions that facilitate iteration is part of the *tidyverse*, and is found within the [purrr](https://purrr.tidyverse.org/) package. These functions known as ```map()``` functions, and we will use them here to iteratively apply our functions to multiple inputs (the "map" label might be confusing when working in a GIS setting where you might be making actual maps, i.e. spatial visualizations; however, it should be clear from the context whether we are referring to ```map()``` functions within *purrr*, or to actual maps). 
+
+Let's see how we can use a ```map()``` function to sequentially apply the ```fahrenheit_to_celsius_converter()``` function we created to several different values for the "fahrenheit_input" argument, contained in ```fahrenheit_input_vector```. We'll pass ```fahrenheit_input_vector``` as the first argument to the  ```map_dbl()``` function, and ```fahrenheit_to_celsius_converter``` (i.e. the function we want to apply iteratively to the elements in `the```fahrenheit_input_vector``` ) as the second argument. The result of this operation will be a new "results vector", containing the transformed temperature values for each input in the original vector of Fahrenheit values (```fahrenheit_input_vector```). We'll assign this result/output vector to a new object named ```celsius_outputs_vector```: 
+
+```{r}
+celsius_outputs_vector<-map_dbl(fahrenheit_input_vector, fahrenheit_to_celsius_converter)
+```
+
+In short, the code above takes ``fahrenheit_input_vector``` (i.e. a vector with the numbers 45.6, 95.9, 67.8, 43), and runs each of these numbers through the ```fahrenheit_converter()``` function, and sequentially deposits the transformed result to the newly created ```celsius_outputs_vector()``` object, which contains the following elements:
+
+```{r}
+celsius_outputs_vector
+```
+
+More explicitly, the code that reads ```celsius_outputs_vector<-map_dbl(fahrenheit_input_vector, fahrenheit_converter)``` did the following:
+
+1. Pass 45.6 (the first element in the input vector, ```fahrenheit_input_vector```) to the ```fahrenheit_converter()``` function, and place the output (7.555556) as the first element in a new vector of transformed values, named ```celsius_outputs_vector```.
+2. Pass 95.9 (the second element in the input vector, ```fahrenheit_input_vector```) to the ```fahrenheit_converter()``` function, and deposit the output (35.500000) as the second element in ```celsius_outputs_vector```. 
+3. Pass 67.8 (the third element in the input vector,  ```fahrenheit_input_vector```) to the ```fahrenheit_converter()``` function, and deposit the output (19.888889) as the third element in ```celsius_outputs_vector```. 
+4. Pass 43 (the fourth element in the input vector, ```fahrenheit_input_vector```) to the ```fahrenheit_converter()``` function, and deposit the output (6.111111) as the fourth element in ```celsius_outputs_vector```. 
+
+If we want to extract an element from the output vector, we can do so by specifying its index within brackets. For instance, if we wanted to extract the second element in ```celsius_outputs_vector```, we could type the following:
+
+```{r}
+celsius_outputs_vector[2]
+```
+
+There are a variety of map functions, and the precise one you should use turns on the number of arguments used by the function (here, this value is of course one), and the desired class of the output (i.e. numeric vector, character vector, data frame, list etc.). Below, we'll talk more about how to handle functions with multiple arguments within the *purrr* ecosystem. Before that, though, let's see how to use a slightly different type of *map* function to return a different kind of output.
+
+First, let's say we want to iteratively pass the input values from ```fahrenheit_input_vector``` as arguments to ```fahrenheit_converter()```, but that we want to return the output values in a list, rather than a vector (as above). To do so, we pass  our input vector (```fahrenheit_input_vector```),  and the function we want to iteratively apply to the elements of the input vector (```fahrenheit_converter```) to the ```map()``` function. We'll assign the output list to a new object named ```celsius_outputs_list```: 
+
+```{r}
+celsius_outputs_list<-map(fahrenheit_input_vector, fahrenheit_to_celsius_converter)
+```
+
+Let's now print the contents of our list; note that each of our transformed Celsius temperature values is now a separate list element within ```celsius_outputs_list```:
+
+```{r}
+celsius_outputs_list
+```
+
+We can extract specific list elements by specifying the index number of the list element in double-brackets after the name of the list object (note that this is slightly different from extracting the element of a numeric vector, for which we use a single bracket, as demonstrated earlier). For example, if we want to extract the second element of ```celsius_outputs_list```, we can use the following: 
+
+```{r}
+celsius_outputs_list[[2]]
+```
+
+A handy *tidyverse* function, called ```pluck()``` can also be used to extract list elements; for example, we can extract the second list element from ```celsius_outputs_list``` with ```pluck()``` with the following:
+
+```{r}
+celsius_outputs_list %>% pluck(2)
+```
+
+If we want to organize our information in a data frame, the first step is to  slightly modify our function to return a data frame:
+
+```{r}
+fahrenheit_to_celsius_converter_df<-function(fahrenheit_input){
+  celsius_output<-(fahrenheit_input-32)*(5/9)
+  celsius_output_df<-data.frame(fahrenheit_input, celsius_output)
+  return(celsius_output_df)
+}
+```
+
+Now, let's test this function for a single value:
+
+```{r}
+fahrenheit_to_celsius_converter_df(44)
+```
+
+Let's say we want to assemble a dataset using multiple Fahrenheit input values, where one column consists of these input values, and the second column consists of the corresponding Celsius outputs? To that end, we can use the ```map_dfr()``` function, which is part of the *purrr* package's suite of ```map()``` functions. Below, we'll use the same ```fahrenheit_input_vector``` from above as our input vector, and pass this vector as the first argument to the ```map_dfr()``` function; the second argument is the name of the function to which we want to apply these input values, namely, ```fahrenheit_to_celsius_converter_df()```. We'll assign the dataset to an object named ```celsius_outputs_df```:
+
+```{r}
+celsius_outputs_df<-map_dfr(fahrenheit_input_vector, fahrenheit_to_celsius_converter_df)
+```
+
+Let's now print the contents of ```celsius_outputs_df```:
+
+```{r}
+celsius_outputs_df
+```
+
+We now have a dataset with one column consisting of our Fahrenheit inputs (taken from ```fahrenheit_input_vector```), and a second column consisting of our Celsius outputs (derived by applying the ```fahrenheit_to_celsius_converter_df()``` function to our vector of input values, ````fahrenheit_input_vector```). 
+
+We've just covered three different *purrr* functions: ```map()``` (which returns a list), ```map_dbl()``` (which returns a vector), and ```map_dfr()``` (which returns a dataframe). There are other map functions which return different types of objects; you can see a list of these other map functions by inspecting the documentation for the ```map()``` function with ```?purrr::map()```.
+
+## Iteration with functions that have two inputs
+
+In the previous subsection, we explored some basic functions from the *purrr* package's ```map()``` family, which are used to iteratively apply a given function to a set of inputs, and then return a set of outputs (i.e. the results of applying that function) that is contained in an object (the type of object, i.e. list, vector etc. is determined by the type of *map* function that is used). The functions we were iteratively applying in the examples above were single-input functions, but functions can (and often do) require multiple inputs. 
+
+In this subsection, we'll explore iteration with ```map2()``` functions, which are used for iteration in cases where the relevant function has two inputs. First, let's define a simple 2-input function. In this example, we'll define a function that takes export and import values as inputs, and returns a value for net exports (defined as the difference between total exports and total imports), and assign the function to an object named ```net_exports_calculation()```:
+
+```{r}
+net_exports_calculation<-function(exports, imports){
+  net_export_value<-exports-imports
+  return(net_export_value)
+}
+```
+
+Let's now test the function for a single case, with arbitrary input values, denominated in units of $1  million. We'll test the function for a hypothetical case where exports are $133 million (exports=133) and imports are $55 million (imports=55): 
+
+```{r}
+net_exports_calculation(exports=133, imports=55)
+```
+
+The function, as expected, returns a net export value of $78 million. 
+
+Now, let's say we have export and import data for several countries, and want to calculate net exports for all of these countries by iteratively applying ```net_exports_calculation()``` to all of our data. The first country has exports of $78 million and imports of $134 million; the second has exports of $499 million and imports of $345 million; and the third country has exports of $785 million  and imports of $645 million. How can we apply ```net_exports_calculation()``` to each of these countries, and calculate a net export value for each one?
+
+First, we'll create vectors that contain our import and export values. Below, a numeric vector containing each country's export values is assigned to an object named ```export_vector```, and a numeric vector containing each country's import values is assigned to an object named ```import_vector```:
+
+```{r}
+export_vector<-c(78, 499, 785)
+import_vector<-c(134, 345, 645)
+```
+
+Now, let's cycle these vectors through the ```net_exports_calculation()```` function, and deposit the resulting export values into a list, which we'll name ```net_export_list```. Instead of using the ```map()``` function (as above), we'll use a function named ```map2()```, since the function we're applying has two inputs. 
+
+Below, the first argument to ```map2()```, ```export_vector````, is the vector we defined above which contains our export values; the second argument, ```import_vector```, is our vector of import values; and the third argument, ```net_exports_calculation```, is the function we want to apply. 
+
+The ```map2()``` function will take the first  element of ```export_vector``` and the first element of ```import_vector```, run those values through ```net_exports_calculation```, and deposit the result (i.e. the net export value for the first country) as the first element in the ```net_export_list``` list object. Then, it will take the second  element of ```export_vector``` and the second element of ```import_vector```, run those values through ```net_exports_calculation```, and deposit the result (i.e. the net export value for the first country) as the second element in the ```net_export_list``` list object. Finally, it will go through the same process for the third country. 
+
+```{r}
+net_export_list<-map2(export_vector, import_vector, net_exports_calculation)
+```
+
+Let's now print the contents of ```net_export_list```, which contain our net export values:
+
+```{r}
+net_export_list
+```
+
+If, instead of depositing the results into a list, we'd like to deposit our outputs into a numeric vector, we can do so using the ```map2_dbl()``` function, the analog of ```map_dbl()``` which is used when the function takes two inputs rather than one. We'll assign our results vector to a new object named ```net_export_vector```:
+
+```{r}
+net_export_vector<-map2_dbl(export_vector, import_vector, net_exports_calculation)
+```
+
+Let's now print the contents of ```net_export_vector```:
+
+```{r}
+net_export_vector
+```
+
+Note that the net export values contained in ```net_export_vector``` are the same as those in ```net_export_list```, as we would expect; the only difference is that ```net_export_vector``` is a vector and ```net_export_list``` is a list. 
+
+Just as ```map2()``` and ```map2_dbl()``` serve as analogs to ```map()``` and ```map_dbl()``` for functions with two inputs, ```map2_dfr()``` is the analog to ```map_dfr()``` for such functions. To see how it works, let's first define a function that returns a dataframe, with the first column consisting of the export value, the second consisting of the import value, and the final column consisting of the net export value that is calculated within the body of the function. We'll assign this function to a new object named ```net_exports_calculation_df()```: 
+
+```{r}
+net_exports_calculation_df<-function(exports, imports){
+  net_exports<-exports-imports
+  df<-data.frame(exports, imports, net_exports)
+  return(df)
+}
+```
+
+Now, let's test the ```net_exports_calculation_df()``` function we've just defined using an export value of $100 millions (exports=100) and an import value of $40 million (imports=40 million): 
+
+```{r}
+net_exports_calculation_df(exports=100,imports=40)
+```
+
+Having confirmed that the function works as expected, let's use the ```map2_dfr()``` function to iteratively apply the ```net_exports_calculation_df()``` function to the export values contained in ```export_vector``` and the import values contained in ```import_vector```. 
+
+The code below takes the first element in ```export_vector```, and the first element in ```import_vector```, and runs these input values through ```net_exports_calculation_df()``` to create the first row of the output data frame (where the first column is the first element of ```export_vector```, the second column is the first element of ```import_vector```, and the third column is the net export value calculated using these values). It then takes the second element in ```export_vector```, and the second element in ```import_vector```, and runs these input values through the ```net_exports_calculation_df()``` function to create the second row of the output data frame. Finally, it repeats the process for the third elements of ```export_vector``` and  ```export_vector```, and creates the third row of the output data frame. We'll assign the data frame to a new object named ```net_exports_dataframe```:
+
+```{r}
+net_exports_dataframe<-map2_dfr(export_vector, import_vector, net_exports_calculation_df)
+```
+
+Let's now print the contents of our newly created data frame object:
+
+```{r}
+net_exports_dataframe
+```
+
+## Iteration with functions that have more than two inputs
+
+While the ```map2()``` family functions allows us to conveniently handle iteration tasks involving two-input functions, you will often need to work with functions with more than two inputs. How can we carry out iteration tasks with these multi-input functions? 
+
+The ```pmap()``` family of functions within *purrr* allows us to handle iteration tasks using functions with any number of inputs greater than two, by using a list as a container for all of the inputs we would like to iterate over. 
+
+To see how this works, let's first define a function with more than two arguments. In particular, we'll create a function that takes numeric values for consumption spending (consumption_spending), government spending (government_spending), investment spending (investment_spending), and net exports (net_exports) as arguments, and returns a value for GDP (which is the sum of these values). We'll assign this GDP calculator function to a new object named ```gdp_calculation```:
+
+```{r}
+gdp_calculation<-function(consumption_spending, government_spending, investment_spending, net_exports){
+  gdp<-consumption_spending+government_spending+investment_spending+net_exports
+  return(gdp)
+}
+```
+
+Let's now test the function; as before, we'll assume that units are in millions of dollars. We'll test our function for a country with consumption spending of $125 million (```consumption_spending=125```), government spending of $66 million (```government_spending=66```), investment spending of $36 million (```investment_spending=36```), and net exports of -$33 million (```net_exports=-33```): 
+
+```{r}
+gdp_calculation(consumption_spending = 125, government_spending=66, investment_spending=36, net_exports=-33)
+```
+
+As expected, the function returns the sum of these values, which translates into 194 (interpreted here as a GDP of $194 million). 
+
+Now, let's say we have consumption spending, government spending, investment spending, and net export data for four different countries, and we want to iteratively apply the ```gdp_calculation()``` function over the data for these four countries, and then deposit the resulting GDP values for each of the countries into a list. 
+
+The first step is to create a new list of input values, where each list element is a vector that contains the country-level values for each argument of the ```gdp_calculation()``` function. We'll assign this list to a new object named ```gdp_input_list```:
+
+```{r}
+gdp_input_list<-list(consumption_spending=c(44, 89, 64, 33),
+                     government_spending=c(54, 76, 222, 110),
+                     investment_spending=c(123, 200, 55, 45),
+                     net_exports=c(-55, 89, 143,-12))
+```
+
+To make sure we understand what ```gdp_input_list``` represents, consider the first element in each of the four numeric vectors in the list; the first element corresponds to the first country, which we can see has consumption spending of $44 million, government spending of $54 million, investment spending of $123 million, and net exports of -$55 million. The second element of each of the vectors in the list corresponds to information for the second country, which has consumption spending of $89 million, government spending of $76 million, investment spending of $200 million, and net exports of $89 million. And so on for Countries 3 and 4. 
+
+Now that we have defined our list of input values (```gdp_input_list```) based on the arguments to the ```gdp_calculation()``` function, we can pass ```gdp_input_list``` (the list of input values) and ```gdp_calculation()``` (the function we are iterating over) as arguments to *purrr's* ```pmap()``` function, which will iteratively apply the ```gdp_calculation()``` function to the inputs specified in ```gdp_input_list``` in a vectorized fashion (i.e. the function uses the first value in each vector of the input list to generate the first output value, and then uses the second value in each vector of the input list to generate the second output value etc). We'll assign the resulting list of output values to a new object named ```gdp_output_list```:
+
+```{r}
+gdp_output_list<-pmap(gdp_input_list, gdp_calculation)
+```
+
+Let's now print the contents of ```gdp_output_list```:
+
+```{r}
+gdp_output_list
+```
+
+As expected, the first list element contains the GDP of the first country, 166 (44+54+123+55); the second list element contains the GDP of the second country, 454 (89+76+200+89); and so on, for the third and fourth countries.
+
+If we want our function outputs in a vector, rather than a list, we can simply use the ```pmap_dbl()``` function instead; below, we'll assign this vector of GDP values to an object named ```gdp_output_vector```:
+
+```{r}
+gdp_output_vector<-pmap_dbl(gdp_input_list, gdp_calculation)
+```
+
+When we print the contents of ```gdp_output_vector```, we can see the GDP values calculated by ```gdp_calculation()``` (based on the arguments specified in ```gdp_input_list```) within a vector:
+
+```{r}
+gdp_output_vector
+```
+
+As an exercise, see if you can write a function that takes arguments for consumption spending, government spending, investment spending, and net exports, and returns a data frame in which these values are columns, along with another column that contains the GDP value. Then, use the ```pmap_dfr()``` function to create a new dataframe using the input values contained in ```gdp_input_list``` (which we used above). 
+
+```{r, echo=F, results=F}
+gdp_calculation_df<-function(consumption_spending, government_spending, investment_spending, net_exports){
+  gdp<-consumption_spending+government_spending+investment_spending+net_exports
+  gdp_df<-data.frame(consumption_spending, government_spending, investment_spending, net_exports, gdp)
+  return(gdp_df)
+}
+
+gdp_output_df<-pmap_dfr(gdp_input_list, gdp_calculation_df)
+```
+
+Your code should yield a table that looks something like this:
+
+```{r, echo=F}
+gdp_output_df
+```
+
+# Using functions and iteration in GIS workflows
+
+## Functions, iteration, and spatial joins
+
+In the second assignment, one of your options was to implement a spatial join using traffic stop data for the city of Aurora, compiled by the Stanford Open Policing Project. In particular, the assignment asked you to implement a spatial join with respect to census tracts, compute the total number of stops in each census tract, and then present this information in a data frame. 
+
+The script below reviews the code that was required to carry out these tasks:  
+
+```{r, results=F, eval=F, message=F}
+# Reads in data and assigns to object named "CO_aurora_policestops"
+CO_aurora_policestops<-read_csv("https://www.dropbox.com/s/u7xqa7dc34hlsfp/co_aurora_2020_04_01.csv?dl=1")
+
+# Define spatial point object using "CO_aurora_policestops", and assign it to a new object named "co_aurora_sf"
+co_aurora_sf<-CO_aurora_policestops %>% 
+                  drop_na(lng) %>% 
+                  st_as_sf(coords=c("lng", "lat"), crs=4326)
+
+# Project "co_aurora_sf" into the appropriate projection for Aurora, and assign the reprojected data to an object named "co_aurora_sf_project"
+co_aurora_sf_project<-co_aurora_sf %>% st_transform(2232)
+
+# Extract census tract data for CO using tidycensus, and assign to a new object named "CO_tracts"
+CO_tracts<-get_decennial(geography = "tract",
+                         state="CO",
+                         variables = "P001001",
+                         year = 2010,
+                         geometry=TRUE) %>% 
+  st_transform(2232)
+
+# Spatially join "CO_tracts" object to "co_aurora_sf_project" object, yielding a new dataset that contains information on the Census tract in which each stop occured; this new dataset is assigned to an object named "stops_tracts_join"
+stops_tracts_join<-st_join(co_aurora_sf_project, CO_tracts)
+
+# create a new dataframe containing information on the number of stops for each tract, and assign this data frame to an object named "stops_per_tract"
+stops_per_tract<-stops_tracts_join %>% 
+  group_by(GEOID, NAME) %>% 
+  summarize(n())
+
+# Renames column named "n()" to "traffic_stops
+stops_per_tract_final<-stops_per_tract %>% 
+                      rename(traffic_stops="n()")
+```
+
+```{r, echo=F, results=F, message=F}
+# Reads in data and assigns to object named "CO_aurora_policestops"
+CO_aurora_policestops<-read_csv("https://www.dropbox.com/s/u7xqa7dc34hlsfp/co_aurora_2020_04_01.csv?dl=1")
+
+# Define spatial point object using "CO_aurora_policestops", and assign it to a new object named "co_aurora_sf"
+co_aurora_sf<-CO_aurora_policestops %>% 
+                  drop_na(lng) %>% 
+                  st_as_sf(coords=c("lng", "lat"), crs=4326)
+
+# Project "co_aurora_sf" into the appropriate projection for Aurora, and assign the reprojected data to an object named "co_aurora_sf_project"
+co_aurora_sf_project<-co_aurora_sf %>% st_transform(2232)
+```
+
+Recall that the assignment also asked you to export the final dataset (here, the data assigned to ```stops_per_tract_final```) as a CSV file. The final CSV file will be less unwieldy if we transform ```stops_per_tract_final```, which is currently an *sf* object, into a dataframe object, and delete the "geometry" column. We can do so with the following:
+
+```{r, results=F, eval=F, message=F}
+# Converts "stops_per_tract_final" object to data frame, deletes "geometry" column, and assigns to a new object named "stops_per_tract_final_df"
+stops_per_tract_final_df<-as.data.frame(stops_per_tract_final) %>% 
+                          dplyr::select(-geometry)
+```
+
+Finally, we can export ```stops_per_tract_final_df``` to our working directory with the following:
+
+```{r, results=F, eval=F, message=F}
+write_csv(stops_per_tract_final_df, "census_tracts_stops.csv")
+```
+
+This script allowed us to generate and export a census tract-level dataset of police traffic stops, but let's say that we want to generate a dataset of traffic stops (using this data) at various other geographies as well (for instance, counties or county subdivisions or census blocks). One strategy to build these datasets at these different geographies is to simply use the script we developed for census tracts, copying and pasting relevant changes as necessary to adapt the code for different geographic boundaries.
+
+A more efficient and scalable approach, however, is to wrap the code we developed into a function that takes a desired geography (from *tidycensus*) as an argument, and returns a dataset containing information on the number of stops per geographic unit (based on that desired geography). We'll use the same principles discussed in earlier sections to create this function, which generalizes the spatial join script for census tracts: 
+
+```{r}
+# Creates function that takes desired tidycensus geography as argument, and returns data frame of number of traffic stops with respect to that geography; function is assigned to an object named "traffic_stop_geography"
+traffic_stop_geography<-function(desired_geography){
+
+geography_extract<-get_decennial(geography = desired_geography,
+                                   state="CO",
+                                   variables = "P001001",
+                                   year = 2010,
+                                   geometry=TRUE) %>% 
+                          st_transform(2232)
+  
+stop_geography_join<-st_join(co_aurora_sf_project, geography_extract)
+
+stops_per_geography<-stop_geography_join %>% 
+                            group_by(GEOID, NAME) %>% 
+                            summarize(n()) %>% 
+                            rename(traffic_stops="n()")
+
+stops_per_geography_df<-as.data.frame(stops_per_geography) %>% 
+                          dplyr::select(-geometry)
+
+return(stops_per_geography_df)
+}
+```
+
+Now that we have our function, let's go ahead and test it. Let's generate a dataset containing information on the number of stops within each county subdivision; we'll assign the dataset to an object named ```county_subdivision_stops```:
+
+```{r, results=F, message=F}
+county_subdivision_stops<-traffic_stop_geography(desired_geography="county subdivision")
+```
+
+Let's print the contents of ```county_subdivision_stops``` to see what our dataset looks like:
+
+```{r, echo=F}
+county_subdivision_stops %>% datatable(extensions=c("Scroller", "FixedColumns"), options = list(
+  deferRender = TRUE,
+  scrollY = 350,
+  scrollX = 350,
+  dom = "t",
+  scroller = TRUE,
+  fixedColumns = list(leftColumns = 3)
+))
+```
+
+Now, let's say we want to generate a county-level dataset of stops, a census tract level dataset of stops, and a zip code-level dataset of stops, and then place these datasets into a list. We can do so using the ```map()``` function we learned about earlier to iteratively apply the ```traffic_stop_geography()``` function to our desired input geographies. 
+
+First, we'll create a character vector that contains the *tidycensus* codes for the geographies we'd like to use in our spatial joins; we'll assign this vector to a new object named ```desired_geography_inputs```:
+
+```{r, message=F, results=F, warning=F}
+desired_geography_inputs<-c("county", "tract", "zcta")
+```
+
+Now, we'll use *purrr's* ```map()``` function to iteratively apply ```traffic_stop_geography()``` to the inputs specified in ```desired_geography_inputs```; we'll assign the output list to a new object named ```geography_stop_list```:
+
+```{r, message=F, results=F, warning=F}
+geography_stop_list<-map(desired_geography_inputs, traffic_stop_geography)
+```
+
+Let's go ahead and print our list:
+
+```{r}
+geography_stop_list
+```
+
+
+Now, we can easily extract datasets for any of the specified geographies from our list, using the relevant index. For example, let's say we want to extract the county-level dataset; we can do so using index number 1 (since "county" is the first element in the ```desired_geography_inputs``` vector):
+
+```{r, eval=F}
+geography_stop_list[[1]]
+```
+
+```{r, echo=F}
+geography_stop_list[[1]] %>% datatable(extensions=c("Scroller", "FixedColumns"), options = list(
+  deferRender = TRUE,
+  scrollY = 350,
+  scrollX = 350,
+  dom = "t",
+  scroller = TRUE,
+  fixedColumns = list(leftColumns = 3)
+))
+```
+
+Recall that we can also use the ```pluck()``` function to extract list elements; for example, let's say we want to extract the zip-code level dataset of police stops from ```geography_stop_list```. We can do so with the following: 
+
+```{r, eval=F}
+geography_stop_list %>% pluck(3)
+```
+
+```{r, echo=F}
+zip_code_stops<-geography_stop_list %>% pluck(3)
+```
+
+```{r, echo=F}
+zip_code_stops %>% datatable(extensions=c("Scroller", "FixedColumns"), options = list(
+  deferRender = TRUE,
+  scrollY = 350,
+  scrollX = 350,
+  dom = "t",
+  scroller = TRUE,
+  fixedColumns = list(leftColumns = 3)
+))
+```
+
+It may also be convenient to assign list elements to their own objects; for instance, if we wanted to extract the zip code dataset from ```geography_stop_list```, and assign it to its own object (here, named ```police_stops_zip_code```), we could do the following:
+
+```{r}
+police_stops_zip_code<-geography_stop_list %>% pluck(3)
+```
+
+It is often convenient to explicitly name our list elements. For example, the code below uses the ```names()``` function to name the elements of ```geography_stop_list``` based on the ```desired_geography_inputs``` vector:
+
+```{r}
+names(geography_stop_list)<-desired_geography_inputs
+```
+
+Now, when we print ```geography_stop_list```, we can note that the list elements are named after the geography to which the dataset corresponds. 
+
+```{r}
+geography_stop_list
+```
+
+Now that our list is named, we can use these names to extract list elements. For example, if we wanted to extract the zip code dataset, we could use the following:
+
+```{r, eval=F}
+geography_stop_list[["zcta"]]
+```
+
+```{r, echo=F}
+geography_stop_list[["zcta"]] %>% datatable(extensions=c("Scroller", "FixedColumns"), options = list(
+  deferRender = TRUE,
+  scrollY = 350,
+  scrollX = 350,
+  dom = "t",
+  scroller = TRUE,
+  fixedColumns = list(leftColumns = 3)
+))
+```
+
+Even after naming the list, we can continue referring to the list elements by their indices as well. For example: 
+
+```{r, eval=F}
+geography_stop_list[[3]]
+```
+
+```{r}
+geography_stop_list[[3]] %>% datatable(extensions=c("Scroller", "FixedColumns"), options = list(
+  deferRender = TRUE,
+  scrollY = 350,
+  scrollX = 350,
+  dom = "t",
+  scroller = TRUE,
+  fixedColumns = list(leftColumns = 3)
+))
+```
+
+Now that we have all of our desired datasets stored in ```geography_stop_list```, we can go ahead and write each of these datasets out to disk. To do so, we can first write a function that will take a given file and desired file name as arguments, and save this file to disk (to the working directory) with the given file name. We'll assign this function to a new object named ```output_csv()```:
+
+```{r}
+output_csv<-function(file, name){
+  filename<-paste0(name, ".csv")
+  write_csv(file, filename)
+}
+```
+
+Note that in the function above, the part of the function's body that reads ```filename<-paste0(name, ".csv")``` simply appends the desired file extension to the file name that is supplied as an argument. 
+
+You can go ahead and test that this function works for a single file; for instance, let's try using this function to write out the zip code dataset, which we earlier assigned to ```police_stops_zip_code```. We'll name the file "zip_code_data": 
+
+```{r}
+# Test function
+output_csv(police_stops_zip_code, "zip_code_data")
+```
+
+If you check your working directory, you should see a CSV file containing the ```police_stops_zip_code``` data, saved as "zip_code_data.csv".
+
+Now that we've written a function that can write out a specified CSV file with a specified name, let's go ahead and apply it iteratively to all of the list elements in ```geography_stop_list``` so that each dataset is written out to disk individually. To do so, we'll use a variant of the ```walk()``` function, which works much the same as a ```map()``` function; the key difference is that when we use ```walk()``` (or a variant of ```walk()```), we are not interested in the return value of the function, but rather in the action it performs (i.e transferring data to disk). As a general rule, if you are interested in iteratively applying a function to read in data, or to write out data, you should use a ```walk()``` function rather than ```map()```.
+
+Because the ```output_csv()``` function has two arguments, we'll use the ```walk2()``` function. Below, the first argument, ```geography_stop_list```, contains the object that we'd like to write out to disk. The second argument, ```desired_geography_inputs```, is the character vector we defined earlier, which contains the names of the list elements in ```geography_stop_list```. We'll use these names as our file names. Finally, ```output_csv()``` is the function we would like to apply: 
+
+```{r}
+walk2(geography_stop_list, desired_geography_inputs, output_csv)
+```
+
+The code above takes the first element of ```geography_stop_list```, and writes this dataset out to the working directory as "county.csv" (the "county" is the first element of ```desired_geography_inputs``` and the ".csv" is appended within the ```output_csv()``` function's body); it then takes the second element of ```geography_stop_list```, and writes this dataset to the working directory as "tract.csv"; finally, it takes the third element of ```geography_stop_list``` and writes this dataset to the working directory as "zcta.csv".
+
+After running the code above, you should check your working directory to confirm that all of the datasets have been saved, and that the filenames are correct and correspond to the appropriate data. 
+
+## Functions, iteration, and map creation
+
+In the first lesson, we learned how to make a basic world choropleth map based on World Bank development indicator data extracted from the *WDI* package. Let's first reproduce the script from that lesson, which generated a world choropleth map of trade as a percentage of GDP in the year 2015: 
+
+```{r, eval=F}
+# Extract country boundaries (sans Antarctica) as an sf object using "ne_countries" function, and assign to object named "country_boundaries"
+country_boundaries<-ne_countries(scale="medium", returnclass="sf") %>% 
+                       filter(iso_a3 !="ATA")
+
+# Extract cross-sectional data on trade as a percentage of GDP for the year 2015, using WDI package, and then rename the column named "NE.TRD.GNFS.ZS" to "trade_gdp_2015"; dataset is assigned to new object named "trade_gdp_2015"
+trade_gdp_2015<-WDI(country="all",
+                    indicator="NE.TRD.GNFS.ZS",
+                    start=2015, 
+                    end=2015, 
+                    extra=T) %>% 
+               rename(trade_gdp_2015=NE.TRD.GNFS.ZS)
+
+# Joins "trade_gdp_2015" object to "country_boundaries" object, based on 3-digit ISO code, and assigns joined dataset to new object named "trade_2015_spatial"
+trade_2015_spatial<-full_join(country_boundaries, trade_gdp_2015,
+                                    by=c("iso_a3"="iso3c"))
+
+# Uses tmap package to create map based on "trade_gdp_2015" column in "trade_2015_spatial" object and assigns result to object named "trade_2015"
+trade_2015<-tm_shape(trade_2015_spatial)+
+               tm_polygons(col="trade_gdp_2015",
+                          n=7,
+                          style="quantile",
+                          palette="YlOrBr",
+                          title="Trade as a % of GDP,\n2015",
+                          textNA="No Data")+
+            tm_layout(legend.outside=T,
+                      legend.outside.position = "bottom",
+                      main.title="Crossnational Variation in Commercial Integration, 2015",
+                      main.title.size=1,
+                      main.title.position="center",
+                      inner.margins=c(0.06,0.10,0.10,0.08), # Sets margins to create whitespace
+                      frame=FALSE,
+                      attr.outside = TRUE)+ # Places credits section outside map
+            tm_credits("Map Author: Aditya Ranganath\nData Source: World Bank\nDevelopment Indicators (WDI)", position=c(0.78,0), size=0.38) # Specifies content, position, size of credits
+
+# prints "trade_2015"
+trade_2015
+```
+
+```{r, echo=F}
+# Extract country boundaries (sans Antarctica) as an sf object using "ne_countries" function, and assign to object named "country_boundaries"
+country_boundaries<-ne_countries(scale="medium", returnclass="sf") %>% 
+                       filter(iso_a3 !="ATA")
+
+# Extract cross-sectional data on trade as a percentage of GDP for the year 2015, using WDI package, and then rename the column named "NE.TRD.GNFS.ZS" to "trade_gdp_2015"; dataset is assigned to new object named "trade_gdp_2015"
+trade_gdp_2015<-WDI(country="all",
+                    indicator="NE.TRD.GNFS.ZS",
+                    start=2015, 
+                    end=2015, 
+                    extra=T) %>% 
+               rename(trade_gdp_2015=NE.TRD.GNFS.ZS)
+
+# Joins "trade_gdp_2015" object to "country_boundaries" object, based on 3-digit ISO code, and assigns joined dataset to new object named "trade_2015_spatial"
+trade_2015_spatial<-full_join(country_boundaries, trade_gdp_2015,
+                                    by=c("iso_a3"="iso3c"))
+
+# Uses tmap package to create map based on "trade_gdp_2015" column in "trade_2015_spatial" object and assigns result to object named "trade_2015"
+trade_2015<-tm_shape(trade_2015_spatial)+
+               tm_polygons(col="trade_gdp_2015",
+                          n=7,
+                          style="quantile",
+                          palette="YlOrBr",
+                          title="Trade as a % of GDP,\n2015",
+                          textNA="No Data")+
+            tm_layout(legend.outside=T,
+                      legend.outside.position = "bottom",
+                      main.title="Crossnational Variation in Commercial Integration, 2015",
+                      main.title.size=1,
+                      main.title.position="center",
+                      inner.margins=c(0.06,0.10,0.10,0.08), # Sets margins to create whitespace
+                      frame=FALSE,
+                      attr.outside = TRUE)+ # Places credits section outside map
+            tm_credits("Map Author: Aditya Ranganath\nData Source: World Bank\nDevelopment Indicators (WDI)", position=c(0.78,0), size=0.38) # Specifies content, position, size of credits
+
+# prints "trade_2015"
+trade_2015
+```
+
+Let's say that for the project you are working on, you expect you'll have to make a bunch of different world choropleth maps for different World Bank indicators. In order to automate this process, we can write a function that generalizes the code for a single map. Below, we'll assign this function to an object named ```wdi_map_maker```. This function takes the WDI variable code ("wdi_variable_code"), the desired start year for the WDI data ("start_year"), the end year for the WDI data ("end_year"), the desired legend title ("legend_title"), and the desired title for the map ("main_map_title") as inputs, and returns a choropleth map based on these parameters: 
+
+```{r}
+wdi_map_maker<-function(wdi_variable_code, start_year, end_year, 
+                        legend_title, main_map_title){
+country_boundaries<-ne_countries(scale="medium", returnclass="sf") %>% 
+                       filter(iso_a3 !="ATA")
+  
+wdi_extract<-WDI(country="all",
+              indicator=wdi_variable_code,
+              start=start_year,
+              end=end_year,
+              extra=T)
+
+spatial_object_tomap<-inner_join(country_boundaries, wdi_extract,
+                                    by=c("iso_a3"="iso3c"))
+final_map<-tm_shape(spatial_object_tomap)+
+  tm_polygons(col=wdi_variable_code,
+              n=7,
+              style="quantile",
+              palette="YlOrBr",
+              title=legend_title,
+              textNA="No Data")+
+    tm_layout(legend.outside=T,
+              legend.outside.position = "bottom",
+              main.title=main_map_title,
+              main.title.size=1,
+              main.title.position="center",
+              inner.margins=c(0.06,0.10,0.10,0.08), # Sets margins to create whitespace
+              frame=FALSE,
+              attr.outside = TRUE)+ # Places credits section outside map
+   tm_credits("Map Author: Aditya Ranganath\nData Source: World Bank\nDevelopment Indicators (WDI)", position=c(0.78,0), size=0.38) # Specifies content, position, size of credits
+return(final_map)
+}
+```
+
+Let's now test this function; let's say we want to make a map of services trade as a percentage of GDP (the WDI variable code for this indicator is "BG.GSR.NFSV.GD.ZS"), from the year 2017, with a legend title of "Services Trade (% of GDP)", and a main map title of "Service Market Integration, 2017". Let's pass these arguments to the ```wdi_map_maker()``` function, and see if it works:
+
+```{r}
+wdi_map_maker(wdi_variable_code="BG.GSR.NFSV.GD.ZS", start_year=2017, end_year=2017, 
+                        legend_title="Services Trade (% of GDP)", main_map_title="Service Market Integration, 2017")
+```
+
+Let's try another one. Let's say we want to make a choropleth map of government taxes as a share of GDP (WDI code for this variable is "GC.TAX.TOTL.GD.ZS") for the year 2017, and that we want to set the legend title as "Taxes (% of GDP)", and the main title of the map as "Government Taxes as a Share of GDP, 2017". Let's plug those parameters into the function, and generate our map: 
+
+```{r}
+wdi_map_maker(wdi_variable_code="GC.TAX.TOTL.GD.ZS", start_year=2017, end_year=2017, 
+                        legend_title="Taxes (% of GDP)", main_map_title="Government Taxes as a Share of GDP, 2017")
+```
+
+Now, let's say you want to make several maps, and don't want to apply ```wdi_map_maker()``` multiple times in a manual fashion. Rather, you want to iteratively apply the function to a set of multiple inputs, and generate multiple maps based on those inputs. 
+
+For simplicity, we'll work with the same input parameters that we used individually in the two previous function calls to ```wdi_map_maker()```, and see how we can apply ```wdi_map_maker()``` to these inputs in an iterative fashion. 
+
+The first step is to create a new list, which we'll assign to an object named ```input_list_WDI```, whose elements are vectors that contain the arguments we would like to pass as arguments to the ```wdi_map_maker()``` function:
+
+```{r}
+input_list_WDI<-list(wdi_variable_code=c("BG.GSR.NFSV.GD.ZS", "GC.TAX.TOTL.GD.ZS"),
+                    start_year=c(2017, 2017),
+                    end_year=c(2017, 2017),
+                    legend_title=c("Services Trade (% of GDP)", "Taxes (%GDP)"),
+                    main_map_title=c("Service Market Integration, 2017", "Government Taxes as a Share of GDP, 2017")) 
+```
+
+It may be helpful to print the contents of ```input_list_WDI```, so that we can clearly see its structure:
+
+```{r}
+input_list_WDI
+```
+
+Now, we can pass ```input_list_WDI``` as an argument to the ```pmap()``` function, along with ```wdi_map_maker()```, to iteratively apply the ```wdi_map_maker()``` function using the arguments specified in ```input_list_WDI```. The ```pmap()``` function returns a list containing the function's outputs (in this case, world choropleth maps for different WDI variables), which we'll assign to a new object named ```WDI_map_list```:
+
+
+```{r}
+WDI_map_list<-pmap(input_list_WDI, wdi_map_maker)
+```
+
+Let's break down the code above, so that we understand how the ```pmap()``` function is working in this case:
+
+* First, it runs the ```wdi_map_maker()``` function using the first element of the ```wdi_variable_code``` vector ("BG.GSR.NFSV.GD.ZS") in ```input_list_WDI```, the first element of the ```start_year``` vector ("2017"), the first element of the "end_year" vector ("2017"), the first element of the ```legend_title``` vector ("Services Trade (% of GDP)"), and the first element of the ```main_map_title``` vector ("Service Market Integration, 2017") as arguments. It deposits the map created using these arguments into the output list, ```WDI_map_list```, as the first element.
+* Second, it runs the ```wdi_map_maker()``` function using the second element of the ```wdi_variable_code``` vector ("GC.TAX.TOTL.GD.ZS") in ```input_list_WDI```, the second element of the ```start_year``` vector ("2017"), the second element of the "end_year" vector ("2017"), the second element of the ```legend_title``` vector ("Taxes (%GDP)"), and the second element of the ```main_map_title``` vector ("Government Taxes as a Share of GDP, 2017") as arguments. It deposits the map created using these arguments into the output list, ```WDI_map_list```, as the second element.
+
+Now, let's print the contents of ```WDI_map_list```, and confirm that our maps appear as expected:
+
+```{r}
+WDI_map_list
+```
+
+Recall that we can extract our list elements by specifying the desired element's index with Base R's double bracket syntax. For instance, if we wanted to extract the first element from ```WDI_map_list``` (the 2017 service market integration map), we could use the following: 
+
+```{r}
+WDI_map_list[[1]]
+```
+
+Recall, also, that we can use the ```pluck()``` function to extract list elements. For instance, if we want to extract the second element in ```WDI_map_list``` (the map of taxes as a share of GDP in 2017), we can use the following:
+
+```{r}
+WDI_map_list %>% pluck(2)
+```
+
+If we want to name our list elements, we can do so using the ```names()``` function. Let's say we want to name the list elements according to the WDI variable code that specifies the data which is being mapped. We can extract these variable codes from ```input_list_WDI``` with the following:
+
+```{r}
+input_list_WDI$wdi_variable_code
+```
+
+Now, we can assign these codes to the elements in ```WDI_map_list``` with the following:
+
+```{r}
+names(WDI_map_list)<-input_list_WDI$wdi_variable_code
+```
+
+Lets print the contents of ```WDI_map_list```, and confirm that the elements are now associated with the relevant variable codes:
+
+```{r}
+WDI_map_list
+```
+
+Now, in addition to extracting list elements by their index numbers, we can also do so using the assigned names. For instance, if we wanted to extract the map of taxes as a share of GDP using the ```pluck()``` function using its name ("GC.TAX.TOTL.GD.ZS") rather than its index (2), we could use the following: 
+
+
+```{r}
+WDI_map_list %>% pluck("GC.TAX.TOTL.GD.ZS")
+```
+
+After generating all of your desired maps and depositing those maps into a list, you may wish to export these maps from R Studio, and save them to a local directory on your computer using a common file format (such as PDF, png, jpeg etc.).
+
+If you would like to create a single document which contains all of the maps that are stored in a list, a good option is to use a PDF graphics device. The code below uses a PDF graphics device to write out the choropleth maps in ```WDI_map_list``` to the working directory as a 2-page PDF file in which each map is printed on a separate page in the order they appear in ```WDI_map_list```:
+
+```{r}
+pdf("WDI_maps.pdf")
+WDI_map_list
+dev.off()
+```
+
+In the code above, the first line, ```pdf("WDI_maps.pdf")``` initiates the PDF device, and specifies that the output file name is to be "WDI_maps.pdf". Then, the second line, ```WDI_map_list```, specifies the name of the list object that contains the maps we'd like to print to our PDF document. Finally, ```dev.off()``` turns off the PDF device. At this point, you should check your working directory, and confirm that a PDF file named "WDI_maps.pdf" does indeed exist in your working directory, and that this file does contain the maps in ```WDI_map_list```.
+
+If you would prefer to write out all of the maps within ```WDI_map_list``` as separate files (rather than as a single file containing all the maps, as we just did), the process is a bit more involved, but can be implemented using skills we have already developed.
+
+Recall from the first lesson that if we want to write out a single *tmap* object to disk, we can use the *tmap's* ```tmap_save()``` function. For instance, let's say we want to write out the ```trade_2015``` *tmap* object we created earlier to our working directory, and save this file as a PDF file named "trade_2015_map". We can do so with the following: 
+
+```{r}
+tmap_save(tm=trade_2015,
+          filename="trade_2015_map.pdf",
+          width=1920,
+          height=1080)
+```
+
+Above, the ```tm``` argument specifies the name of the object we would like to write out to disk (```trade_2015```), and the ```filename``` argument  specifies the desired filename for the exported file (```trade_2015_map.pdf```). The ```width``` and ```height``` arguments specify the desired dimensions for the exported map. After running the code, you should check your working directory and open the "trade_2015_map.pdf" file to ensure that everything looks in order. Recall that the ```tmap_save()``` function is quite flexible; if we had wanted the file saved as a png file instead of a pdf file, for instance, we could have simply used a ".png" extension for the filename rather than a ".pdf" extension (i.e. ```filename="trade_2015.pdf"```).
+
+Now that we've refreshed our memory about how to export a single *tmap* object to disk, let's consider how to export multiple *tmap* objects, stored in a list, as individual files in an iterative fashion (so that we don't have to write out each map individually). The first step is to write a function to export *tmap* objects that generalized the code above. The code below creates a function that takes the name of a map object (```map_object```), a desired filename (```map_file_name```), and a desired file extension (```extension```) as arguments, and exports the map specified by those parameters using the dimensions we used above. It assigns this function to an object named ```map_export()```:
+
+```{r}
+map_export<-function(map_object, map_file_name, extension){
+  tmap_save(tm=map_object,
+            filename=paste0(map_file_name, extension),
+            width=1920,
+            height=1080)
+}
+```
+
+Now, let's test out the ```map_export()``` function for a single map. We'll write out the ```trade_2015``` object using this function, but write it out as a PNG file instead of a PDF, and name it ```trade_2015_alternate```:
+
+```{r}
+map_export(map_object=trade_2015,
+           map_file_name = "trade_2015_alternate",
+           extension=".png")
+```
+
+Check your working directory to make sure that you see the "trade_2015_alternate.png" file we've just written out, and that the map has printed correctly.
+
+Now that we've confirmed that the ```map_export()``` function is working correctly, let's use it to iteratively write out the maps in ```WDI_map_list``` to disk as separate PDF files. Before proceeding, we need to decide on names for the exported files. For convenience, let's name the exported files after the WDI variable codes, which is also the name of the list elements in ```WDI_map_list```. Let's extract these WDI variable code names, and assign this name vector to a new object named ```wdi_export_names```:
+
+```{r}
+wdi_export_names<-names(WDI_map_list)
+```
+
+Now, let's define a list of inputs and assign it to an object named ```WDI_map_inputs_list```; we'll use this list to specify the arguments to ```map_export()```. Below, ```map_object=```WDI_map_list``` specifies that the *tmap* objects we want to write out are stored in ```WDI_map_list```. The second list element, ```map_file_name=name_vector```, specifies that we want to use the filenames stored in the ```wdi_export_names``` vector we created above as file names. Finally, ```extension=".pdf"``` specifies that we want the exported files to be stored in PDF format. 
+
+```{r}
+WDI_map_inputs_list<-list(map_object=WDI_map_list,
+                          map_file_name=wdi_export_names,
+                          extension=".pdf")
+```
+
+Now that we have our input list, we'll use the ```pwalk()``` function to iteratively apply ```map_export()``` using the arguments specified in  ```WDI_map_inputs_list```. The ```pwalk()``` function works in essentially the same way as the ```pmap()``` function; the main difference is that the latter returns an actual output, while the ```walk()``` family of functions is better-suited to performing a specific action (i.e. reading in or writing out data). Below, the first argument to ```pwalk()``` is the list of argument we would like to iteratively apply using the ```map_export()``` function (the second argument): 
+
+```{r}
+pwalk(WDI_map_inputs_list, map_export)
+```
+
+Let's unpack what the code above is doing:
+
+* First, it uses the information in ```WDI_map_inputs_list``` to extract the first element from ```WDI_map_list``` (the map of services integration) , the first element from ```wdi_export_names``` ("BG.GSR.NFSV.GD.ZS"), and the ".pdf" character string, and uses these elements as (respectively) the arguments for  "map_object", "map_file_name", and "extension" in the ```map_export()``` function. After the function runs using these arguments, the map of services integration in ```WDI_map_list``` is written out to the working directory as "BG.GSR.NFSV.GD.ZS.pdf". 
+* Second, it uses the information in ```WDI_map_inputs_list``` to extract the second element from ```WDI_map_list``` (the map of taxes as a share of GDP) , the second element from ```wdi_export_names``` ("GC.TAX.TOTL.GD.ZS"), and the ".pdf" character string, and uses these elements as (respectively) the arguments for  "map_object", "map_file_name", and "extension" in the ```map_export()``` function. After the function runs using these arguments, the map of taxes as a share of GDP in ```WDI_map_list``` is written out to the working directory as "GC.TAX.TOTL.GD.ZS.pdf". 
+
+You may have noticed that we only supplied one character string for the desired extension (i.e. ```extension=".pdf"``` in ```WDI_map_inputs_list```), but that there are two maps and two desired file names. It wasn't necessary to specify ".pdf" twice, because R automatically recycles vector values. Vector recycling refers to the fact that when performing vectorized operations, R requires vectors to be of the same length; when vectors of different lengths are supplied, R will reuse (i.e. "recycle") the elements of the shorter vector until it matches the length of the longer vector(s). Here, the ".pdf" value used for the first iteration is automatically recycled in the second iteration, which is appropriate since we want both files to be PDF files; if, for example, we wanted the map of taxes as a share of GDP to be saved as a PNG file instead, we would need to specify ```extension=c(".pdf", ".png")``` in ```WDI_map_inputs_list``` instead of ```extension=".pdf"```. Note, also, that we could have also generated two PDF files by specifying ```extension=c(".pdf", ".pdf")```, but given how vector recycling works in R, this was unnecessary. 
+
+## Functions and iteration with raster data
+
+In Class 3's tutorial on rasters, we used a raster dataset of NYC's population, along with a vector dataset of subway stops, to calculate the percentage of the city's population that lives within 500 meters of a subway stop. Let's remind ourselves of what the script we developed to calculate this percentage looked like: 
+
+```{r, echo=-1, eval=F}
+setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class5/scripting_data")
+
+# Read in NYC 2019 Raster
+nyc_pop_2019<-raster("nyc_2019_pop.tif")
+
+# Read in NYC subway stop data
+nyc_subway_stops<-st_read("stops_nyc_subway_may2019.shp")
+
+# Read in NYC borough data
+nyc_boroughs<-st_read("nyu_2451_34490.shp")
+
+# Create 500m subway buffers
+nyc_subway_500m_buffer<-st_buffer(nyc_subway_stops, 1640.42)
+
+# Dissolve buffers
+nyc_subway_500m_buffer_dissolved<-nyc_subway_500m_buffer %>% 
+                                    group_by() %>% 
+                                    summarise()
+
+# Transform CRS of "nyc_subway_500m_buffer_dissolved" to match "nyc_pop_2019"
+nyc_subway_500m_buffer_dissolved_4326<-nyc_subway_500m_buffer_dissolved %>% 
+                                        st_transform(4326)
+
+# Use zonal statistics to calculate population in buffer zone ("nyc_subway_500m_buffer_dissolved_4326") based on "nyc_2019_population" raster
+nyc_pop_within_buffer<-exact_extract(nyc_pop_2019, nyc_subway_500m_buffer_dissolved_4326, fun="sum")
+
+# Convert "nyc_boroughs" to WGS84 CRS to match "nyc_pop_2019" CRS
+nyc_borough_4326<-nyc_boroughs %>% st_transform(4326)
+
+# Use zonal statistics to calculate total NYC population 
+nyc_pop<-sum(exact_extract(nyc_pop_2019, nyc_borough_4326, fun="sum" ))
+
+# Percentage Inside Buffer
+pct_inside<-(nyc_pop_within_buffer/nyc_pop)*100
+
+# Calculate Percentage Outside Buffer
+pct_outside_buffer<-100-pct_inside
+
+# Print "pct_outside_buffer"
+pct_outside_buffer
+```
+
+```{r, echo=F, results=F, message=F}
+setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class5/scripting_data")
+
+# Read in NYC 2019 Raster
+nyc_pop_2019<-raster("nyc_2019_pop.tif")
+
+# Read in NYC subway stop data
+nyc_subway_stops<-st_read("stops_nyc_subway_may2019.shp")
+
+# Read in NYC borough data
+nyc_boroughs<-st_read("nyu_2451_34490.shp")
+
+# Create 500m subway buffers
+nyc_subway_500m_buffer<-st_buffer(nyc_subway_stops, 1640.42)
+
+# Dissolve buffers
+nyc_subway_500m_buffer_dissolved<-nyc_subway_500m_buffer %>% 
+                                    group_by() %>% 
+                                    summarise()
+
+# Transform CRS of "nyc_subway_500m_buffer_dissolved" to match "nyc_pop_2019"
+nyc_subway_500m_buffer_dissolved_4326<-nyc_subway_500m_buffer_dissolved %>% 
+                                        st_transform(4326)
+
+# Calculate population in buffer zone ("nyc_subway_500m_buffer_dissolved_4326") based on "nyc_2019_population" raster
+nyc_pop_within_buffer<-exact_extract(nyc_pop_2019, nyc_subway_500m_buffer_dissolved_4326, fun="sum")
+
+# Extract total NYC population
+nyc_borough_4326<-nyc_boroughs %>% st_transform(4326)
+nyc_pop<-sum(exact_extract(nyc_pop_2019, nyc_borough_4326, fun="sum" ))
+
+# Percentage Inside Buffer
+pct_inside<-(nyc_pop_within_buffer/nyc_pop)*100
+
+# Calculate Percentage Outside Buffer
+pct_outside_buffer<-100-pct_inside
+
+# Print "pct_outside_buffer"
+pct_outside_buffer
+```
+
+```{r, echo=F}
+pct_outside_buffer
+```
+
+Now, let's say you want to modify this script, calculate the percentage of NYC residents that live more than 1000 meters away from a subway stop. One option is to generate a new set of buffers with a radius of 1000 meters, and then carry out subsequent calculations (that are modeled on the steps above) using these buffers. However, this is fairly tedious, and can quickly become overwhelming if you want to perform calculations for several different distance thresholds. In such circumstances, it is better to write a function that takes a given distance (in meters) as its input argument, and returns the percentage of the city's population that lives in areas of the city that live more than that distance from a subway stop. 
+
+Below, we will write such a function, which is assigned to a new object named ```nyc_population_buffer```. The ```nyc_population_buffer()``` function takes a single argument, "buffer_distance_meters", which indicates the desired distance threshold (in meters) to use in computing 
+the subway stop buffers. The body of the function takes this argument, and calculates the percentage of the city's population whose proximity to a subway stop is further than this distance threshold. The code used in the function's body is substantially the same as the script we used above to calculate the the percentage of NYC residents that live further than 500m from a subway stop. Note, however, that we already know (from the script above), the city's total population (based on the raster dataset and associated zonal statistics calculation) in 2019:
+
+```{r}
+# Prints NYC 2019 population based on zonal stats calculation
+nyc_pop
+```
+
+We'll use this population estimate (8309940) directly in the function's body, rather than repeating the calculation we've already performed. Also, note that instead of returning the percentage of residents beyond the given threshold as a numeric vector, the function returns a data frame, with one column containing the relevant distance threshold (i.e. the input argument), and another column containing the corresponding percentage of city residents whose proximity to the closest subway stop is greater than that distance. 
+
+```{r}
+nyc_population_buffer<-function(buffer_distance_meters){
+  buffer_distance_feet<-buffer_distance_meters*3.281
+  nyc_subway_buffer<-st_buffer(nyc_subway_stops, buffer_distance_feet)
+  
+  nyc_subway_buffer_dissolved<-nyc_subway_buffer %>% 
+                                group_by() %>% 
+                                summarise()
+  
+  nyc_buffer_dissolved_4326<-nyc_subway_buffer_dissolved %>% 
+                                st_transform(4326)
+  
+  nyc_pop_within_buffer<-exact_extract(nyc_pop_2019, nyc_buffer_dissolved_4326, fun="sum")
+  
+  nyc_inside_buffer_pct<-(nyc_pop_within_buffer/8309940)*100
+  
+  pct_outside_buffer<-100-nyc_inside_buffer_pct
+  
+  final_df<-data.frame(buffer_distance_meters, pct_outside_buffer)
+  
+  return(final_df)
+}
+```
+
+Let's now test the ```nyc_population_buffer()``` we've just created. Let's calculate the percentage of NYC's 2019 population that lived further than 1000m from a subway stop:
+
+```{r}
+nyc_population_buffer(buffer_distance_meters=1000)
+```
+
+We can see that this value is roughly 22%. 
+
+Let's say we want to calculate the percentage of NYC's 2019 population that lived further than 650m from a subway stop:
+
+```{r}
+nyc_population_buffer(buffer_distance_meters=650)
+```
+
+We can see that roughly 34% of the population lives further than 650m from a subway stop. It makes sense that this percentage is greater than the percentage of the city's population that lives >1000m from a subway stop, since the total area outside 650m subway buffers is naturally greater than the total area outside 1000m subway buffers. 
+
+Now, let's say that instead of trying different distance thresholds, one at a time, we want to pass several distance thresholds as arguments to the ```nyc_population_buffer()``` function, and create a data frame which contains multiple distance thresholds, and multiple corresponding return values that indicate the percentage of city residents who whose distance to a subway stop exceeds that threshold First, we'll define a vector of distance thresholds, to which we'll iteratively apply the ```nyc_population_buffer()``` function. We'll assign this vector to an object named ```buffer_distance_meters_vector```:
+
+```{r}
+buffer_distance_meters_vector<-c(250, 500, 750, 1000, 1250, 1500, 1750, 2000)
+```
+
+Because we want our final results in a data frame, and there is only one argument to the ```nyc_population_buffer()``` function, we will use the ```map_dfr()``` function to iteratively apply ```nyc_population_buffer()``` to the distance thresholds contained in the argument vector, ```buffer_distance_meters_vector``. We'll assign the resulting data frame to a new object named ```subway_distance_table```:
+
+```{r}
+subway_distance_table<-map_dfr(buffer_distance_meters_vector, nyc_population_buffer)
+```
+
+Above, the first argument to ```map_dfr()``` is the vector of arguments we want to iterate over (here, various distance thresholds), and the second argument, ```nyc_population_buffer()```, is the function that we would like to apply. 
+
+The code takes the first element of ```buffer_distance_meters_vector``` (250), and uses this value as an input argument to ```nyc_population_buffer()```. The result is the first row in the output table (with two columns, one named "buffer_distance_meters_vector" and the other "pct_outside_buffer", which display the ```nyc_population_buffer()``` function's input and output, respectively); the value of the "buffer_distance_meters" in this first row is 250 (the first element in ```buffer_distance_meters```), and the corresponding value of "pct_outside_buffer" is the percentage of the city population outside a subway buffer zone of that area, as calculated by the ```nyc_population_buffer()``` function. It then takes the second element of ```buffer_distance_meters_vector``` (500), uses this value as an input argument to ```nyc_population_buffer()```, and deposits the result in the second row of the resulting data frame. The code repeats this process, and appends the function's subsequent outputs to subsequent data frame rows, until it runs through all of the arguments in the ```buffer_distance_meters_vector``` vector; it then assigns the output dataframe to a new object named ```subway_distance_table```. 
+
+Let's open ```subway_distance_table``` and see what our final data frame looks like:
+
+```{r}
+subway_distance_table
+```
+
+Assembling this table would have been a time-consuming task if we had to modify and rerun our original script eight times. But by writing a function that generalizes that script for a buffer distance of any length, and using basic iteration functions from the *purrr* package, we were able to carry out this process with greater speed and efficiency.
+
+# Further reading
+
+If you would like to explore functional programming in R in greater detail, a good place to start is Chapter 19 ("Functions"), Chapter 20 ("Vectors"), and Chapter 21 ("Iteration"), of [R For Data Science](https://r4ds.had.co.nz/) by Hadley Wickham and Garrett Grolemund. Another useful resource is an (evolving) online book entitled [Functional Programming](https://dcl-prog.stanford.edu/index.html), by Sara Altman, Bill Behrman, and Hadley Wickham. Finally, if you would like to gain more experience with the *purrr* package and ```map()``` functions, Rebecca Barter's tutorial, entitled ["Learn to purrr](https://www.rebeccabarter.com/blog/2019-08-19_purrr/) is an excellent primer. None of these resources are specifically focused on GIS, but the tools and techniques presented and elaborated in these tutorials can be adapted to GIS datasets and workflows, as we have saw in this tutorial's examples. 
+
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>
+
+
+
+
+
+
+
+
+
+
+
+

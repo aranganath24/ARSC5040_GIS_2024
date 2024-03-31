@@ -1,0 +1,224 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=F, warning=F}
+library(raster)
+library(GADMTools)
+library(tidycensus)
+library(rgeoboundaries)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(tmap)
+library(tidyverse)
+```
+
+
+# Extracting country polygons
+
+```{r}
+country_boundaries<-ne_countries(scale="medium", returnclass="sf")
+```
+
+```{r, echo=-1}
+tmap_mode("plot")
+world_map<-tm_shape(country_boundaries)+
+            tm_polygons()
+
+world_map
+```
+
+## Filter out a country using dplyr
+
+```{r}
+india<-country_boundaries %>% filter(iso_a3=="IND")
+```
+
+```{r}
+india_map<-tm_shape(india)+
+            tm_polygons()
+
+india_map
+```
+
+## Filter out multiple countries using dplyr
+
+```{r}
+usa_can_mexico<-country_boundaries %>% 
+                  filter(iso_a3=="USA"|iso_a3=="CAN"|iso_a3=="MEX")
+```
+
+
+```{r}
+usa_can_mex_map<-tm_shape(usa_can_mexico)+
+                    tm_polygons()
+```
+
+```{r}
+usa_can_mex_map
+```
+
+```{r}
+namerica_bb<-st_bbox(c(xmin=-178.19453, xmax=-52.65366, ymax=83.15, ymin=14.54541),
+                     crs=st_crs(4326))
+```
+
+
+```{r}
+tm_shape(usa_can_mexico, bbox=namerica_bb)+tm_polygons()
+```
+
+# Extracting subnational administrative boundaries
+
+## Extracting subnational boundaries for one country
+
+```{r}
+france_1<-france_1<-getData("GADM", country="FRA", level=1) %>% st_as_sf()
+```
+
+```{r}
+tm_shape(france_1)+
+  tm_polygons()
+```
+
+```{r}
+france_2<-france_1<-getData("GADM", country="FRA", level=2) %>% st_as_sf()
+```
+
+```{r}
+tm_shape(france_2)+
+  tm_polygons()
+```
+
+## Extracting subnational boundaries for multiple countries
+
+```{r}
+border_extract<-function(desired_country){
+  dataset<-getData("GADM", country=desired_country, level=1) %>% st_as_sf()
+}
+```
+
+
+```{r}
+countries<-c("FRA", "DEU")
+```
+
+```{r}
+country_list<-map(countries, border_extract)
+```
+
+```{r}
+country_list
+```
+
+```{r}
+france_germany<-bind_rows(country_list)
+```
+
+```{r}
+france_germany_map<-tm_shape(france_germany)+
+                      tm_polygons()
+```
+
+```{r}
+france_germany_map
+```
+
+# USA subnational boundaries
+
+```{r, message=F, warning=F, results=F}
+state_population_2010<-get_decennial(geography = "state", 
+                                     variables = "P001001",
+                                     year = 2010,
+                                     geometry=TRUE)
+```
+
+
+```{r}
+tm_shape(state_population_2010)+
+  tm_polygons()
+```
+
+
+```{r, message=F, warning=F, results=F}
+state_population_2010_shifted<-get_decennial(geography = "state", 
+                                     variables = "P001001",
+                                     year = 2010,
+                                     geometry=TRUE) %>% 
+                            tigris::shift_geometry()
+```
+
+
+```{r}
+tm_shape(state_population_2010_shifted)+
+    tm_polygons()
+```
+
+```{r, warning=F, results=F, message=F}
+county_population_2010_shifted<-get_decennial(geography = "county", 
+                                     variables = "P001001",
+                                     year = 2010,
+                                     geometry=TRUE) %>% 
+                            tigris::shift_geometry()
+```
+
+```{r}
+tm_shape(county_population_2010_shifted)+
+  tm_polygons()
+```
+
+## USA boundaries: micro-geographies
+
+```{r, message=F, warning=F, results=F}
+tract_extract<-function(desired_state){
+  get_decennial(state=desired_state,
+                geography = "tract", 
+                variables = "P001001",
+                year = 2010,
+                geometry=TRUE)
+}
+```
+
+```{r}
+states<-c("CO", "WY", "UT")
+```
+
+```{r, results=F, message=F, warning=F}
+state_list<-map(states, tract_extract)
+```
+
+```{r}
+co_wy_ut<-bind_rows(state_list)
+```
+
+```{r}
+tm_shape(co_wy_ut)+
+  tm_polygons()
+```
+
+```{r}
+state_selection<-state_population_2010_shifted %>% 
+                    filter(NAME=="Colorado"|NAME=="Wyoming"|NAME=="Utah")
+```
+
+```{r}
+state_selection
+```
+
+
+```{r}
+tm_shape(co_wy_ut)+
+  tm_polygons()+
+tm_shape(state_selection)+
+  tm_borders(lwd=8, lty="solid")
+
+```
+
+
+
+
+
+
+
+
+

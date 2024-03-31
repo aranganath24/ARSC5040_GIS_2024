@@ -1,0 +1,74 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(osmdata)
+library(sf)
+library(tmap)
+library(tidyverse)
+```
+
+
+```{r}
+# examine available features
+features_osm<-available_features()
+features_osm
+```
+
+```{r}
+# extract tags from a given feature
+available_tags("amenity")
+```
+
+```{r}
+# Extract Denver cafes
+Denver_cafes<- getbb(place_name = "Denver", display_name_contains = "Colorado") %>%
+                  opq() %>%
+                  add_osm_feature("amenity", "cafe")
+
+```
+
+```{r}
+# Convert to sf object
+Denver_cafes_sf<-osmdata_sf(Denver_cafes)
+```
+
+```{r}
+# Extract points
+Denver_cafes_sf_points<-Denver_cafes_sf %>% pluck("osm_points")
+```
+
+```{r}
+tmap_mode("view")
+```
+
+```{r}
+# Create Map
+tm_shape(Denver_cafes_sf_points)+
+  tm_dots()
+```
+
+
+Extracting the Starbucks locations:
+
+```{r}
+starbucks<-Denver_cafes_sf_points %>% filter(name=="Starbucks")
+```
+
+```{r}
+tm_shape(starbucks)+
+  tm_dots()
+```
+
+
+
+
+
+
+
+
+
+
+
+

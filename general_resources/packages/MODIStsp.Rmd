@@ -1,0 +1,340 @@
+---
+title: "Accessing Data Using MODIStsp"
+author: "Aditya Ranganath"
+date: "3/20/2022"
+output: 
+ html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    number_sections: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=F, warning=F}
+library(MODIStsp)
+library(sf)
+library(tidyverse)
+library(tmap)
+library(tidycensus)
+library(raster)
+library(viridis)
+```
+
+In order to use the ```MODIStsp``` package, you must register on the EARTHDATA page, at this [link](https://urs.earthdata.nasa.gov/). 
+
+# MODIS Land Cover Data
+
+We will extract the MODIS land cover raster (MCD12C1) and make a simple map of land cover in the state of Colorado. A description of the data can be found [here](https://lpdaac.usgs.gov/documents/101/MCD12_User_Guide_V6.pdf). 
+
+## Extract and download Colorado polygon
+
+First, let's extract a polygon of Colorado's state borders using *tidycensus*. 
+
+```{r, message=F, results=F, warning=F}
+co_polygon<-get_decennial(geography = "state",
+                               variables = "P001001",
+                               year = 2010,
+                               geometry=TRUE) %>% 
+  filter(NAME=="Colorado") %>% 
+  st_transform(4326)
+```
+
+In case we want to overlay county-level boundaries against the land cover raster, we can also extract a spatial dataset of Colorado counties:
+
+```{r, message=F, results=F, warning=F}
+co_counties_polygon<-get_decennial(geography = "county",
+                                   state="CO", 
+                                   variables = "P001001",
+                                   year = 2010,
+                                   geometry=TRUE) %>% 
+                    st_transform(4326)
+```
+
+After extracting this data from *tidycensus*, we'll need to extract its bounding box, or alternatively, download the data to our local machine; this will allow us to specify the desired extent of the raster when we extract it using the ```MODIStsp``` function. In this case, we'll go with the first option. 
+
+First, we'll define a path and name for the spatial dataset that is to be downloaded:
+
+```{r, eval=F}
+filepath<-"land_cover/colorado.shp"
+```
+
+Then, we'll download the ```co_polygon``` spatial data object as a shapefile using the ```st_write``` function:
+
+```{r, eval=F}
+st_write(co_polygon, paste0(filepath))
+```
+
+The Colorado state polygon is stored in a sub-directory (named "land_cover") within our working directory, and is named "colorado.shp". 
+
+## Extract land cover raster from MODIS
+
+Now, we're ready to 
+
+```{r, attr.output='style="max-height: 200px;"'}
+MODIStsp_get_prodlayers("MCD12Q1")
+```
+
+
+```{r, eval=F}
+MODIStsp(gui             = FALSE,
+         out_folder      = "land_cover",
+         out_folder_mod  = "land_cover",
+         selprod         = "LandCover_Type_Yearly_500m (MCD12Q1)",
+         bandsel         = "LC1", 
+         user            = "YOUR_USERNAME" ,
+         password        = "YOUR_PASSWORD",
+         start_date      = "2019.01.01", 
+         end_date        = "2019.12.31", 
+         output_proj = 4326,
+         verbose         = FALSE,
+         spatmeth        = "file",
+         spafile         = filepath,
+         out_format      = "GTiff")
+```
+
+## Read in land use raster
+
+```{r}
+CO_raster<-raster("land_cover/colorado/LandCover_Type_Yearly_500m_v6/LC1/MCD12Q1_LC1_2019_001.tif")
+```
+
+## Visualize raster with tmap
+
+```{r}
+raster_label<-c("Evergreen needleleaf forests",
+                "Evergreen broadleaf forests",
+                "Deciduous needleleaf forests",
+                "Deciduous broadleaf forests",
+                "Mixed forests",
+                "Closed shrublands",
+                "Open shrublands",
+                "Woody savannas",
+                "Savannas",
+                "Grasslands",
+                 "Permanent wetlands",
+                 "Croplands",
+                "Urban and built-up lands",
+                "Cropland/natural vegetation mosaics",
+                "Snow and ice",
+                "Barren",
+                "Water bodies")
+```
+
+
+```{r}
+CO_landcover_tmap<-tm_shape(CO_raster)+
+                    tm_raster(breaks=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18),
+                              labels=raster_label, 
+                              palette="Set1",
+                              title="Colorado Land Cover, 2019")+
+                      tm_legend(outside=T)
+```
+
+```{r}
+tmap_mode("plot")
+CO_landcover_tmap
+```
+
+```{r}
+tmap_mode("view")
+
+CO_landcover_tmap
+```
+
+```{r}
+tmap_mode("plot")
+```
+
+```{r}
+CO_landcover_tmap+
+  tm_shape(co_counties_polygon)+
+    tm_polygons(alpha=0)
+```
+
+```{r}
+tmap_mode("view")
+CO_landcover_tmap+
+  tm_shape(co_counties_polygon)+
+    tm_polygons(alpha=0)
+```
+
+## Visualize raster with ggplot
+
+```{r}
+CO_raster_df <- as.data.frame(CO_raster, xy = TRUE) %>%
+  mutate(MCD12Q1_LC1_2019_001 = as.factor(MCD12Q1_LC1_2019_001))
+```
+
+```{r}
+levels(CO_raster_df$MCD12Q1_LC1_2019_001)
+```
+
+```{r}
+CO_raster_df$MCD12Q1_LC1_2019_001<-factor(CO_raster_df$MCD12Q1_LC1_2019_001, levels=c("1", "2",
+                              "3", "4", "5",
+                              "6", "7", "8",
+                              "9", "10", "11",
+                              "12", "13", "14",
+                              "15", "16", "17"))
+
+```
+
+```{r}
+levels(CO_raster_df$MCD12Q1_LC1_2019_001) <- raster_label
+```
+
+```{r}
+levels(CO_raster_df$MCD12Q1_LC1_2019_001)
+```
+
+
+```{r}
+ggplot() + 
+  geom_raster(data = CO_raster_df,
+              aes(x = x, y = y, fill = MCD12Q1_LC1_2019_001)) +
+  geom_sf(data = co_polygon, inherit.aes = FALSE, fill = NA) +
+  scale_fill_viridis(name = "Land Cover Type", discrete = TRUE) +
+  labs(title = "Land Cover classification in Colorado",
+       subtitle = "01-01-2019 - 31-12-2019",
+       x = "Longitude",
+       y = "Latitude") +
+  theme_minimal()
+```
+
+
+```{r}
+ggplot() + 
+  geom_raster(data = CO_raster_df,
+              aes(x = x, y = y, fill = MCD12Q1_LC1_2019_001)) +
+  geom_sf(data=co_counties_polygon, inherit.aes=F, fill=NA)+
+  scale_fill_viridis_d(name = "Land Cover Type", option="C", direction=-1 ) +
+  labs(title = "Land Cover classification in Colorado",
+       subtitle = "01-01-2019 - 31-12-2019",
+       x = "Longitude",
+       y = "Latitude") +
+  theme_minimal()
+```
+
+```{r}
+CO_landcover_ggplot<-
+  ggplot() + 
+  geom_raster(data = CO_raster_df,
+              aes(x = x, y = y, fill = MCD12Q1_LC1_2019_001)) +
+  geom_sf(data=co_counties_polygon, inherit.aes=F, fill=NA)+
+  labs(title = "Land Cover classification in Colorado",
+       subtitle = "01-01-2019 - 31-12-2019",
+       x = "Longitude",
+       y = "Latitude") +
+  theme_minimal()
+```
+
+
+```{r}
+colors<-c("lightpink1", "lightgrey", "magenta", "lightcyan",
+          "yellow", "palegreen", "seashell", "plum",
+          "skyblue", "salmon2", "khaki", "tomato", 
+          "gray0", "springgreen", "purple", "orange",
+          "mediumblue", "slategray")
+
+CO_landcover_ggplot + 
+  scale_fill_manual(values=colors, drop=F)
+```
+
+
+# Extracting and visualizing an NDVI raster for Colorado
+
+
+```{r, attr.output='style="max-height: 200px;"'}
+MODIStsp_get_prodlayers("M*D13A2")
+```
+
+```{r, eval=FALSE}
+MODIStsp(
+  gui = FALSE,
+  out_folder = "VegetationData",
+  out_folder_mod = "VegetationData",
+  selprod = "Vegetation_Indexes_16Days_1Km (M*D13A2)",
+  bandsel = "NDVI",
+  user = "YOUR_USERNAME",
+  password = "YOUR_PASSWORD",
+  start_date = "2020.07.03",
+  end_date = "2020.07.03",
+  output_proj = 4326,
+  verbose = FALSE,
+  spatmeth = "file",
+  spafile = "VegetationData/colorado.shp",
+  out_format = "GTiff"
+)
+```
+
+## Load NDVI raster
+
+```{r}
+CO_ndvi<-raster("VegetationData/colorado/VI_16Days_1Km_v6/NDVI/MYD13A2_NDVI_2020_185.tif")
+```
+
+```{r}
+CO_ndvi
+```
+
+See [here](https://lpdaac.usgs.gov/products/mod13a2v006/) for scale factor. 
+
+```{r}
+CO_ndvi_adjusted<-CO_ndvi*0.0001
+```
+
+## Make ndvi map using tmap
+
+```{r}
+tmap_mode("plot")
+CO_ndvi_map<-tm_shape(CO_ndvi_adjusted)+
+                tm_raster(palette = "YlGn", style="cont", breaks=c(-0.2, 0,0.2,0.4,0.6,0.8, 1))+
+                tm_legend(outside=T)
+
+CO_ndvi_map
+```
+
+```{r}
+tmap_mode("view")
+CO_ndvi_map
+```
+
+## Make ndvi map using ggplot
+
+```{r}
+NDVI_co_df <- as.data.frame(CO_ndvi_adjusted, xy = TRUE, na.rm = TRUE)
+
+# Visualising using ggplot2
+ggplot() +
+  geom_raster(
+    data = NDVI_co_df,
+    aes(x = x, y = y, fill = MYD13A2_NDVI_2020_185)
+  ) +
+  geom_sf(data = co_counties_polygon, inherit.aes = FALSE, fill = NA) +
+  scale_fill_viridis(name = "NDVI") +
+  labs(
+    title = "NDVI (Normalized Difference Vegetation Index) in Colorado",
+    subtitle = "03-07-2020",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme_minimal()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,83 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=F, warning=F}
+library(spocc)
+library(sf)
+library(tmap)
+library(tidyverse)
+library(tidycensus)
+library(rnaturalearth)
+library(rnaturalearthdata)
+```
+
+```{r}
+mountain_lion<-occ(query=c("Puma concolor"), from="gbif", limit=16000)
+```
+
+```{r}
+mountain_lion_data<-mountain_lion %>% pluck("gbif") %>% pluck("data") %>% pluck("Puma_concolor")
+```
+
+```{r}
+mountain_lion_data
+```
+
+```{r}
+mountain_lion_data_cleaned<-mountain_lion_data %>% drop_na(longitude)
+```
+
+```{r}
+mountain_lion_locations<-st_as_sf(mountain_lion_data_cleaned, coords=c("longitude", "latitude"), crs=4326)
+```
+
+```{r}
+country_boundaries<-ne_countries(scale="medium", returnclass="sf")
+```
+
+
+```{r, echo=-1}
+tmap_mode("plot")
+tm_shape(country_boundaries)+
+  tm_polygons()+
+tm_shape(mountain_lion_locations)+
+  tm_dots()
+```
+
+```{r, results=F, message=F, warning=F}
+boulder_polygon<-get_decennial(geography = "county",
+                               state="CO",
+                                variables = "P001001",
+                                year = 2010,
+                                geometry=TRUE) %>% 
+                  filter(GEOID=="08013")
+```
+
+
+```{r}
+boulder_polygon_projected<-st_transform(boulder_polygon, 2231)
+```
+
+```{r}
+mountain_lion_locations_projected<-st_transform(mountain_lion_locations, crs=st_crs(boulder_polygon_projected))
+```
+
+```{r}
+lions_boulder_spatialjoin<-st_join(mountain_lion_locations_projected,
+                          boulder_polygon_projected)
+```
+
+```{r}
+lions_in_boulder<-lions_boulder_spatialjoin %>% filter(GEOID=="08013")
+```
+
+```{r}
+tm_shape(boulder_polygon_projected)+
+  tm_polygons()+
+tm_shape(lions_in_boulder)+
+  tm_dots()
+  
+```
+
+

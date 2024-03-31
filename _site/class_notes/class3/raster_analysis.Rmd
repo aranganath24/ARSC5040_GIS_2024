@@ -1,0 +1,719 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Preliminaries
+
+Please load the following packages. If any of these packages are not already installed, please remember to install them first.
+
+```{r, message=F, warning=F, results=F}
+library(sf)
+library(tidyverse)
+library(raster)
+library(exactextractr)
+library(terra)
+library(tmap)
+```
+
+```{r, echo=F, warning=F}
+library(DT) 
+```
+
+# Introduction
+
+So far in the course, we have been working with geospatial vector data. Vector data uses georeferenced points, lines, and polygons to represent the spatial properties of real-world phenomena. Raster data, on the other hand, are georeferenced grid cells (stored as pixels), which contain data associated with the area that they cover. Spatial datasets on phenomena such as terrain elevation/ruggedness, temperature, air pollution, precipitation, population, and land use are often provided as rasters. 
+
+It's important to emphasize that one format is not necessarily "better" than the other. Rather, different phenomena lend themselves more readily to the vector or raster format; as a general rule, raster data is very effective in capturing how phenomena vary across space (even at very granular scales), but less effective in capturing intricate spatial geometries. For vector data, the converse is true. It is possible to convert between vector and spatial formats, depending on one's needs; it is also possible to integrate vector datasets with raster datasets in a given research project. Among other things, this tutorial provides an example of how we can integrate vector data and raster data to answer questions that might otherwise have been difficult to address.
+
+The tutorial below uses a variety of spatial datasets
+
+* High resolution population rasters of New York City for the year 2019, and 2009
+* A polygon vector dataset of New York City boroughs
+* A point vector dataset of New York City subway stops
+
+Data for the NYC population rasters comes from [WorldPop](https://www.worldpop.org), an excellent online repository of spatial data that contains a vast collection of raster data relevant to social scientific research. Note that the original WorldPop rasters (available at the following link, which also contains information on how the data were generated: [https://www.worldpop.org/geodata/listing?id=29.](https://www.worldpop.org/geodata/listing?id=29.)) are country-level datasets. Because the file for the United States is extremely large, and can take a while to download, I created the NYC-specific rasters (using the country-level rasters for the United States in 2009 and 2019) for use in the tutorial beforehand (using techniques that we'll cover in the tutorial below), so as to avoid possible download problems. This speaks to a more general issue with raster datasets, namely, that high-resolution rasters can often become very large (in terms of their file sizes), so when working with larger rasters, it is important to think about data storage and preservation options in a considered and intentional way. In addition, in such cases, you may need to explore the use of research computing services and infrastructure to carry out your analyses.  
+
+The polygon shapefile of NYC's five boroughs is available at this [page](https://geo.nyu.edu/catalog/nyu-2451-34490) from NYU's [Spatial Data Repository](https://geo.nyu.edu), part of the broader [Geoblacklight](https://geoblacklight.org) project. The data containing the dataset of NYC subway stops is also available through the NYU spatial data repository, at this [page](https://geo.nyu.edu/catalog/nyu-2451-60068). 
+
+For convenience, all of the data has also been posted to this [page](https://www.dropbox.com/sh/u85vkdoyj2miymx/AAD5I1d4Se-9fv_FKYwJldcta?dl=0). The tutorial below assumes that all of this data has been downloaded to your working directory. It also assumes that you have read this brief [primer](https://desktop.arcgis.com/en/arcmap/latest/manage-data/raster-and-images/what-is-raster-data.htm) on raster data. Please do so, if you haven't already. 
+
+# Read in raster and view metadata
+
+Let's begin by reading in our raster of NYC's 2019 population, using the ```raster``` function from the *raster* package; we'll assign this raster to a new object named ```nyc_2019_population```:
+
+```{r, echo=-1}
+setwd("class_notes/class3/data/nyc_rasters")
+# Reads in 2019 NYC population raster and assigns to object named 
+nyc_2019_population<-raster("nyc_2019_pop.tif")
+```
+
+We can print basic raster metadata to the console by simply printing the name of our raster object, ```nyc_2019_population```:
+
+```{r}
+# Prints basic raster metadata
+nyc_2019_population
+```
+
+This provides us with some valuable information, which we can use to get oriented:
+
+* The first piece of information to note is the raster's CRS; the string that reads ```+proj=longlat +datum=WGS84 +no_defs``` alerts us to the facts that the dataset is in the geographic coordinate system associated with [EPSG: 4326](https://spatialreference.org/ref/epsg/wgs-84/) (i.e. the coordinate system used by GPS, which we became familiar with last class). 
+* The second piece of information is the raster's resolution, i.e. the size of the raster's cells. Here, we see that the raster has a resolution of 0.0008333333 degrees; this works out to a resolution of slightly less than 100m in NYC, so this is a fairly high-resolution dataset (but there are raster datasets that can get considerably more granular).
+* Another useful piece of information is the data on the raster's extent, or bounding box, which is delimited by the following coordinates: -74.25625, -73.70042, 40.49625, 40.91542. Of course, it is often more intuitive to obtain a sense of the raster's geographic extent by plotting it, which we will do shortly. 
+* In the final row, we see that the minimum population value associated with a cell is 0 (i.e. unpopulated cells) and the maximum cell population is 2668.463. It may seem strange that there are decimals in a population count (where we would naturally expect whole numbers), but this is an artifact of the model used to generate these cell-level population estimates. 
+
+If we want more information about the distribution of cell population counts than the minimum and maximum value, we can pass the name of our raster object (here, ```nyc_2019_population```) to the ```summary()``` function: 
+
+```{r}
+# Print data distribution using sample of cells
+summary(nyc_2019_population)
+```
+
+Note that if the raster dataset has a lot of cells, the ```summary()``` function may return data for a random sample of the cells. If you want to force the function to compute statistics for all the cells in the raster dataset, you can use the "maxsamp" argument, and set the number of cells equal to the number of cells in the raster object:
+
+```{r}
+# Print  data distribution using all cells in dataset
+summary(nyc_2019_population, maxsamp=ncell(nyc_2019_population))
+```
+
+It can often be useful to make a quick histogram of the cell values, so as to get a sense of how the variable of interest (here, population), varies across the raster cells. 
+
+To make a histogram of cell-level data in a raster using ggplot, we must first convert the raster object to a data frame, by passing the name of the raster object to the ```as.data.frame()``` function, and specifying ```xy=TRUE``` (which returns the coordinates associated with each cell, in addition to the cell-level population values). Below, we assign the data frame generated from the raster to an object named ```nyc_2019_population_df```:
+
+```{r}
+# Make the raster into a data frame object
+nyc_2019_population_df<-as.data.frame(nyc_2019_population, xy=TRUE)
+```
+
+As with any data frame, you can view this newly created data frame (which contains information on cell locations and population) by passing it to the ```View()``` function, i.e. ```View(nyc_2019_population_df)```. 
+
+Now that we've created the data frame, we can generate a histogram that visualizes the frequency distribution of cell-population counts with the following: 
+
+```{r}
+# Plot histogram of cell-level population
+ggplot()+
+  geom_histogram(data=nyc_2019_population_df, 
+                 aes(nyc_2019_pop), 
+                 bins=10)
+```
+
+In the code above, we use ```ggplot()``` to initiate a new *ggplot* object, and then call the  ```geom_histogram()``` function to create a histogram based on the "nyc_2019" population within the ```nyc_2019_population_df``` object. If you'd like more or less bins, you can adjust the "bins" argument accordingly. 
+
+# Visualize raster data
+
+Now that we have a sense of our raster's data distribution, let's go ahead and plot our raster object. In this tutorial, we'll plot our rasters using *tmap*, just as we have been using *tmap* to plot our vector data. 
+
+The syntax below should be familiar; we start with ```tm_shape(nyc_2019_population)```, which establishes the object we want to map. Then, because the object is a raster, we call the ```tm_raster()``` function (instead of ```tm_polygons() or ```tm_dots()``` which we previously used for polygon or point vector datasets):
+
+```{r, echo=-1}
+tmap_mode("plot")
+# Makes basic plot of "nyc_2019_population" raster object
+tm_shape(nyc_2019_population)+
+  tm_raster()
+```
+
+We'll work on refining this basic plot below, but to get a better sense of the gridded structure of the data, it might be helpful to shift to "view" mode, and then view the raster as an interactive plot:
+
+```{r}
+# shifts tmap to view mode
+tmap_mode("view")
+
+# Makes basic plot of "nyc_2019_population" raster object in view mode
+tm_shape(nyc_2019_population)+
+  tm_raster()
+```
+
+Pan to a highly populated area of Manhattan, and keep zooming in until you can view the raster's constituent grid cells; each of these georeferenced cells is associated with a population value, which represents an estimate of the population that resides in the area delimited by that cell. Here, darker cell values are used to represent more highly populated cells. 
+
+Let's go ahead and shift back to "plot" mode:
+
+```{r}
+tmap_mode("plot")
+```
+
+Now, let's explore some basic ways to customize the plot. Below, we change the palette to a Yellow-Green-Blue palette, partition the data equally across bins, and increase the number of intervals to ten:
+
+```{r}
+tmap_mode("plot")
+tm_shape(nyc_2019_population)+
+  tm_raster(style="equal", n=10, palette="YlGnBu")
+```
+
+It can sometimes be useful to invert a color palette, such that lower values are associated with darker colors, and higher values are associated with lighter colors. To invert a color palette, simply stick a minus sign ("-") before it:
+
+```{r}
+tm_shape(nyc_2019_population)+
+  tm_raster(style="equal", n=10, palette="-YlGnBu")
+```
+
+Let's experiment with some other color palettes. Below, we'll try reduces the number of data partitions to 8 (```n=8```), and using an inverted Purple to Red palette (```palette="-PuRd"```):
+
+```{r, echo=-1}
+tmap_mode("plot")
+tm_shape(nyc_2019_population)+
+  tm_raster(style="equal", n=8, palette="-PuRd")
+```
+
+Recall that our raster dataset has many "NA" values; to get a sense of where these NA cells are located, we can explicitly plot them; below, ```colorNA="grey"``` instructs *tmap* to plot NA values in grey:
+
+```{r}
+tm_shape(nyc_2019_population)+
+  tm_raster(style="equal", n=8, palette="-PuRd", colorNA="grey")
+```
+
+As you can see, NA values are associated with areas that are in the water, in New Jersey, and outside New York's city limits more generally. 
+
+If you are not satisfied with R's custom color palettes, we can define our own, and use our custom palette in our raster maps. Let's first define a character vector of our desired colors, and assign this vector to an object named ```my_colors``` (recall that color codes are presented in the [R Color Cheat Sheet](https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf)):
+
+```{r}
+# Define color vector and assign to object named "my_colors"
+my_colors<-c("grey1", "gold", "orange", "orangered", "orangered4")
+```
+
+Now, let's use this palette to make a raster map:
+
+```{r}
+# Uses "my_colors" palette to make raster map with 5 intervals based on "nyc_2019_population" object; NA values are plotted in grey, and NA category is removed from legend
+tm_shape(nyc_2019_population)+
+  tm_raster(style="equal", n=5, palette=my_colors, colorNA="grey", textNA="")
+```
+
+At this point, it's easier to note some basic patterns, which are roughly in line with what we might expect; note, for example, Manhattan's extraordinary population density, Staten Island's relatively low density, and the absence of population in the rectangular section of what you may recognize as Central Park (which has the very high-density neighborhoods of the Upper East Side and Upper West Side on either side of it). 
+
+This map is useful in getting a sense of some basic patterns, but if we wanted to begin refining the map for distribution or publication, we can draw on some of the functions we learned about a few classes ago:
+
+```{r}
+tm_shape(nyc_2019_population)+
+  tm_raster(style="equal", 
+            n=5, 
+            palette=my_colors, 
+            colorNA="grey", 
+            textNA="",
+            title="Cell Population")+
+   tm_layout(legend.title.size=0.6,
+            legend.title.fontface = 2,
+            legend.text.size = 0.6,
+            main.title="Spatial Distribution of NYC Population, 2019",
+            main.title.size=0.8)
+```
+
+Of course, there is a lot more that could be done (for example, we could add a credits section) using *tmap*; once the raster plot showing the spatial distribution of the population is ready to be exported, assign the map to an object and use the ```tmap_save()``` function that we discussed in Class 1. 
+
+# Projecting and Manipulating Raster Data
+
+In this section, we'll discuss how to reproject raster data into different coordinate systems. We'll also explore the process of clipping a raster to the extent of a polygon, and learn how to derive new rasters by applying mathematical operations to existing rasters. 
+
+## Reprojecting raster data
+
+In the previous lesson, we learned about the importance of ensuring that different data layers are in the same coordinate reference system before visualizing or analyzing those different datasets in conjunction. We also learned about the importance of working in an appropriate projected coordinate reference system (PCS), when computing distances or areas. Those basic principles still apply when working with rasters, but it is important to note that the process of reprojecting raster data is considerably more complex than the process of reprojecting vector data; the former is more computationally intensive, and actually changes the grid structure of the data to "fit" the new projection. For more details, please see the discussion by Lovelace et al [here](https://geocompr.robinlovelace.net/reproj-geo-data.html), in the section on "Reprojecting Raster Geometries." As a practical matter, Lovelace et al advise that "when both raster and vector data are used, it is better to avoid reprojecting rasters and reproject vectors instead."
+
+We will follow this guideline, but as a practical matter, you may sometimes have to reproject your rasters (especially when you are working with two different rasters in different coordinate reference systems, and need to reproject one to line up with the other), so it is important to see how this process is implemented. While the underlying algorithms that are used to reproject rasters are more complex than those used to reproject vectors, the actual implementation is straightforward.
+
+To take an example, let's reproject ```nyc_2019_population``` into a projected coordinate reference system [appropriate for New York City](https://epsg.io/2263). First, we'll turn ```nyc_2019_population``` into a "SpatRaster" object using the ```rast()``` function, which is an efficient container used by the *terra* package to handle raster data; this "SpatRaster" is assigned to a new object named ```nyc_2019_population_spatraster```:
+
+```{r}
+# Uses "terra" package's "rast" function to convert "nyc_2019_population" into a SpatRaster
+nyc_2019_population_spatraster<-rast(nyc_2019_population)
+```
+
+Now, we can use the *terra* package's ```project()``` function to change the CRS of ```nyc_2019_population_spatraster``` to the one associated with EPSG:2263. The ```method="bilinear"``` argument below specifies that we want to use a bilinear interpolation method to interpolate raster cell values in the transformed raster grid; this is the standard method used for continuous data. We'll assign the reprojected NYC raster to a new object named ```nyc_population_2263```:
+
+```{r}
+# Transforms "nyc_2019_population_spatraster" into EPSG 2263 coordinate reference system, and assigns the reprojected raster to a new object named "nyc_population_2263"
+nyc_population_2263<-project(nyc_2019_population_spatraster, "EPSG:2263", method = "bilinear")
+```
+
+When we print the name of this new object, note the changes in the metadata: 
+
+```{r}
+# Prints metadata associated with "nyc_population_2263" 
+nyc_population_2263
+```
+
+The string that reads ```NAD83 / New York Long Island (ftUS) (EPSG:2263)``` confirms that the transformation has been successful. Note, also that the cell resolution (259.7054) and geographic extent are now given in feet rather than angular degrees. Note, also, that the maximum cell value is now 1678.078; this change is a byproduct of the way in which the raster grid was transformed during the raster reprojection process. 
+
+We can plot this reprojected raster just as we plotted the raster in geographic coordinates above:
+
+```{r}
+# Makes simple plot of "nyc_population_2263"
+tm_shape(nyc_population_2263)+
+  tm_raster(palette="-RdPu")
+```
+
+## Clipping raster data to different extents
+
+Recall (from the tutorial introduction) that this NYC population raster was generated from a much larger population raster for the US as a whole. Clipping rasters to different extents is a useful operation; it can cut down the size of rasters to a region of geographic interest, which can save memory and lead to more streamlined visualizations.
+
+This subsection explores the process of clipping a raster to a new extent; the steps taken here were the same steps taken to generate the NYC population raster from the USA population raster. 
+
+In this example, let's say we want to clip our NYC raster to the extent of Manhattan, creating a new raster object that is constrained to this borough. We'll use a vector layer of Manhattan to extract our "Manhattan-only" raster.
+
+First, let's load in a polygon layer of New York City's 5 boroughs and assign it to an object named ```nyc_boroughs```:
+
+```{r}
+setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class3/data/nyc_boroughs")
+nyc_boroughs<-st_read("nyu_2451_34490.shp")
+```
+
+Note that the CRS of ```nyc_boroughs``` is EPSG:2263. Recall that when working with both vector and raster layers, it is preferable to reproject a vector layer; to that end, we'll transform ```nyc_boroughs``` into EPSG:4326 to match the CRS of```nyc_2019_population```, instead of using ```nyc_population_2263``` from above (which we reprojected into EPSG:2263 for illustrative purposes). 
+
+We'll use the ```st_transform()``` function from the *sf* package (which we became acquainted with in the previous class) to transform ```nyc_boroughs``` into WGS84 coordinates, and assign this transformed data to a new object named ```nyc_boroughs_4326```:
+
+```{r}
+# Change CRS of "nyc_boroughs" to EPSG:4326 to match raster
+nyc_boroughs_4326<-nyc_boroughs %>% st_transform(4326)
+```
+
+Let's go ahead and plot ```nyc_boroughs_4326``` to see our polygons:
+
+```{r}
+# Plot "nyc_boroughs_4326"
+tm_shape(nyc_boroughs_4326)+
+  tm_polygons()
+```
+
+As always, we can open up the attribute table of a vector layer by passing the name of the object to the ```View()``` function. For example:
+
+```{r}
+# Opens attribute table of "nyc_boroughs_4326" in R Studio Data Viewer
+View(nyc_boroughs_4326)
+```
+
+```{r, echo=F}
+nyc_boroughs_4326 %>% datatable(extensions=c("Scroller", "FixedColumns"), options = list(
+  deferRender = TRUE,
+  scrollY = 350,
+  scrollX = 350,
+  dom = "t",
+  scroller = TRUE,
+  fixedColumns = list(leftColumns = 1)
+))
+```
+
+Now that we've loaded our polygon dataset of NYC boroughs into R and explored it to ensure that everything is in order, let's extract the borough of Manhattan, and assign it to a new object named ```manhattan```: 
+
+```{r}
+# Filter out the Manhattan polygon and assign to an object named "manhattan"
+manhattan<-nyc_boroughs_4326 %>% filter(bname=="Manhattan")
+```
+
+Let's now view our Manhattan polygon (in green), in conjunction with our NYC-wide raster layer:
+
+```{r}
+# Plots "nyc_2019_population" population raster along with "manhattan" polygon
+tm_shape(nyc_2019_population)+
+  tm_raster(palette="-RdPu")+
+tm_shape(manhattan)+
+  tm_polygons("green", alpha=0.4)
+```
+
+This plot helps to clarify our goal; we want to clip the NYC population raster to the extent of Manhattan (displayed in green).
+
+The first step is to convert ```manhattan```, which is an *sf* object, into a spatial data frame. A spatial data frame is a data structure that (like sf) that is used to store and display vector GIS data in R; we need to make this conversion, since the raster functions used to clip a raster to a given polygon extent are not (yet) compatible with sf objects.
+
+We can convert an sf object to a spatial data frame using the ```as()``` function; below, the second argument ```"Spatial"``` indicates that we want to convert the sf object given as the first argument (```manhattan```) to a spatial data frame; we'll assign the newly created spatial data frame to an object named ```manattan_spatialdf```:
+
+```{r}
+manattan_spatialdf<-as(manhattan, "Spatial")
+```
+
+Now that we have our spatial data frame of Manhattan, we'll use it to clip our NYC raster to the bounding box of ```manattan_spatialdf```. We'll clip our NYC raster (```nyc_2019_population```) to the bounding box of ```manattan_spatialdf``` using the ```crop()``` function, and assign the cropped raster to a new object named ```manhattan_cropped```:
+
+```{r}
+# reduces "nyc_2019_population" raster to extent of "manattan_spatialdf" bounding box using "crop" function
+manhattan_cropped<-crop(nyc_2019_population, manattan_spatialdf)
+```
+
+Let's print the metadata associated with ```manhattan_cropped```:
+
+```{r}
+# Prints metadata for "manhattan_cropped"
+manhattan_cropped
+```
+
+The key thing to note here is that the ```manhattan_cropped``` raster is considerably smaller than our original ```nyc_2019_population``` raster; note that the number of cells in the former is 39480, while the number of cells in ```nyc_2019_population``` is 335501.
+
+Let's go ahead and plot ```manhattan_cropped```, in conjunction with our ```manhattan``` polygon:
+
+```{r}
+# Plot "manhattan_cropped" 
+tm_shape(manhattan_cropped)+
+  tm_raster(palette="-RdPu")+
+tm_shape(manhattan)+
+  tm_polygons("green", alpha=0.4)
+```
+
+Note that even though our raster dataset is now considerably smaller, it still includes parts of other boroughs that are part of the ```manhattan_spatialdf``` bounding box. If we want to remove these parts of the raster from our plot, and visualize a "Manhattan-only" raster, we can use the ```mask()``` function to convert all of the raster cells in the ```manhattan_cropped``` object that are outside the extent of ```manattan_spatialdf``` to NA values. We'll assign this raster layer that results from the application of the ```mask()``` function, in which areas in ```manhattan_cropped``` that are outside the extent of ```manattan_spatialdf``` are set to "NA" values, to an object named ```manhattan_final_raster```:
+
+```{r}
+# Convert cells in "manhattan_cropped" outside the extent of "manattan_spatialdf" to NA values; assign the result to object named "manhattan_final_raster"
+manhattan_final_raster<-mask(manhattan_cropped, manattan_spatialdf)
+```
+
+Let's view this raster's metadata:
+
+```{r}
+# Prints "manhattan_final_raster" metadata
+manhattan_final_raster
+```
+
+Note that the number of cells in ```manhattan_final_raster``` is the same as the number of cells in ```manhattan_cropped``` (39480); unlike the ```crop()``` function, the ```mask()``` function does not actually reduce the size of a raster by removing cells. However, by setting areas outside Manhattan to "NA", the ```mask()``` function allowed us to create a raster object in which only cells associated with Manhattan are displayed:
+
+```{r}
+# Plots "manhattan_final_raster" 
+tm_shape(manhattan_final_raster)+
+  tm_raster(palette="-RdPu", colorNA="grey", textNA="")
+```
+
+In other words, note that the outer borough areas displayed in ```manhattan_cropped()``` no longer show up, which is what we wanted. 
+
+In short, clipping a raster object to a given polygon extent is a two step process:
+
+1. Use the ```crop()``` function to generate a raster object that is clipped to the bounding box of a polygon stored as a spatial data frame (this process actually reduces the number of cells in the raster)
+2. Use the ```mask()``` function to make raster cells outside the polygon extent NA values (which makes these cells invisible, but does not actually remove them from the dataset). 
+
+Before proceeding, it's also worth noting that we can zoom in or out of a raster plot, without actually touching the underlying data, by altering the parameters of a tmap visualization's bounding box. For example, let's say we want to create a raster plot of lower Manhattan. The first step is to create our desired bounding box for Lower Manhattan, using the ```st_bbox()``` function. We'll assign this bounding box to an object named ```lower_manhattan_bounding_box```:
+
+```{r}
+# Creates bounding box for Lower Manhattan, and assigns bounding box to object named "lower_manhattan_bounding_box"
+lower_manhattan_bounding_box<-st_bbox(c(xmin=-74.04728, xmax=-73.907, ymax=40.73, ymin=40.68392 ))
+```
+
+Now, if we pass this bounding box as an argument to the ```tm_shape()``` function, our plot will zoom in on Lower Manhattan:
+
+```{r}
+tm_shape(manhattan_final_raster, bbox = lower_manhattan_bounding_box)+
+  tm_raster(palette="-RdPu", colorNA="grey", textNA="")
+```
+
+## Raster Math and Derivative Rasters
+
+One of most powerful features of raster datasets is that they allow us to easily manipulate them mathematically to create new rasters derived from existing ones. For example, let's say you have a raster dataset of temperature data, in which the grid cells represent temperature values across a given geographic area. What happens if these temperature values are stored based on the Fahrenheit scale, but you want to work with a dataset in which temperature values are measured in Celsius? You could easily implement this conversion by manipulating the raster object according to the Fahrenheit-Celsius conversion formula. For instance, if your (Fahrenheit) temperature raster was stored in an object named ```temperature_raster_F```, you could create a new Celsius raster by simply running ```((temperature_raster_F-32)*5/9)```. This would convert all of the raster cell values from Fahrenheit values to Celsius values, effectively yielding a new raster that is based on the Celsius temperature scale. 
+
+It is also possible to derive a new raster by mathematically manipulating more than one raster. To see a concrete example of this, let's read in another raster dataset. In particular, we'll read in a raster dataset of New York City's 2009 population and assign it to a new object named ```nyc_2009_population```:
+
+```{r, echo=-1}
+# Read in NYC 2009 population raster and assign to object named "nyc_2009_population"
+setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class3/data/nyc_rasters")
+nyc_2009_population<-raster("nyc_2009_pop.tif")
+```
+
+Let's view the metadata of ```nyc_2009_population```:
+
+```{r}
+# Prints "nyc_2009_population" metadata
+nyc_2009_population
+```
+
+And create a quick plot:
+
+```{r}
+# Plots "nyc_2009_population" raster
+tm_shape(nyc_2009_population)+
+  tm_raster(palette="-RdPu", colorNA="grey", textNA="")
+```
+
+Now, let's say we want to visualize cell-level population change in NYC from 2009 to 2019. To do so, we can first create a new raster by subtracting ```nyc_2009_population``` from ```nyc_2019_population```; this yields a new raster in which cell values represent the absolute change in the raw cell-level population from 2009 to 2019. We'll assign this new raster to an object named ```population_change_2009_2019```:
+
+```{r}
+# Use raster math to calculate cell-level population change between 2019 and 2009
+population_change_2009_2019<-nyc_2019_population-nyc_2009_population
+```
+
+Now, we can visualize cell-level population change in the decade from 2009-2019 by simply plotting ```population_change_2009_2019```:
+
+```{r}
+# Plot "population_change_2009_2019" to visualize population change
+tm_shape(population_change_2009_2019)+
+  tm_raster(palette="-RdPu", n=6, colorNA="grey", textNA="")
+```
+
+To create a more informative plot, we might want to change the structure of our data intervals, which you can try as an exercise. 
+
+For now, let's try something different. Instead of visualizing raw population changes, let's make a map that identifies grid cells where population growth from 2009 to 2019 exceeded 100%. 
+
+First, we'll create a new derivative raster using ```nyc_2019_population``` and ```nyc_2009_population``` in which the cell values reflect the percentage change in the cell-level population from 2009 to 2019. We'll assign this "population percentage change raster" to a new object named ```population_pct_change_2019_2009```:
+
+```{r}
+population_pct_change_2019_2009<-((nyc_2019_population-nyc_2009_population)/nyc_2009_population)*100
+```
+
+Let's view the metadata for ```population_pct_change_2019_2009```:
+
+```{r}
+population_pct_change_2019_2009
+```
+
+And now, let's plot our population percentage-change raster, ```population_pct_change_2019_2009```: 
+
+```{r}
+# Plot "population_pct_change_2019_2009"
+tm_shape(population_pct_change_2019_2009)+
+  tm_raster(palette="-RdPu", colorNA="grey", textNA="")
+```
+Let's now modify this plot, so as to clearly highlight areas with greater than 100% population growth from 2009 to 2019. 
+
+First, let's set custom legend breaks; one break represents values from -79 to 100, and the second break represents values from 100 to 3300. We'll assign the numeric vector representing these breaks to an object named ```breaks_pop_change```:
+
+```{r}
+# Creates vector of legend breaks and assigns to object named "breaks_pop_change"
+breaks_pop_change<-c(-79, 100, 3300)
+```
+
+Now, we'll set our legend labels; we'll label all values in the first break (from -79 to 100) as "< 100% Growth") and we'll label all values in the second (above 100) as "> 100% Growth". We'll assign this vector of text labels to a new object named ```labels_pop_change```:
+
+```{r}
+# Creates character vector of legend labels and assigns it to an object named "labels_pop_change"
+labels_pop_change<-c("< 100% Growth", "> 100% Growth")
+```
+
+Finally, we'll create a vector of colors to assign to our categories; we'll display cells in the -79 to 100 range (labeled "< 100% Growth") in blue, and cells in the >100 category (labelled "> 100% Growth") in green. We'll create a character vector with these color codes, and assign it to an object named "colors_pop_change": 
+
+```{r}
+# Creates character vector of colors and assigns it to an object named "colors_pop_change"
+colors_pop_change<-c("blue", "green")
+```
+
+Now, we'll plug these parameters into relevant arguments in ```tm_raster()```, and use a few more functions and arguments familiar from before to further customize our map:
+
+```{r}
+# Creates map of areas with greater than 100% change
+tm_shape(population_pct_change_2019_2009)+
+  tm_raster(colorNA="grey", 
+            palette=colors_pop_change, 
+            breaks=breaks_pop_change,
+            labels=labels_pop_change,
+            title="Percentage Change in NYC Population,\n2009-2019",
+            textNA="")+
+  tm_layout(legend.title.size=0.6,
+            legend.title.fontface = 2,
+            legend.text.size = 0.6,
+            main.title="Areas With Highest Relative Population Growth in NYC,\n2009-2019",
+            main.title.size=0.8)
+```
+
+We now have a gridded map that highlights cells experiencing greater than 100% population growth from 2009 to 2019 in green. There are certain parts of this map we may want to inspect more closely (for instance,
+there’s something strange going on in a part of Central Park), but as a first cut, this
+raster map gives us a starting point for undertaking a granular study of population
+changes in New York. One might imagine that such analysis could be especially
+interesting to carry forward into the next few years, as part of a broader study of
+micro-level urban population changes in the Coronavirus era .
+
+# Raster Analysis: Introducing Zonal Statistics
+
+There are many useful analytic operations one can perform with rasters; one of the most useful ones for social scientists is the calculation of zonal statistics. Zonal statistics refers to the process of calculating summary statistics using a raster dataset, with respect to area(s) defined by a vector GIS dataset. Let's take a simple example. Let's say that we want to calculate the population in each NYC borough, based on the cell-level information in our raster. We can use apply zonal statistics on on our polygon layer of NYC boroughs (```nyc_boroughs_4326```) to take the sum of each Borough's cell values, thereby yielding an estimate of each borough's population. 
+
+There are many ways to compute zonal statistics in R, but the fastest and most intuitive way is to use a package called *exactextractr*; see this [page](https://github.com/isciences/exactextract) for more details on how it works (for instance, how it calculates statistics for cells that are partially within a polygon and partially without). In the code below, we'll take the sum of cell values for each borough by using the ```exact_extract()``` function. The first argument, ```nyc_2019_population```, specifies the raster that we are using in the calculation; the second argument, ```nyc_2019_population```, specifies the vector dataset that contains the zones (here, boroughs) with respect to which the calculation is made; and the third argument, ```fun="sum"``` specifies the nature of the calculation (i.e. we want to add up cell values for each borough, as opposed, say, to taking the mean, or extracting the minimum or maximum value). The ```exact_extract()``` function returns a numeric vector, where each element is the raster summary statistic for the zones defined by the vector dataset; we'll assign this vector to an object named ```nyc_boroughs_population_zonal```:
+
+```{r, message=F, warning=F, results=F}
+# Extract total population in each borough by taking sum of grid cell values in "nyc_2019_population" raster for each zone defined by "nyc_boroughs_4326" (here, "zones" are boroughs)
+nyc_boroughs_population_zonal<-exact_extract(nyc_2019_population, nyc_boroughs_4326, fun="sum")
+```
+
+Now, let's print our vector:
+
+```{r}
+# Prints
+nyc_boroughs_population_zonal
+```
+
+To make it easier to interpret these numbers, let's remind ourselves about what the attribute table for ```nyc_boroughs_4326``` looks like:
+
+```{r}
+View(nyc_boroughs_4326)
+```
+
+```{r, echo=F}
+nyc_boroughs_4326 %>% datatable(extensions=c("Scroller", "FixedColumns"), options = list(
+  deferRender = TRUE,
+  scrollY = 350,
+  scrollX = 350,
+  dom = "t",
+  scroller = TRUE,
+  fixedColumns = list(leftColumns = 1)
+))
+```
+
+The numbers in ```nyc_boroughs_population_zonal``` inform us of the population for each "zone" (here, borough) in the dataset; for example, taking the sum of raster cells by borough shows that the population of the Bronx in 2019 was 1425518.9, the population of Brooklyn was 2537773.8, the population of Manhattan was 1627678.6, and so on. 
+
+If we want to add this information to the ```nyc_boroughs_4326``` dataset, we can bind the ```nyc_boroughs_population_zonal``` vector to it; we'll assign the new data frame, with the zonal statistics information attached to it, to an object named ```nyc_2019_boroughs_population```:
+
+```{r}
+# column-binds "nyc_boroughs_population_zonal" vector to "nyc_boroughs_4326" attribute table and assigns the result to a new object named "nyc_2019_boroughs_population"
+nyc_2019_boroughs_population<-cbind(nyc_boroughs_4326, nyc_boroughs_population_zonal )
+```
+
+```{r}
+View(nyc_2019_boroughs_population)
+```
+
+```{r}
+nyc_2019_boroughs_population %>% datatable(extensions=c("Scroller", "FixedColumns"), options = list(
+  deferRender = TRUE,
+  scrollY = 350,
+  scrollX = 350,
+  dom = "t",
+  scroller = TRUE,
+  fixedColumns = list(leftColumns = 1)
+))
+```
+
+We now have a column of the borough-specific population, calculated based on the zonal statistics operation with the raster dataset. 
+
+While we used zonal statistics to calculate the population by borough, we can easily aggregate this information to derive a raster-based population estimate for the entire city (i.e. all of the boroughs together). To do so, we can simply add up the elements in the ```nyc_boroughs_population_zonal``` vector: 
+
+```{r}
+# Calculates sum of "nyc_boroughs_population_zonal" to derive city-wide population estimate
+sum(nyc_boroughs_population_zonal)
+```
+
+# Raster Analysis: Answering research questions using zonal statistics
+
+The previous example of using zonal statistics to aggregate cell-level data with respect to zones defined by a vector GIS dataset was illustrative, but not particularly compelling. After all, we could easily calculate borough-specific data using existing government data. 
+
+The real power of zonal statistics is in its ability to calculate granular spatial information for areas for which we do not have "off-the-shelf" official data. Let's consider an example of how we can use zonal statistics to answer a question that would have been more challenging to answer using other methods.
+
+In particular, let's say that you're a city planner, and want to find out the percentage of the city's population that lives more than 500 meters from a subway station. A question like this implicates
+important issues relating to New York City’s quality of life, the accessibility of public
+infrastructure, and fairness and equity. It would be difficult to answer without GIS, but can be answered relatively straightforward methods that bring together raster data and vector data using zonal statistics.
+
+To begin answering this question, let's first read in our point layer of NYC subway stops, and assign the data to an object named ```nyc_subway_stops```:
+
+```{r, echo=-1}
+setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class3/data/subway_stops")
+# read in NYC subway stops
+nyc_subway_stops<-st_read("stops_nyc_subway_may2019.shp")
+```
+
+Let's plot these subway stops against our dataset of NYC boroughs; note that because we're going to be doing some distance calculations with the vector data, we'll work in a projected CRS appropriate to NYC (EPSG: 2263) for now. Below, both ```nyc_boroughs``` and ```nyc_subway_stops``` are in this projection:
+
+```{r}
+# Plot "nyc_subway_stops" over "nyc_boroughs"
+tm_shape(nyc_boroughs)+
+  tm_polygons()+
+tm_shape(nyc_subway_stops)+
+  tm_dots()
+```
+
+Now, let's create a circular 500 meter buffer around each subway stop, so as to delineate areas that are within 500 meters of a subway stop. Below, we use the ```st_buffer()``` function to draw circular 500 m buffers around the points in ```nyc_subway_stops```; note that the distance argument is 1640.42 because the projection's units are in feet (1640.42 ft = 500 metres). We'll assign our buffer dataset to an object named ```subway_500_buffers```:
+
+```{r}
+# Create 500 m buffers around subway stations
+subway_500_buffers<-st_buffer(nyc_subway_stops, 1640.42)
+```
+
+Now, let's plot our borough polygons, subway stations, and subway station buffers together: 
+
+```{r}
+# View buffers
+tm_shape(nyc_boroughs)+
+  tm_polygons()+
+tm_shape(subway_500_buffers)+
+  tm_borders()+
+tm_shape(nyc_subway_stops)+
+  tm_dots()
+```
+
+Because of the density of the subway system, many of the buffers overlap; let's dissolve the various buffers into one polygon, using the ```group_by()``` and ```summarise()``` functions (this operation should be familiar from last class). We'll assign the dissolved buffer layer to an object named ```subway_500_buffers_dissolved```:
+
+```{r}
+# Dissolve Buffers and assign dissolved polygon to object named "subway_500_buffers_dissolved"
+subway_500_buffers_dissolved<-subway_500_buffers %>% 
+                              group_by() %>% 
+                              summarise()
+```
+
+Let's now plot our dissolved buffers, along with our subway stops and boroughs: 
+
+```{r}
+# Plot dissolved buffers
+tm_shape(nyc_boroughs)+
+  tm_polygons()+
+tm_shape(subway_500_buffers_dissolved)+
+  tm_borders()+
+tm_shape(nyc_subway_stops)+
+  tm_dots()
+```
+
+It can be a little difficult to see the difference between the separate buffers and the dissolved buffers. To clarify things, let's plot ```subway_500_buffers```, which contains separate buffers, in blue: 
+
+```{r}
+# Plots separate buffers against boroughs
+tm_shape(nyc_boroughs)+
+  tm_polygons()+
+tm_shape(subway_500_buffers)+
+  tm_borders("blue")
+```
+
+And compare that with the appearance of the dissolve buffer layer (also in blue): 
+
+```{r}
+# Plots dissolved buffer layer
+tm_shape(nyc_boroughs)+
+  tm_polygons()+
+tm_shape(subway_500_buffers_dissolved)+
+  tm_borders("blue")
+```
+
+If we want to "fill in" the dissolved buffer layer with a color, we can plot it as a polygon. Here, we'll plot the dissolved buffer layer in blue:
+
+```{r}
+# Plots dissolved buffer
+tm_shape(nyc_boroughs)+
+  tm_polygons()+
+tm_shape(subway_500_buffers_dissolved)+
+  tm_polygons("blue")
+```
+
+This area, in short, delimits the areas in the city that are within 500 metres of a subway stop; areas outside the dissolved buffer are more than 500 metres from a subway stop. 
+
+Now that we've finished our distance calculations, let's convert the coordinate reference system of our dissolved buffer layer to EPSG: 4326, since that is the CRS of the raster layer we're working with (remember that when working with raster data and vector data, it's preferable to project vector data into the raster's CRS, rather than the other way around). We'll assign this reprojected dissolved buffer to an object named ```subway_500_buffers_dissolved_4326```:
+
+```{r}
+# Transform "subway_500_buffers_dissolved" to same CRS as "nyc_2019_population" (EPSG: 4326)
+subway_500_buffers_dissolved_4326<-subway_500_buffers_dissolved %>% 
+                                    st_transform(4326)
+```
+
+Now let's use zonal statistics to calculate the population within our buffer zone, by calculating the sum of the values of the raster cells falling within this buffer zone. We'll assign this value to an object named ```nyc_pop_within_buffer```:
+
+```{r, message=F, results=F, warning=F}
+# Calculate population in buffer zone ("subway_500_buffers_dissolved_4326") based on "nyc_2019_population" raster
+nyc_pop_within_buffer<-exact_extract(nyc_2019_population, subway_500_buffers_dissolved_4326, fun="sum")
+```
+
+Let's print the value of ```nyc_pop_within_buffer```, which informs us of the number of people that live within the 500 m buffer (i.e. within 500 metres of a subway stop):
+
+```{r}
+nyc_pop_within_buffer
+```
+
+So, 4564042 lived within 500 metres of a subway stop in NYC in 2019. Recall that the total population of NYC, based on our raster calculations, is given by ```sum(nyc_boroughs_population_zonal)```, which we calculated earlier; we'll assign this value to ```total_population_2019```:
+
+```{r, message=F, results=F, warning=F}
+total_population_2019<-sum(nyc_boroughs_population_zonal)
+```
+
+To calculate the percentage of the population *within* 500m of a subway stop, we can simply divide ```nyc_pop_within_buffer``` by ```total_population_2019``` and multiply by 100. We'll assign this percentage to an object named ```percentage_within_buffer```:
+
+```{r}
+# Percentage within buffer
+percentage_within_buffer<-(nyc_pop_within_buffer/total_population_2019)*100
+```
+
+The percentage of the population that lives *more* than 500 metres from a subway stop, then, is simply 100 subtracted by ```percentage_within_buffer```; we'll assign this value to an object named ```percentage_outside_buffer```:
+
+```{r}
+# Calculates the % of the city's population that lives outside the 500m buffer zone; assigns value to object named "percentage_outside_buffer"
+percentage_outside_buffer<-100-percentage_within_buffer
+```
+
+Let's print the value of ```percentage_outside_buffer```:
+
+```{r}
+# Prints "percentage_outside_buffer"
+percentage_outside_buffer
+```
+
+So, about 45% of NYC's population in 2019 lived more than 500m from a subway station. Bringing together raster data and vector data in a unified GIS workflow allowed us to answer a non-trivial question in just a few short steps. 
+
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>

@@ -1,0 +1,267 @@
+---
+title: "Extract Precipitation, Temperature, and Humidity using nasapower "
+author: "Aditya Ranganath"
+date: "3/16/2022"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    number_sections: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=F, results=F, warning=FALSE}
+library(sf)
+library(tmap)
+library(tidyverse)
+library(tidycensus)
+library(nasapower)
+library(raster)
+```
+
+```{r, echo=F, warning=F}
+library(DT) 
+```
+
+
+# Extracting data at a point
+
+## Extract data from the geographic center of Boulder County
+
+```{r, message=F, warning=F, results=F}
+boulder_polygon<-get_decennial(geography = "county",
+                               state="CO",
+                                variables = "P001001",
+                                year = 2010,
+                                geometry=TRUE) %>% 
+                  filter(GEOID=="08013") %>% 
+                  st_transform(2231)
+```
+
+
+```{r}
+tm_shape(boulder_polygon)+
+  tm_polygons()
+```
+
+```{r}
+boulder_centroid<-st_centroid(boulder_polygon)
+```
+
+```{r}
+boulder_centroid
+```
+
+```{r}
+tm_shape(boulder_polygon)+
+  tm_polygons()+
+tm_shape(boulder_centroid)+
+  tm_dots()
+```
+
+```{r}
+boulder_polygon_wgs<-st_transform(boulder_polygon, 4326)
+boulder_centroid_wgs<-st_transform(boulder_centroid, 4326)
+```
+
+```{r}
+boulder_polygon_wgs
+```
+
+```{r}
+boulder_polygon_wgs
+```
+
+
+```{r}
+tm_shape(boulder_polygon_wgs)+
+  tm_polygons()+
+tm_shape(boulder_centroid_wgs)+
+  tm_dots()
+```
+
+
+```{r}
+boulder_weather_2015_jan_daily <- get_power(
+  community = "ag",
+  lonlat = c(-105.3577, 40.09247),
+  pars = c("RH2M", "T2M", "PRECTOTCORR"),
+  dates = c("2015-01-01", "2015-01-31"),
+  temporal_api = "daily"
+)
+```
+
+
+```{r, echo=F}
+boulder_weather_2015_jan_daily %>% datatable(extensions=c("Scroller", "FixedColumns"), options = list(
+  deferRender = TRUE,
+  scrollY = 350,
+  scrollX = 350,
+  dom = "t",
+  scroller = TRUE,
+  fixedColumns = list(leftColumns = 3)
+))
+```
+
+
+```{r}
+boulder_centroid_weather_2011_2012_monthly<- get_power(
+                              community = "ag",
+                              lonlat = c(-105.3577, 40.09247),
+                              pars = c("RH2M", "T2M", "PRECTOTCORR"),
+                              dates = c(2011,2012),
+                              temporal_api = "monthly")
+```
+
+```{r, echo=F}
+boulder_centroid_weather_2011_2012_monthly %>% datatable(extensions=c("Scroller", "FixedColumns"), options = list(
+  deferRender = TRUE,
+  scrollY = 350,
+  scrollX = 350,
+  dom = "t",
+  scroller = TRUE,
+  fixedColumns = list(leftColumns = 3)
+))
+```
+
+# Extract data by bounding box
+
+Extract central Colorado Counties: 
+
+```{r, message=F, warning=F, results=F}
+central_co_counties<-get_decennial(geography = "county",
+                                   state="CO",
+                                   variables = "P001001",
+                                   year = 2010,
+                                   geometry=TRUE) %>% 
+  filter(GEOID=="08001"|GEOID=="08005"|GEOID=="08019"|GEOID=="08031"|
+           GEOID=="08047"|GEOID=="08059"|GEOID=="08117"|GEOID=="08035"|
+           GEOID=="08041"|GEOID=="08093"|GEOID== "08119"|GEOID=="08039"|GEOID=="08073"|GEOID=="08013"|GEOID=="08069"|
+           GEOID=="08123"|GEOID=="08087") %>% 
+  st_transform(4326)
+
+```
+
+```{r, echo=F}
+central_co_counties %>% datatable(extensions=c("Scroller", "FixedColumns"), options = list(
+  deferRender = TRUE,
+  scrollY = 350,
+  scrollX = 350,
+  dom = "t",
+  scroller = TRUE,
+  fixedColumns = list(leftColumns = 3)
+))
+```
+
+```{r, message=F, warning=F, results=F}
+colorado_polygon<-get_decennial(geography = "state",
+                                   variables = "P001001",
+                                   year = 2010,
+                                   geometry=TRUE) %>% 
+                        st_transform(4326) %>% 
+                        filter(NAME=="Colorado")
+```
+
+
+```{r}
+tm_shape(colorado_polygon)+
+  tm_polygons()+
+tm_shape(central_co_counties)+
+  tm_polygons("blue")
+```
+
+
+```{r}
+central_co_bounding_box<-st_bbox(central_co_counties) %>% as.vector()
+
+central_co_bounding_box
+```
+
+
+```{r}
+central_co_precipitation_2011_2012_monthly<-get_power(
+                                    community = "ag",
+                                    lonlat = central_co_bounding_box,
+                                    pars = c("PRECTOTCORR"),
+                                    dates = c(2011,2012),
+                                    temporal_api = "monthly")
+```
+
+
+```{r}
+central_co_precipitation_2011_2012_monthly %>% datatable(extensions=c("Scroller", "FixedColumns"), options = list(
+  deferRender = TRUE,
+  scrollY = 350,
+  scrollX = 350,
+  dom = "t",
+  scroller = TRUE,
+  fixedColumns = list(leftColumns = 3)
+))
+```
+
+```{r}
+central_co_precipitation_2011_2012_monthly_locations<-
+ st_as_sf(central_co_precipitation_2011_2012_monthly, coords=c("LON", "LAT"), crs=4326, remove=F)
+```
+
+```{r}
+tm_shape(colorado_polygon)+
+  tm_polygons()+
+tm_shape(central_co_precipitation_2011_2012_monthly_locations)+
+  tm_dots()
+```
+
+```{r}
+central_co_precipitation_2011<-central_co_precipitation_2011_2012_monthly_locations %>% 
+                                  filter(YEAR==2011) %>% 
+                                  filter(ANN>=1.5)
+
+```
+
+```{r}
+tm_shape(colorado_polygon)+
+  tm_polygons()+
+tm_shape(central_co_precipitation_2011_2012_monthly_locations)+
+  tm_dots(size=0.1)+
+tm_shape(central_co_precipitation_2011)+
+  tm_dots("green", size=0.1)
+```
+
+```{r}
+precipitation_annual_2011<-central_co_precipitation_2011_2012_monthly %>% 
+                           filter(YEAR==2011)
+```
+
+
+```{r}
+rainfall_raster<-rasterFromXYZ(precipitation_annual_2011[, c("LON", "LAT", "ANN")])
+```
+
+
+```{r}
+tm_shape(rainfall_raster)+
+  tm_raster(title="Annual Precipitation, 2011")+
+  tm_legend(outside=T)
+```
+
+```{r}
+rainfall_raster_map<-tm_shape(rainfall_raster)+
+                      tm_raster(title="Annual Precipitation, 2011")+
+                      tm_legend(outside=T)
+```
+
+```{r}
+tm_shape(colorado_polygon)+
+  tm_polygons()+
+  rainfall_raster_map+
+  tm_shape(central_co_counties)+
+    tm_polygons(alpha=0)
+
+```
+
+
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>

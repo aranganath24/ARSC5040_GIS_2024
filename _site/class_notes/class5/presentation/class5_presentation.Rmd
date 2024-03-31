@@ -1,0 +1,71 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## GIS and Research Design
+
+* “Credibility revolution” is the name given by Angrist and Pischke (2010) to describe the movement within applied microeconomics to pay greater attention to:
+  * The robustness of empirical results to changes in statistical specifications (i.e. is a particular result merely an artifact of particular modelling choices, or does it actually describe a real world relationship?)
+  * The validity of causal claims (i.e. does the independent variable of interest actually cause variation in the outcome variable, or are the independent and dependent variables merely correlated?
+* While the credibility revolution took root in applied microeconomics, it has come to influence many applied social scientific fields beyond economics as well. 
+
+## GIS and Research Design: Looking Back
+
+* <font size="5">Spatial data and methods can play an important role in research designs inspired by the credibility revolution </font>
+  * <font size="4">Indeed, John Snow epidemiological analysis of Cholera in 19th century London--considered the first GIS analysis--is also important in the intellectual history of causal inference </font>
+* <font size="5">Kudamatsu (2018) provides a useful survey of some of the ways in which GIS techniques (many of which we learned about in the past four classes), can facilitate credible inference </font>
+  * <font size="4">Spatial join **(Class 2)** </font>
+  * <font size="4">Vector intersections **(Class 2)** </font>
+  * <font size="4">Zonal statistics **(Class 3, Class 4)** </font>
+  * <font size="4">Buffers and distance calculations **(Class 2, Class 3)** </font>
+  * <font size="4">Raster calculations/cell statistics **(Class 3, Class 4)** </font>
+
+## GIS and Research Design: Looking Ahead
+* <font size="3.2">Identify 3-4 "big" theoretical or conceptual questions in your field (i.e. what is the relationship between political institutions and economic outcomes? how do people construct their social identities? what are the determinants of state capacity?). </font>
+* <font size="3.2">Make a list of articles/books that attempt to explore these questions in concrete empirical settings, and consider how the authors attempted to address relevant inferential challenges in their research designs. What were some potential problems with those designs? </font>
+* <font size="3.2">Familiarize yourself (if you haven't already), with some of the empirical methods used to facilitate credible inference (see the ITSS [mini-course](https://www.colorado.edu/cartss/interdisciplinary-training-social-sciences-itss/mini-course-causal-inference-spring-2021) on causal inference, or this relatively accessible online [book](https://mixtape.scunning.com/index.html) by Scott Cunningham) </font>
+* <font size="3.2">Finally, develop a strategy for grafting spatial data onto one of these methods (using the papers discussed in Kudamatsu, or which we read earlier in this course, as a template for how you might do so) to credibly answer your question </font>
+
+## Potential GIS Research Design Pitfalls: Measurement Error
+
+* Is it appropriate to actually encode spatial variables as lines/points/polygons (vector data) or grids (raster data)? Do these data models adequately capture the underlying theoretical construct the researcher wants to measure? 
+* In many cases, yes. But in some cases maybe not (i.e. Euratlas using polygons to represent pre-modern political units, where political authority was much more fluid than today, and was not delimited by the hard borders implied by polygons)
+  * "The validity of linear boundaries as a measure of the extent of political organization
+changes over time, an evolution that is not captured by the Euratlas data set" (Branch 2016, 855)
+
+## Potential GIS Research Design Pitfalls: Selection Bias
+
+* The things left out of GIS datasets (because they are difficult to represent with GIS data models) may, depending on the context of your question, lead to biased results.
+* Example: Say you are interested in the settlement patterns of ethnic groups, and those settlement patterns are represented by polygons, the dataset will likely leave out groups whose spatial distribution is difficult to represent with polygons (i.e. diaspora groups); this omission could lead to biased inferences (Branch 2016, 862)
+
+## Potential GIS Research Design Pitfalls: Ecological Inference
+
+* <font size="3.5">Results of statistical analyses using data derived with GIS methods can be sensitive to the geographic units of analysis that are used </font>
+  * <font size="3.2">Important to keep in mind the Modifiable Areal Unit Problem (MAUP), and ensure that the units of analysis or theoretically justified and appropriate. </font>
+  * <font size="3.2">If data are not provided at the right unit of analysis (for your question) sensitivity analysis can help to gauge the robustness of your results </font>
+  * <font size="3.2">Easy to commit ecological fallacy when working with GIS data: make sure you do not test individual-level hypotheses using geographically aggregated data. Just because a statistical relationship holds true at an aggregate level doesn't mean it holds true at the individual level (i.e. richer counties may be more likely to vote Democratic, but it does not necessarily follow that richer individuals are more likely to vote Democratic) </font>
+
+## Geospatial Data Ethics: Visualization and Analysis
+
+* <font size="3.5">It is easy to manipulate maps (even unintentionally) to support a given narrative or hypothesis (i.e. ["lying with maps"](https://open.lib.umn.edu/mapping/chapter/7-lying-with-maps/)). </font>
+  * <font size="3.2">Choices about classification schemes, data standardization methods, map projections, aggregation units etc. can dramatically influence the conclusions an audience will draw from a map ([Deluca and Nelson](https://open.lib.umn.edu/mapping/chapter/7-lying-with-maps/)). </font>
+  * <font size="3.2">Important to have an understanding of the ways in which maps function as rhetorical devices, and how these choices can affect interpretations, so we can be intentional about these choices, and minimize the possibility of misleading people. </font>
+* <font size="3.5">Maps can potentially convey sensitive information, and lead to disclosure risks </font>
+
+## Geospatial Data Ethics: Privacy and Disclosure Risk
+
+* <font size="3.5">"Whether through the publication of data (including maps) or the direct transfer of data files, the dissemination of data to other researchers poses confidentiality protection prob-
+lems for spatially explicit social survey or census data" ([VanWey, Rindfuss, Gutmann, Entwisle, Balk 2005, 15338](https://www.pnas.org/doi/pdf/10.1073/pnas.0507804102)). </font>
+  * <font size="3.2">When working with geolocated survey datasets or data collected using mobile technology (for example) it can be challenging to balance need to protect individual privacy with the need for granular data for analysis (and the need to share this data with others for the sake of scholarly transparency) </font>
+  * <font size="3.2">Some techniques, such as ["geomasking"](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2952889/) can help researchers to work with and disseminate this data in an ethical manner. </font>
+  * <font size="3.2">If you need to share geolocated data that can potentially identify individuals, but don't want to publicly disseminate it, certain repositories (like [ICPSR](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2952889/) can help facilitate this) </font>
+
+## GIS and Society
+
+* Our course has focused on developing a practical GIS skillset that you can use in your research as social scientists.
+* But GIS and mapping technologies are themselves an interesting topic for social scientific inquiry:
+  * What are the economic, political, social, and technological forces that shape the mapping and geospatial industries? 
+  * What is the causal role of cartography and GIS technology in shaping social, economic, and political processes, ideas, and institutions (both historically, and in today's world)?
+  
+
+

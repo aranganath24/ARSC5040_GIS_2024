@@ -1,0 +1,398 @@
+{"0": {
+    "doc": "Announcements",
+    "title": "Announcements",
+    "content": "Announcements are stored in the _announcements directory and rendered according to the layout file, _layouts/announcement.html. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/announcements/",
+    "relUrl": "/announcements/"
+  },"1": {
+    "doc": "Announcements",
+    "title": "Week 1 Announcement",
+    "content": "Apr 8 &middot; 0 min read . | Create a new repository based on Just the Class. | Configure a publishing source for GitHub Pages. Your course website is now live! | Update _config.yml with your course information. | Edit and create .md Markdown files to add your content. | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/announcements/",
+    "relUrl": "/announcements/"
+  },"2": {
+    "doc": "Announcements",
+    "title": "Week 0 Announcement",
+    "content": "Apr 1 &middot; 0 min read Hello world! . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/announcements/",
+    "relUrl": "/announcements/"
+  },"3": {
+    "doc": "Class One",
+    "title": "Class One: Basic concepts; spatial thinking; mapping data",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class1/#class-one-basic-concepts-spatial-thinking-mapping-data",
+    "relUrl": "/class1/#class-one-basic-concepts-spatial-thinking-mapping-data"
+  },"4": {
+    "doc": "Class One",
+    "title": "Table of contents",
+    "content": ". | Overview | Readings | Class Notes/Tutorial | Useful resources | Assignment | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class1/#table-of-contents",
+    "relUrl": "/class1/#table-of-contents"
+  },"5": {
+    "doc": "Class One",
+    "title": "Overview",
+    "content": "In this introductory session, we will use the required readings to reflect, in general terms, on how spatial data and “spatial thinking” might inform your current (or future) research projects. The in-class exercise will introduce you to the basic process of transforming a tabular dataset into a choropleth map. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class1/#overview",
+    "relUrl": "/class1/#overview"
+  },"6": {
+    "doc": "Class One",
+    "title": "Readings",
+    "content": "Required Readings . | Logan, John. 2012. “Making a Place for Space: Spatial Thinking in Social Science.” Annual Review of Sociology 38: 507-524. doi: https://doi.org/10.1146/annurev-soc-071811-145531. | Gleditsch, Kristian Skrede, and Nils B. Weidmann. 2012. “Richardson in the Information Age: Geographic Information Systems and Spatial Data in International Studies.” International Studies Quarterly 15: 461-481. doi: https://doi.org/10.1146/annurev-polisci-031710-112604. | . Optional Readings . | Rogers, Simon. 2013. “John Snow’s data journalism: the cholera map that changed the world”. The Guardian. March 15, 2013. https://www.theguardian.com/news/datablog/2013/mar/15/john-snow-cholera-map . | Coleman, Thomas. 2019. “Causality in the time of Cholera: John Snow as a Prototype for Causal Inference.” Working Paper. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3262234 . | Behm, Dayna, Tony Bryan, Joshua Lordemann, and Steven R. Thomas. 2018. “The Past, Present and Future of Geospatial Data Use: Exploring the uses of geospatial data in retail, health care, financial services, and transportation/logistics.” February 1, 2018. https://trajectorymagazine.com/past-present-future-geospatial-data-use/ . | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class1/#readings",
+    "relUrl": "/class1/#readings"
+  },"7": {
+    "doc": "Class One",
+    "title": "Class Notes/Tutorial",
+    "content": ". | Class 1 Tutorial | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class1/#class-notestutorial",
+    "relUrl": "/class1/#class-notestutorial"
+  },"8": {
+    "doc": "Class One",
+    "title": "Useful resources",
+    "content": ". | Cartography Guide by Axis Maps | Choropleth Map Guide | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class1/#useful-resources",
+    "relUrl": "/class1/#useful-resources"
+  },"9": {
+    "doc": "Class One",
+    "title": "Assignment",
+    "content": "Due by the beginning of next class (April 7) via email. Please make a choropleth map that shows how a variable you are interested in varies across a given set of geographic units. You are welcome to hew closely to the class tutorial, and map a World Bank WDI variable of your choice. However, you are also encouraged to move in different directions, and create a choropleth map that is relevant to one of your research interests. If you are looking for a spatial dataset to which you can join the tabular data you want to map, feel free to let me know and I can try to help you. Please provide all of the code you used to generate the map, in addition to the map itself. Also, please comment your code wherever appropriate. Finally, write a brief paragraph in which you discuss the spatial patterns that the map helps you to identify. Are there any patterns of clustering or dispersion that you find interesting? Do you notice anything surprising or unexpected? And, what future research questions might this map suggest? . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class1/#assignment",
+    "relUrl": "/class1/#assignment"
+  },"10": {
+    "doc": "Class One",
+    "title": "Class One",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class1/",
+    "relUrl": "/class1/"
+  },"11": {
+    "doc": "Class Two",
+    "title": "Class Two: Vector data and geoprocessing",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class2/#class-two-vector-data-and-geoprocessing",
+    "relUrl": "/class2/#class-two-vector-data-and-geoprocessing"
+  },"12": {
+    "doc": "Class Two",
+    "title": "Table of contents",
+    "content": ". | Overview | Readings | Class Notes/Tutorial | Useful resources | Assignment | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class2/#table-of-contents",
+    "relUrl": "/class2/#table-of-contents"
+  },"13": {
+    "doc": "Class Two",
+    "title": "Overview",
+    "content": "In this session, we will cover vector data (which we were introduced to in the previous session when working with a spatial dataset of country boundaries) more explicitly, and explore the different ways it can be manipulated and analyzed, and the different ways it can be used to inform our understanding of social phenomena. We will also explore some of the practical considerations to keep in mind when working with map coordinate systems. The in-class exercise will give you some practice in carrying out basic vector data operations in R Studio. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class2/#overview",
+    "relUrl": "/class2/#overview"
+  },"14": {
+    "doc": "Class Two",
+    "title": "Readings",
+    "content": "Required Readings . | Smith, Heather. 2020. “Geographic vs Projected Coordinate Systems.” Esri ArcGIS Blog. https://www.esri.com/arcgis-blog/products/arcgis-pro/mapping/gcs_vs_pcs/. | “7 Geoprocessing Tools Every GIS Analyst Should Know”. 2022. GISGeography. https://gisgeography.com/geoprocessing-tools/ | “How Spatial Join Works in GIS”. 2022. GISGeography. https://gisgeography.com/spatial-join/ | “What is Geocoding?”. ArcGIS Dekstop Documentation. https://desktop.arcgis.com/en/arcmap/latest/manage-data/geocoding/what-is-geocoding.htm | . Read ONE of the following. Please pay careful attention to the section in which the geospatial methods are discussed, and consider the following questions: What methods were used? How might you deploy these methods in your own research? Was there anything confusing about the methods section? Would you want to ask the author for clarification on anything? How could these research questions be extended in new directions? . | Pengl, Yannick, Philip Roessler, and Valeria Rueda. 2021. “Cash Crops, Print Technologies, and the Politicization of Ethnicity in Africa.” American Political Science Review 116(1): 181-199. doi: https://doi.org/10.1017/S0003055421000782 . | Deenesh, Sohoni and Salvatore Saporito. 2009. “Mapping School Segregation: Using GIS to Explore Racial Segregation between Schools and Their Corresponding Attendance Areas.” American Journal of Education 115(4): 569-600. doi: https://doi-org.colorado.idm.oclc.org/10.1086/599782. | Kotsadam, Andrea, Gudrun Ostby, Siri Aas Rustad, Andreas Foro Tollefsen, and Henrik Urdal. 2018. “Development Aid and Infant Mortality. Micro-level evidence from Nigeria.” World Development: 59-69. doi: https://doi.org/10.1016/j.worlddev.2017.12.022. | Braun, Robert. 2016. “Religious Minorities and Resistance to Genocide: The Collective Rescue of Jews in the Netherlands during the Holocaust.” American Political Science Review 110(1): 127-147. doi: https://doi.org/10.1017/S0003055415000544. | Maranville, Angela R., Tih-Fen Ting, Yang Zhang. 2009. “An Environmental Justice Analysis: Superfund Sites and Surrounding Communities in Illinois.” Environmental Justice 2(2): 49-56. doi: https://doi.org/10.1089/env.2008.0547. | Jha, Saumitra. 2013. “Trade, Institutions, and Ethnic Tolerance: Evidence from South Asia”. American Political Science Review 107(4): 806-832. doi: https://doi.org/10.1017/S0003055413000464 . | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class2/#readings",
+    "relUrl": "/class2/#readings"
+  },"15": {
+    "doc": "Class Two",
+    "title": "Class Notes/Tutorial",
+    "content": ". | Class 2 Tutorial | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class2/#class-notestutorial",
+    "relUrl": "/class2/#class-notestutorial"
+  },"16": {
+    "doc": "Class Two",
+    "title": "Useful resources",
+    "content": ". | Video on coordinate reference systems by Jonathan Soma | Guide to geocoding tools, from UC-Berkeley; note that some of these resources may not be available at CU-Boulder, but many of them are available to the public. | sf package cheatsheet | R coordinate systems cheatsheet | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class2/#useful-resources",
+    "relUrl": "/class2/#useful-resources"
+  },"17": {
+    "doc": "Class Two",
+    "title": "Assignment",
+    "content": "Please choose one of the options below and turn it in before the start of Class 3. Option 1 . Explore some of the vector datasets discussed in the General Resources section of the course webpage. Find a polygon dataset, and a point dataset (or a tabular dataset that is geocoded), and implement a spatial join to derive a new dataset that contains information on the number of points within each polygon. What research questions might the dataset you generated help to answer? . Option 2 . Go to this archive of police stop data, provided as part of the Stanford Open Policing Project. Under the “CO” heading on this page, download the “Aurora”” data as a CSV file. Read this file (which contains lat/long coordinates for most of the stops in the dataset; assume that the coordinate reference system for these lat/long coordinates are EPSG: 4326) into R Studio, and generate a new dataset that contains information on the total number of police stops which took place in each census tract. Document your steps/code, and send me the final dataset (i.e. the tract-level dataset on the number of stops) that you generated as a CSV file. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class2/#assignment",
+    "relUrl": "/class2/#assignment"
+  },"18": {
+    "doc": "Class Two",
+    "title": "Class Two",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class2/",
+    "relUrl": "/class2/"
+  },"19": {
+    "doc": "Class Three",
+    "title": "Class Three: Raster (gridded) data and its applications",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class3/#class-three-raster-gridded-data-and-its-applications",
+    "relUrl": "/class3/#class-three-raster-gridded-data-and-its-applications"
+  },"20": {
+    "doc": "Class Three",
+    "title": "Table of contents",
+    "content": ". | Overview | Readings | Class Notes/Tutorial | Useful resources | Assignment | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class3/#table-of-contents",
+    "relUrl": "/class3/#table-of-contents"
+  },"21": {
+    "doc": "Class Three",
+    "title": "Overview",
+    "content": "In this session, we will consider the second major type of GIS data (which we have not yet worked with before): raster data. Raster data is essentially a georeferenced grid, rather than georeferenced points, lines, or polygons. We’ll talk about the types of data that are represented with rasters, and the various social-scientific uses of raster datasets. The in-class exercise will give you some practice in visualizing raster data, and exploring how raster and vector datasets can be brought together to generate novel empricial measurements at micro-level spatial scales. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class3/#overview",
+    "relUrl": "/class3/#overview"
+  },"22": {
+    "doc": "Class Three",
+    "title": "Readings",
+    "content": "Required Readings . | “What is Raster Data?” Esri. https://desktop.arcgis.com/en/arcmap/latest/manage-data/raster-and-images/what-is-raster-data.htm . | Foley, Jonathan A., Ruth Defries, Gregory P. Asner, Carol Barford, Gordon Bonan, Stephen R. Carpenter, F. Stuart Chapin et al. 2005. “Global Consequences of Land Use. Science 309(5734): 570-574. doi: https://doi.org/10.1126/science.1111772 . | [SKIM] Dell, Melissa, Benjamin F. Jones, and Benjamin A. Olken. 2014. “What Do We Learn from the Weather? The New Climate-Economy Literature.” Journal of Economic Literature52 (3): 740-98. doi: https://doi.org/10.1257/jel.52.3.740 . | . Read ONE of the following: . | Clement, Matthew Thomas and Camila Alvarez. 2020. “The Inequality of Mundane Environmental Change: Assessing the impacts of Socioeconomic Status and Race on Neighborhood Land Development, 2001-2011”. Sociological Perspectives 63(2): 292-311. doi: https://doi.org/10.1177/0731121419857984 . | Nunn, Nathan and Diego Puga. 2012. “Ruggedness: The Blessing of Bad Geography in Africa.” Review of Economics and Statistics 94(1): 20-36. doi: https://doi.org/10.1162/REST_a_00161 . | Baragwanath, Kathryn and Ella Bayi. 2020. “Collective property rights reduce deforestation in the Brazilian Amazon.” Proceedings of the National Academy of Sciences 117(3): 20495-20502. doi: https://doi.org/10.1073/pnas.1917874117 . | Shaver, Andrew, David B. Carter, and Tsering Wangyal Shawa. 2016. “Terrain ruggedness and land cover: Improved data for most research designs.” Conflict Management and Peace Science 36(2): 191-218. doi: https://doi.org/10.1177/0738894216659843 . | Dell, Melissa. 2010. “The Persistent Effects of Peru’s Mining Mita”. Econometrica 78(6): 1863-1903. | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class3/#readings",
+    "relUrl": "/class3/#readings"
+  },"23": {
+    "doc": "Class Three",
+    "title": "Class Notes/Tutorial",
+    "content": ". | Class 3 tutorial. | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class3/#class-notestutorial",
+    "relUrl": "/class3/#class-notestutorial"
+  },"24": {
+    "doc": "Class Three",
+    "title": "Useful resources",
+    "content": ". | Documentation for the exactextractr package, which implements zonal statistics. | Documentation for the terra package, which is becoming the “go-to” package for handling raster data in R. | A useful set of tutorials on the terra package, focusing on applied examples. | The raster data used in the tutorial is from the WorldPop project, which contains a lot of interesting raster datasets. In addition, the rspatialdata project offers accessible tutorials on various R packages that streamline the process of extracting raster datasets. It includes coverage of packages that facilitate the extraction of land cover, elevation, temperature, rainfall, humidity, vegetation, and air pollution rasters. Please see the General Resources page for more raster data sources. | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class3/#useful-resources",
+    "relUrl": "/class3/#useful-resources"
+  },"25": {
+    "doc": "Class Three",
+    "title": "Assignment",
+    "content": "Choose ONE of the following options. Please make sure to document your steps (i.e. comment your code), and provide any relevant maps or datasets you create. Option 1 . Take the dataset of World Bank projects we worked with last week, and implement a spatial join to compute the number of projects within different polygons of a vector dataset. Then, identify a raster dataset of interest, and use zonal statistics to compute raster summary statistics with respect to the polygons in your dataset. What questions might the dataset you’ve created (containing project information, and information computed from your raster) help you to answer? . Option 2 . Find a raster dataset you’re interested in and explore it. Use it to create a histogram of cell values, generate a map using the raster, and compute a zonal statistic of interest with respect to a vector dataset of interest. Option 3 . Did the percentage of NYC’s population living within 750 metres of a subway stop increase or decrease between 2009 and 2019? (assume no subway stations were added during this time period) . Option 4 . Use a raster dataset to explore a question you are interested in. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class3/#assignment",
+    "relUrl": "/class3/#assignment"
+  },"26": {
+    "doc": "Class Three",
+    "title": "Class Three",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class3/",
+    "relUrl": "/class3/"
+  },"27": {
+    "doc": "Class Four",
+    "title": "Class Four: Geospatial data ethics, and introduction to remote sensing and Google Earth Engine",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class4/#class-four-geospatial-data-ethics-and-introduction-to-remote-sensing-and-google-earth-engine",
+    "relUrl": "/class4/#class-four-geospatial-data-ethics-and-introduction-to-remote-sensing-and-google-earth-engine"
+  },"28": {
+    "doc": "Class Four",
+    "title": "Table of contents",
+    "content": ". | Overview | Readings and Video | Class Notes/Tutorial | Useful resources | Assignment | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class4/#table-of-contents",
+    "relUrl": "/class4/#table-of-contents"
+  },"29": {
+    "doc": "Class Four",
+    "title": "Overview",
+    "content": "In this session, we will begin with a discussion of geospatial data ethics, and think about the distinctive ethical issues that might arise in the context of working with GIS data. Then, we’ll introduce basic concepts and tools related to satellite imagery and remote sensing, and explore some social scientific applications of this data. The in-class exercise will focus on getting you acquainted with Google Earth Engine, which is a platform for extracting and analyzing remotely sensed data. To that end, please make sure you’ve been approved for Google Earth Engine access by the start of class (the process can take up to a week). More details on gaining access to GEE are available on the syllabus, under the section on “Course Materials and Software”. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class4/#overview",
+    "relUrl": "/class4/#overview"
+  },"30": {
+    "doc": "Class Four",
+    "title": "Readings and Video",
+    "content": "Required Viewing . | Remote Sensing Basics, by Russ Congalton. Available at https://www.youtube.com/watch?v=EYQsXs1Jr0Y. Please view the first 35 minutes. | Overview of Earth Engine Platform by Nick Clinton. Available at https://www.youtube.com/watch?v=LAQV9lVZr_g. Please view the entire 13 minute video. | . Required Reading: Satellite Imagery and Remote Sensing . Read ONE of the following: . | Casana, Jesse. 2021. “Rethinking the Landscape: Emerging Approaches to Archaeological Remote Sensing.” Annual Review of Anthropology 50: 167-186. doi: https://doi.org/10.1146/annurev-anthro-101819-110344 . | Donaldson, Dave and Adam Storeygard. 2016. “The View from Above: Applications of Satellite Data in Economics.” Journal of Economic Perspectives 30(4): 171-198. doi: https://doi.org/10.1257/jep.30.4.171 . | . Required Reading: Geospatial Data Ethics . Read ONE of the following: . | Reid, Genevieve and Renee Sieber. 2020. “Learning from Critiques of GIS for assessing the geoweb and indigenous knowledges.” Geojournal. doi: https://doi.org/10.1007/s10708-020-10285-2 . | Taylor, Linnet. 2016. “No Place to Hide? The ethics and analytics of tracking mobility using mobile phone data.” Society and Space 34(2): 319-336. doi: https://doi.org/10.1177/0263775815608851 . | . Suggested Reading: Google Earth Engine . | Gorelick, Noel, Matt Hancher, Mike Dixon, Simon Ilyushchenko, David Thau, and Rebecca Moore. 2017. “Google Earth Engine: Planetary-scale geospatial analysis for everyone.” Remote Sensing of Environment 202(1): 18-27. https://doi.org/10.1016/j.rse.2017.06.031 | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class4/#readings-and-video",
+    "relUrl": "/class4/#readings-and-video"
+  },"31": {
+    "doc": "Class Four",
+    "title": "Class Notes/Tutorial",
+    "content": ". | Class 4 tutorial | Class 4 slides | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class4/#class-notestutorial",
+    "relUrl": "/class4/#class-notestutorial"
+  },"32": {
+    "doc": "Class Four",
+    "title": "Useful resources",
+    "content": ". | There are a number of very good video tutorials on using Google Earth Engine. The best place to start is this webinar, presented by Stace Maples of the Stanford Geospatial Center. | If you plan to do a lot of work with Earth Engine, and you are more comfortable using R than using JavaScript, you should checkout the newly developed RGEE package, which allows you to work with GEE data (and leverage the platform’s computational resources) from your desktop’s R Studio application. It can sometimes be a little challenging to install, but once it’s set up, it’s very nice to work with. I found this video to be a helpful RGEE installation guide. Looking through this repository of RGEE scripts is a great way to start learning the RGEE package. | The official Google Earth Engine documentation page contains a number of useful guides and tutorials. | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class4/#useful-resources",
+    "relUrl": "/class4/#useful-resources"
+  },"33": {
+    "doc": "Class Four",
+    "title": "Assignment",
+    "content": "There is no assignment for next class; please make sure to prepare a brief presentation on your final project, to be delivered next class. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class4/#assignment",
+    "relUrl": "/class4/#assignment"
+  },"34": {
+    "doc": "Class Four",
+    "title": "Class Four",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class4/",
+    "relUrl": "/class4/"
+  },"35": {
+    "doc": "Class Five",
+    "title": "Class Five: GIS and Research Design, Class Presentations, and Conclusion",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class5/#class-five-gis-and-research-design-class-presentations-and-conclusion",
+    "relUrl": "/class5/#class-five-gis-and-research-design-class-presentations-and-conclusion"
+  },"36": {
+    "doc": "Class Five",
+    "title": "Table of contents",
+    "content": ". | Overview | Readings | Class Notes/Tutorial | Useful resources | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class5/#table-of-contents",
+    "relUrl": "/class5/#table-of-contents"
+  },"37": {
+    "doc": "Class Five",
+    "title": "Overview",
+    "content": "In our final class session, we will briefly discuss some of the methodological promises and pitfalls of GIS work, from the standpoint of research design. The bulk of the class session will be devoted to your “lightning-talks”, in which you present your progress on your final project. Please note that I have suggested a few readings (under the label “GIS and Society”), that explore the consequences of geospatial technology, visualization, and analysis for society (from a social scientific perspective). I think this is going to be a really interesting research agenda in the next 5-10 years, and therefore wanted to suggest some work that might give you a sense of some of the work being done in this area; however, we won’t have time to discuss it. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class5/#overview",
+    "relUrl": "/class5/#overview"
+  },"38": {
+    "doc": "Class Five",
+    "title": "Readings",
+    "content": "Required Readings . | Kudamatsu, Masayuki. 2018. “GIS for Credible Identification Strategies in Economics Research.” CESifo Economic Studies: 327-338. doi:https://doi.org/10.1093/cesifo/ifx026 . | Branch, Jordan. 2016. “Geographic Information Systems (GIS) in International Relations.” International Organization 70: 845-869. doi: https://doi.org/10.1017/S0020818316000199 . | . Option Reading (Causal Inference) . | Keele, Luke J. and Rocio Titiunik. 2015. “Geographic Boundaries as Regression Discontinuities”. Political Analysis 23(1): 127-155. doi: https:/doi.org/10.1093/pan/mpu014. | . Optional Readings (GIS and Society) . | Branch, Jordan. 2011. “Mapping the sovereign state: Technology, Authority, and Systemic Change.” International Organization 65(1): 1-36. doi: https://doi.org/10.1017/S0020818310000299 . | Branch, Jordan. 2017. “Territorial Conflict in the Digital Age: Mapping Technologies and Negotiation.” International Studies Quarterly 61(3): 557-569. doi: https://doi.org/10.1093/isq/sqx046 . | Nagaraj, Abhishek and Scott Stern. 2020. “The Economics of Maps.” Journal of Economic Perspectives 34(1): 196-221. doi: https://doi.org/10.1257/jep.34.1.196 . | Leszczynski, Agnieszka and Jeremy Crampton. 2016. “Introduction: Spatial Big Data and everyday life.” Big Data and Society: 1-6. doi: https://doi.org/10.1177/2053951716661366 . | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class5/#readings",
+    "relUrl": "/class5/#readings"
+  },"39": {
+    "doc": "Class Five",
+    "title": "Class Notes/Tutorial",
+    "content": ". | Class 5 Presentation slides | Optional tutorial on GIS scripting in R | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class5/#class-notestutorial",
+    "relUrl": "/class5/#class-notestutorial"
+  },"40": {
+    "doc": "Class Five",
+    "title": "Useful resources",
+    "content": ". | Causal Inference: The Mixtape by Scott Cunningham | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class5/#useful-resources",
+    "relUrl": "/class5/#useful-resources"
+  },"41": {
+    "doc": "Class Five",
+    "title": "Class Five",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/class5/",
+    "relUrl": "/class5/"
+  },"42": {
+    "doc": "Just the Class",
+    "title": "ARSC 5040: GIS Methods and Tools",
+    "content": "Spring 2022, University of Colorado Boulder Thursdays, 3:00-5:30 PM MST . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/#arsc-5040-gis-methods-and-tools",
+    "relUrl": "/#arsc-5040-gis-methods-and-tools"
+  },"43": {
+    "doc": "Just the Class",
+    "title": "Instructor",
+    "content": "Aditya Ranganath (he/his) Data Librarian Center for Research Data and Digital Scholarship, CU Boulder Libraries Contact: Aditya.Ranganath@colorado.edu . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/#instructor",
+    "relUrl": "/#instructor"
+  },"44": {
+    "doc": "Just the Class",
+    "title": "Website Overview",
+    "content": "This is the course website for ARSC 5040: GIS Methods and Tools, a 5-week “mini-course” sponsored by the Interdisciplinary Training in the Social Sciences (ITSS) program at CU-Boulder. Please navigate to the syllabus, or class-specific information and material, using the tabs on the left. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/#website-overview",
+    "relUrl": "/#website-overview"
+  },"45": {
+    "doc": "Just the Class",
+    "title": "Just the Class",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/",
+    "relUrl": "/"
+  },"46": {
+    "doc": "General Resources",
+    "title": "General Resources",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/resources/",
+    "relUrl": "/resources/"
+  },"47": {
+    "doc": "General Resources",
+    "title": "Table of contents",
+    "content": ". | GIS and Data Management | Geospatial Data Analysis Software: A Brief Overview . | Esri Products | Quantum GIS (QGIS) | Geopandas (Python) | . | Which GIS application to use? | GIS Data Sources . | R packages for GIS data extraction | Subject-Specific GIS Data Sources | Curated GIS repositories and data sources compiled by GIS experts | Google Earth Engine Data and Resources | . | Useful tools and packages | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/resources/#table-of-contents",
+    "relUrl": "/resources/#table-of-contents"
+  },"48": {
+    "doc": "General Resources",
+    "title": "GIS and Data Management",
+    "content": "When pursuing GIS work (or any empirical project!), it is important to develop a data management strategy, which can help you save time, and ensure that your work is reproducible. An excellent primer on GIS data management, by Koshoffer, Figueiredo, and Latessa (2020) is available at this link, which contains an MP3 of their presentation and the associated presentation slide deck. You can also find the YouTube recording of their presentation here. Another useful resource is this guide, compiled by Alisa Rod. Some of the resources presented in this guide are platform-specific (i.e. are more relevant to certain types of GIS software, such as ESRI products, rather than others), but many are more general. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/resources/#gis-and-data-management",
+    "relUrl": "/resources/#gis-and-data-management"
+  },"49": {
+    "doc": "General Resources",
+    "title": "Geospatial Data Analysis Software: A Brief Overview",
+    "content": "Our course carries out most of its GIS analysis and visualization using open-source packages written for R, but there are a variety of other GIS software packages you may wish to explore. Esri Products . Esri (founded as the Environment Systems Research Institute), is the leading developer of proprietary GIS software. Its flagship product is ArcGIS Pro, which is a desktop GIS application that allows users to carry out a wide range of spatial analysis and visualization tasks. ArcGIS Pro offers a menu-based interface, but also offers users the opportunity to execute tasks by writing Python scripts. It also offers integration with R via the “R-ArcGIS Bridge”, which you can learn more about here. Other Esri products include ArcGIS Online (a web-based GIS application), and StoryMaps (an interactive multimedia platform that allows users to create attractive presentations that incorporate GIS visualizations). ArcGIS Online is worth exploring, but its analytic capabilities are somewhat limited; it can be useful if you want to make (and share) a quick map or visualization, but is not really the place for a more in-depth geospatial analysis. ArcGIS Online also integrates well with StoryMaps. StoryMaps is especially worth exploring if you are a qualitative social scientists who would like to present your research in narrative form. ArcGIS Online and StoryMaps are also good teaching tools, and easily accessible to undergraduates. While propietary, most colleges and universities license GIS, and make it available to campus affiliates for free at the point of service. For instructions on how to access Esri products through CU-Boulder’s license, please see this page, which also provides the contact information for CU-Boulder’s geospatial librarian. Quantum GIS (QGIS) . QGIS is a prominent open-source desktop GIS application, and might be thought of as the open-source analogue to ArcGIS Pro. It is possible to carry out the full range of geospatial visualization and analysis techniques using QGIS’s native functionality, or with QGIS plugins, which are programs written by the QGIS community that can be installed and used for more specialized tasks. For example, QGIS has a Google Earth Engine plugin (see here) that allows users to interact with Earth Engine from the QGIS interface. QGIS also has a Python scripting window built into it, so you can work in QGIS programmatically as well as through its menu-based interface. For a quick introduction to the QGIS menu-based interface, see this tutorial, which walks through a basic mapping exercise. The tutorial includes a basic cartography workflow in both QGIS and R Studio, which makes it easier to compare the two applications. You can download QGIS at this link. Geopandas (Python) . The past few years have seen the development of powerful geospatial analysis and visualization packages for the Python programming language. The flagship package in this ecosystem is Geopandas. This brief primer, by Christoph Rieke, provides a concise overview of the Python package ecosystem for geospatial data. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/resources/#geospatial-data-analysis-software-a-brief-overview",
+    "relUrl": "/resources/#geospatial-data-analysis-software-a-brief-overview"
+  },"50": {
+    "doc": "General Resources",
+    "title": "Which GIS application to use?",
+    "content": "Our course primarily uses R, since it is a programming language that is widely used in the social sciences. If you decide to use GIS extensively in your future work, your choice of which application to use might be informed by your future goals. If you are planning on an academic research career, or a career as a data or research scientist in the private sector, it makes sense to use R or Python, since those languages are widely used in those professional settings. There are a handful of GIS tasks (such as digitizing and georeferencing print maps) that are still difficult to implement in R/Python, so it may be worthwhile to familiarize yourself with QGIS as well, since these tasks tend to be more straightforward in a dedicated GIS application. If you plan to pursue work in government, policy, or non-data science private sector positions, Esri products remain the industry standard, and you’ll want to familarize yourself with ArcGIS Pro, as well as ArcGIS Online (which is often used to communicate information to the public). CRDDS offers a variety GIS workshops (primarily taught by the Library’s geospatial librarian) that use all of the software packages mentioned above. If you’d like to explore GIS software packages that are not covered in this course, those workshops would be a good place to start. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/resources/#which-gis-application-to-use",
+    "relUrl": "/resources/#which-gis-application-to-use"
+  },"51": {
+    "doc": "General Resources",
+    "title": "GIS Data Sources",
+    "content": "R packages for GIS data extraction . rspatialdata . There are a number of very useful R packages that allow users to directly read in or download geospatial data into R studio from within the R studio environment itself. A good place to start is the rspatialdata project, led by Paula Moraga. The project website provides a guide to various packages that can be used to extract widely used GIS data. There, you can find accessible tutorials on extracting administrative boundary data, crowd-sourced data from Open Street Map through the osmdata package, granular population data, elevation data, temperature data, rainfall data, humidity data, vegetation data, land cover data, demographic and health survey data, malaria data, air pollution data, and species occurrence data. Demographic data and census packages . For demographic data in the United States, Kyle Walker’s tidycensus packages is the best place to start (if you are interested in relatively recent data, from the past 20 years or so). It provides easy-to-use functions that allow users to pull data into R via the Census Bureau API. These functions have the ability to return census datasets (at various census geographies) as sf objects that play nicely with the tidyverse, which makes it easy to use for spatial visualization and analysis. Please note that in order to use tidycensus, you must register for a Census API key, which is a very simple and quick process; you can register here. For guidance on the use of tidycensus, the best resource is a book authored by Walker, entitled Analyzing US Census Data: Methods, Maps, and Models in R. See, in particular, Chapter 2 for a primer on data extraction using tidycensus; Chapter 5, 6, and 7 provide an account of how to use the extracted data in a GIS framework. There are several packages that enable the extraction of demographic data for countries outside the United States. The idbr package, also authored by Walker, is an R package that allows users to extract basic demographic data from a number of foreign countries into R, using the Census Bureau’s International Database . Please see Chapter 12 of Walker’s Census book, on Working with Census Data Outside the United States for an overview. In addition, there are several country-specific R packages that allow users to extract demographic/census from countries of interest; the data available through these country-specific packages is often more detailed and comprehensive than what is available through idbr. For example, there is: . | cancensus for Canadian census data | rKenyaCensus for Kenyan census data | mxmaps and inegiR for Mexican census data | nomisr for UK census data (and various other demographic datasets, such as the labor force survey) | insee for census and demographic data from France | . Walker provides examples using some of these packages in Chapter 12 of his book. In addition, there are useful packages that allow users to extract data at regional scales, and join this data to geospatial datasets for analysis and visualization. For example, the eurostat package allows users to extract Eurostat data. Finally, there are R packages that can help extract and work with IPUMS, a project at the University of Minneosta that provides a rich repository of census micro-data from around the world, which can be linked to spatial datasets using methods discussed in this course. The especially valuable feature of IPUMS is its catalog of historical data, which can facilitate spatio-temporal analyses at fine geographic scales. The ipumsr package is an R package that allows users to extract IPUMS data. For a primer on using IPUMS data in a spatial context, see this useful tutorial. This Github repository also provides useful resources at the intersection of GIS, IPUMS data, and R. Miscellaneous R Packages for Extracting GIS Data . | The FedData package facilitates easy access to a number of raster datasets (i.e. elevation, cropland, landcover, hydrography etc.) compiled by a variety of federal agencies. | The rnaturalearth package provides an easy way to download country and region-level boundary data, as well as data on natural features like lakes and rivers. | The rnoaa package allows users to extract data from a variety of datasets maintained by NOAA into R. | The stats19 package allows for the extraction and analysis of road crash data from the UK. The package allows for the analysis of the spatial distribution of traffic accident data. | The rWBclimate package offers functions to extract climate data from several World Bank climate datasets. | The patentsview package facilitates the extraction of patent data within R via the PatentsView API. Location data relevant to patents is available. | The pdfetch package is not a GIS data extraction package per se, but allows users to extract economic and financial data from a variety of sources (FRED at the St.Louis Fed, Yahoo Finance, the Bureau of Labor Statistics, various central banks around the world etc.) which users can then join to spatial datasets for spatial visualization and analysis purposes. | The crimedata package facilitates the extraction of crime data (including data in sf format) from the Crime Open Database. | The lingtypology package facilitates access to linguistics data, with a focus on mapping applications. The glottospace package is also a package that facilitates the extraction of linguistics data, and the geospatial analysis of this data; it is broader in scope than lingtypology. | ICPSR is (among other things), one of the largest and most prominent social science data archives around today. The icpsrdata package allows users to programmatically extract various ICPSR datasets within R. ICPSR is not solely a geospatial data archive, but it does have some GIS data, as well as a large collection of tabular datasets that can be joined to spatial datasets. | . Subject-Specific GIS Data Sources . While extracting data using R packages is convenient (and facilitates reproducibility), there are of course many datasets that do not currently have packages built around them, but which are still very useful. In these cases, you’ll have to download the data from the source, and then load it into R Studio (or your GIS application of choice). Here are some useful data sources: . | International Development: The AIDDATA project, based out of William and Mary, has archived many datasets related to foreign aid flows and projects. Many of these datasets contain spatial information. worldpop is a large archive of spatial datasets that focus on a variety of topics spanning “population distributions, demographics and dynamics”, and economic development. It’s especially useful as a repository of raster datasets that are relevant to social scientists. worldpop has an associated R package, available here, but it is still somewhat new; while the package is worth exploring, at this point, you’re probably still better off exploring the website directly. Facebook’s Data for Good project is also a rich source of geospatial data on a variety of development-related topics (such as population, infrastructure etc.). | International Conflict: The Peace Research Institute Oslo (PRIO) has archived several useful datasets related to international conflict. See this page for a list of datasets. Examples of GIS datasets on the page include the PRIO Grid, and data on oil and gas deposits, diamond deposits, gemstone deposits, coca bush, opium poppy, and cannabis cultivation. On a related note, the Uppsala Conflict Data Program offers additional geospatial datasets on international conflict and violence; see here for a list. | Economic activity and production: For disaggregated data on economic production, William Nordhaus’s G-Econ project, which contains data on economic activity for “gross cell product”, measured at 1-degree resolution across the world. Data is available for 1990, 1995, 2000, and 2005. For night-lights data (often used as a proxy for economic activity), see this page from the Earth Observation Group at the Colorado School of Mines. | Infrastructure: See GloBio for roads data, and see this page from the National Geospatial Intelligence Agency for data on ports. It’s also worth noting that some of the best sources of infrastructure data are local municipalities. For a guide to US city data, see here. For data specific to Boulder, CO, please see this Geospatial Open Data from Boulder County. | Agriculture and Environment: We’ve already mentioned several environment-related datasets, as well as IPUMS, but it’s worth highlighting IPUMS Terra if you’re interested in integrating social and environmental data in a GIS framework. The Center for Sustainability and the Global Environment at the University of Wisconsin-Madison, and CIESIN at Columbia are rich sources of information and data. | Legislative Boundaries: For those of you interested in political institutions and outcomes, the Constituency-Level Elections Archive (CLEA) is worth checking out. In particular, they have georeferenced and published (as vector data files) electoral constituency boundaries for several countries around the world. See here for this district-level GIS data. | . Curated GIS repositories and data sources compiled by GIS experts . | The Geoblacklight project | A very helpful compilation of GIS data sources published by Professor Gordon McCord at UC San Diego is available [here](https://sites.google.com/site/gordoncmccord/gis?authuser=0](https://sites.google.com/site/gordoncmccord/gis?authuser=0) | A searchable repository of GIS data from ArcGIS Hub | Collections of GIS data sources compiled by librarians at Penn and Berkeley | Some useful resources from the GIS Librarian at CU Boulder. | . Google Earth Engine Data and Resources . | The Google Earth Engine catalog is available here | A curated list of awesome earth engine resources. | A community archive of earth engine datasets | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/resources/#gis-data-sources",
+    "relUrl": "/resources/#gis-data-sources"
+  },"52": {
+    "doc": "General Resources",
+    "title": "Useful tools and packages",
+    "content": ". | https://ropensci.org/packages/geospatial/ | https://github.com/sacridini/Awesome-Geospatial | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/resources/#useful-tools-and-packages",
+    "relUrl": "/resources/#useful-tools-and-packages"
+  },"53": {
+    "doc": "Syllabus",
+    "title": "Syllabus",
+    "content": " ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/",
+    "relUrl": "/syllabus/"
+  },"54": {
+    "doc": "Syllabus",
+    "title": "Table of contents",
+    "content": ". | Introduction | Course Materials and Software | Communication and Office Hours | Topics/Modules | Readings | Assignments | Final project | Final Grades | Accomodations for Disabilities | Classroom Behavior | Honor Code | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/#table-of-contents",
+    "relUrl": "/syllabus/#table-of-contents"
+  },"55": {
+    "doc": "Syllabus",
+    "title": "Introduction",
+    "content": "A Geographic Information System (GIS) is a digital platform that facilitates the visualization and analysis of spatial data (i.e. georeferenced data that contains explicit information about where attributes of interest are located on the earth’s surface). The specialized software, analytical principles, and empirical techniques that comprise Geographic Information Systems are now used in virtually every applied discipline across the physical and natural sciences, humanities, and social sciences. Over the course of our five weeks together, we will explore some of the ways GIS is used in the social sciences. In particular, our goals for the course are to survey existing social scientific scholarship that uses spatial data and GIS methods; encourage you to formulate spatial research questions of your own, or think about how the methods and concepts used in spatial social science might enrich your existing work; and provide you with hands-on experience in working with spatial data and basic GIS methods, with a view towards building a foundational knowledge base that can serve as a starting point for more specialized future exploration. Given the short time frame of the course, we must necessarily be selective about which topics to cover. Important topics that would be included in a longer course, such as critical or speculative approaches to spatial research are omitted for lack of time, but the material we do cover will hopefully allow you to engage productively with these different traditions of scholarship in the future. In addition, while geostatistics and spatial econometrics play an important role in GIS analyses in the social sciences, our course will not explicitly cover these topics. That is because they are presented in another ITSS mini-course, Modeling Temporal and Spatial Processes in the Social Sciences, which frees up time for us to explore other material that is not covered elsewhere in the ITSS curriculum. You are encouraged to enroll in that course when it is next offered, as a complement to this one. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/#introduction",
+    "relUrl": "/syllabus/#introduction"
+  },"56": {
+    "doc": "Syllabus",
+    "title": "Course Materials and Software",
+    "content": "There are no materials for purchase. All relevant learning materials will be distributed (via this website) to you over the course of our 5-week session. We will primarily work in R Studio, which is a development environment for the open-source R programming language. We will work with a variety of GIS and data science packages/libraries, and you will be given guidance about which packages to install and load as we move through the term. If you don’t already have R and R Studio installed on your computers, please install both applications (which are free of charge) before the start of the first class. You can find instructions on how to install R and R Studio on this page; make sure to follow the instructions that correspond to your operating system. The course does not require any previous experience with R/R Studio, and if you are new to R, rest assured that it is fairly intuitive and you will be able to pick things up as we go. However, if you would like a brief primer on working in R Studio, this tutorial, which takes about 4 hours to complete, would be a good place to start. In Class 4, we will introduce you to Google Earth Engine. GEE is free for academic researchers and students, but requires registration, and this process can take up to a week. Please start the registration process well in advance of Class 4 (April 21), so that you have access to the platform by the start of that class. To register, go to the website for the Earth Engine code editor, sign in with a Gmail account, and follow the instructions. The registration process will likely go faster if you register using the Gmail account tied to your CU-Boulder email address, rather than a personal Gmail account (since this will allow Google to quickly verify that you are affiliated with an educational institution). ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/#course-materials-and-software",
+    "relUrl": "/syllabus/#course-materials-and-software"
+  },"57": {
+    "doc": "Syllabus",
+    "title": "Communication and Office Hours",
+    "content": "I am available by email, and encourage you to contact me in between classes if you have questions about the course material or problem sets/assignments. I will also hold office hours (on Zoom) on Tuesdays and Fridays from 4:00 to 5:30 pm. If you would like to meet, but these times are not compatible with your schedule, please email me, and we can set up an appointment. Please note that I do not check email during the weekends. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/#communication-and-office-hours",
+    "relUrl": "/syllabus/#communication-and-office-hours"
+  },"58": {
+    "doc": "Syllabus",
+    "title": "Topics/Modules",
+    "content": "The following is a brief outline of our five class modules. Please click on the relevant link below (or to the left) to view more details on the relevant module’s dedicated page: . | Class One (March 31): Basic concepts; spatial thinking; mapping data | Class Two (April 7): Vector data and geoprocessing | Class Three (April 14): Raster data | Class Four (April 21): Geospatial data ethics; Remote sensing and Google Earth Engine | Class Five (April 28): Research Design and Wrap Up; Presentations | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/#topicsmodules",
+    "relUrl": "/syllabus/#topicsmodules"
+  },"59": {
+    "doc": "Syllabus",
+    "title": "Readings",
+    "content": "For class-specific readings, please see the the dedicated page for the relevant class, which you can access by clicking on the tabs to the left. Please note that in some cases, optional readings are provided. In addition, during some weeks, you have considerable choice in what to read. Please read the instructions carefully, so that you can manage your time effectively. All readings are available as PDF files at this link. The password will be distributed in class; please do not share it with anyone outside the class. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/#readings",
+    "relUrl": "/syllabus/#readings"
+  },"60": {
+    "doc": "Syllabus",
+    "title": "Assignments",
+    "content": "There will be 3 small assignments over the course of the semester: . | Assignment 1: Assigned in Class 1 (3/31), Due by Class 2 (4/7) | Assignment 2: Assigned in Class 2 (4/7), Due by Class 3 (4/14) | Assignment 3: Assigned in Class 3 (4/14), Due by Class 4 (4/21) | . Assignments will be discussed in class on the day they are assigned, and you can find assignment descriptions on that class’s corresponding page by the start of class (for example, Assignment 1 will be introduced and discussed in Class 1, and you can find the Assignment 1 description on the Class 1 page at the beginning of that class). You are encouraged to submit your assignment write-ups as rendered R Markdown files (which you can send to me via email, with the assignment provided as an attachment or a link). If you are unfamiliar with R Markdown, this presentation, by Garrett Grolemund, is an excellent primer. Please also feel free to see me in Office Hours, and I can help you to get your R Markdown files set up. While you’re encouraged to use R Markdown, it is not required, and you are welcome to write up your assignments in a manner of your choosing (provided I can clearly see your code and code outputs). Assignments are graded Pass/Fail. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/#assignments",
+    "relUrl": "/syllabus/#assignments"
+  },"61": {
+    "doc": "Syllabus",
+    "title": "Final project",
+    "content": "In addition to the assignments, you must submit a final project, which is due by Wednesday, May 4, at 11:59 PM. On our final day of class (April 28), you will give a brief (~7 minute) “lightning talk” on your project-in-progress, which will allow us to all learn from each other (and perhaps help you identify opportunities for future collaboration with your classmates). See below for various project options. The goal of the projects is to give you an opportunity to make progress on a project that will yield some tangible benefit to you in the future (i.e. a publication, a lesson plan, a dataset etc.). A word of advice: The final project should be a challenging and rewarding experience, but given time constraints, it is important not to overwhelm yourself (and GIS projects have a way of quickly becoming complicated and overwhelming, even if they did not seem so at first). If you find yourself getting overwhelmed, please talk to me, and we can find a way to recast the project to keep your workload manageable. Option 1: Replication Exercise . Identify a research paper in your field of interest that uses GIS in its empirical analysis, and replicate one aspect of its GIS analysis. In your discussion, provide the code you used to replicate the published analysis, and discuss whether the results did indeed replicate as expected. If not, briefly speculate about why you think that’s the case. If you can think of a quick way to extend the paper’s analysis, please implement that extension and discuss your results. Option 2: Research Proposal . Identify a research question in your area of interest that can be addressed using GIS data, and propose a research design that will allow you to answer it. In your discussion, clearly state the question, briefly discuss how other scholars have explored it in the past, and explain how the use of GIS and spatial data will allow you to extend the research frontier. You should discuss data sources and your empirical strategy, but you are not required to do the actual research (but you are welcome to do so, or conduct a quick plausibility probe, if you wish!) . Option 3: Tutorial . Our course provides a very general overview of GIS and various geospatial tools, but scratches the surface of the many geospatial methods that could be useful to social scientists. Identify a tool or technique that we did not cover, and write a brief tutorial about how to use that tool or technique; the tutorial should be accessible to someone who has completed this mini-course. Think of this project option as an opportunity to teach yourself a method that could be useful for your research, but which we did not cover in the course (or as an opportunity to develop a lesson plan that could could enhance your teaching portfolio). Option 4: Add a GIS component to an existing working paper . Many of you will have works-in-progress (either papers or thesis/dissertation chapters) that do not currently incorporate GIS, but might benefit from doing so. Take a working project (it is fine for the working project to be co-authored with someone outside the class), and add a GIS component to it. If your idea for how to use GIS in the working paper cannot feasibly be implemented in the time you have available, write up the “methods” section of the paper that describes the data and methods you will use. If the data requires an original data collection effort, please describe your strategy for collecting this data. Please submit the entire paper, with the GIS component embedded within it. Option 5: Create (or propose) a new dataset . While taking this course, and exploring the various geospatial datasets that are available, you may develop ideas about new datasets that could be useful to your scholarly community, and which might incorporate variables that are created using GIS methods or tools. Create (or, if you do not have sufficient time, propose) a novel dataset along these lines. In your writeup, discuss how you created it (or would go about creating it, if it is a proposal), and explain what sorts of questions such a dataset could help to answer, and how it would extend the research frontier in your field. Option 6: Project of your choice . You are welcome to define and create a project of your choice, if you have an idea that does not fall within these options. If you decide to do so, please run your idea by me beforehand. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/#final-project",
+    "relUrl": "/syllabus/#final-project"
+  },"62": {
+    "doc": "Syllabus",
+    "title": "Final Grades",
+    "content": "Final grades will be determined as follows. | Assignments (30%) | Attendance and Class participation (30%) | Final Project and Lightning Talk Presentation (40%) | . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/#final-grades",
+    "relUrl": "/syllabus/#final-grades"
+  },"63": {
+    "doc": "Syllabus",
+    "title": "Accomodations for Disabilities",
+    "content": "“If you need accommodations for a disability, it is recommended that you submit an accommodation letter from Disability Services. Disability Services determines accommodations based on documented disabilities in the academic environment. Information on requesting accommodations is located on the Disability Services website. Contact Disability Services at 303-492-8671 or dsinfo@colorado.edu for further assistance. If you have a temporary medical condition or injury, see Temporary Medical Conditions under the Students tab on the Disability Services website.” . Please note that no one is required to self-disclose their disabilities. If you have a disability that is not recognized by Disability Services, please let me know how I can best support your learning. ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/#accomodations-for-disabilities",
+    "relUrl": "/syllabus/#accomodations-for-disabilities"
+  },"64": {
+    "doc": "Syllabus",
+    "title": "Classroom Behavior",
+    "content": "“Students and faculty each have responsibility for maintaining an appropriate learning environment. Those who fail to adhere to such behavioral standards may be subject to discipline. Professional courtesy and sensitivity are especially important with respect to individuals and topics dealing with race, color, national origin, sex, pregnancy, age, disability, creed, religion, sexual orientation, gender identity, gender expression, veteran status, political affiliation or political philosophy. Class rosters are provided to the instructor with the student’s legal name. We will gladly honor your request to address you by an alternate name or gender pronoun. Please advise us of this preference early in the semester so that we may make appropriate changes to our records. For more information, see the policies on classroom behavior and the Student Code of Conduct.” . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/#classroom-behavior",
+    "relUrl": "/syllabus/#classroom-behavior"
+  },"65": {
+    "doc": "Syllabus",
+    "title": "Honor Code",
+    "content": "“All students enrolled in a University of Colorado Boulder course are responsible for knowing and adhering to the Honor Code. Violations of the policy may include: plagiarism, cheating, fabrication, lying, bribery, threat, unauthorized access to academic materials, clicker fraud, submitting the same or similar work in more than one course without permission from all course instructors involved, and aiding academic dishonesty. All incidents of academic misconduct will be reported to the Honor Code (honor@colorado.edu; 303-492-5550). Students who are found responsible for violating the academic integrity policy will be subject to nonacademic sanctions from the Honor Code as well as academic sanctions from the faculty member. Additional information regarding the Honor Code academic integrity policy can be found at the Honor Code Office website.” . ",
+    "url": "http://localhost:4000/ARSC5040_GIS/syllabus/#honor-code",
+    "relUrl": "/syllabus/#honor-code"
+  }
+}

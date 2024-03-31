@@ -1,0 +1,495 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=F, warning=F, results=F}
+library(WDI)
+library(sf)
+library(tmap)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(tidyverse)
+library(tidycensus)
+library(raster)
+library(exactextractr)
+library(terra)
+```
+
+```{r, echo=F, warning=F, message=F}
+library(DT) 
+```
+
+```{r, echo=F, warning=F, message=F}
+tmap_mode("plot")
+```
+
+# Introduction
+
+In the course of working on a GIS project, you may have to perform certain tasks multiple times. For example, you may want to implement a spatial join (a procedure we learned about last class) between a point layer and several different polygon datasets that reflect different geographic scales. Or, you may want to quickly make multiple maps, to get a sense of how different variables are distributed across space before beginning a more in-depth study. 
+
+Dedicated GIS applications like ArcGIS and QGIS have built-in scripting windows that allow users to write Python scripts that can automate repetitive procedures. In addition, for users unfamiliar with Python, ArcGIS provides tools like Model Builder, and embeds batch-processing functions embedded in its menu-bused interface. 
+
+In this lesson, we'll become familiar with some basic scripting tools that can help you to automate some of the tasks we have already covered in the course with a minimal amount of programming. These tools will come in handy if you decide to work with GIS in a longer-term project and you want to save time on your geoprocessing tasks. 
+
+# Functions and Iteration: Example
+
+Before diving into some GIS-specific examples, let's become familiar with some basic concepts and processes using a simple example. Let's say you have a large collection of temperature data, measured in Fahrenheit, and you want to convert these data to Celsius. Recall that the formula to convert between Fahrenheit and Celsius is as follows: 
+
+```{r}
+# fahrenheit to Celsius formula, where "F" is fahrenheit input
+(F-32)*(5/9)
+```
+
+At its most basic level, R is a calculator; if for example, one of our Fahrenheit measurements is 55 degrees; we can convert this to Celsius by plugging 55 into the conversion formula:
+
+```{r}
+# Converts 55 degrees fahrenheit to Celsius
+(55-32)*(5/9)
+```
+
+This is easy enough, but if we have a large amount of temperature data that requires processing, we wouldn't want to carry out this calculation for each measurement in our data collection. The first step in allowing us to carry out this conversion operation at scale is to write a function, which is simply a programming construct that takes a set of inputs (also known as arguments), manipulates those inputs/arguments in a specific way (the body of the function), and returns an output that is the product of how those inputs are manipulated in the body of the function. It is much like a recipe, where the recipe's ingredients are analogous to a function's inputs, the instructions about how to combine and process those ingredients are analogous to the body of the function, and the end product of the recipe (for example, a cake) is analogous to the function's output. 
+
+Let's see how we can wrap the Fahrenheit-Celsius formula above into a function:
+
+```{r}
+fahrenheit_to_celsius_converter<-function(fahrenheit_input){
+  celsius_output<-(fahrenheit_input-32)*(5/9)
+  return(celsius_output)
+}
+```
+
+Let's unpack the code above, which we used to create our function:
+
+* We declare that we are creating a new function with the word ```function```; within the parenthesis after ```function```, we specify the function's argument(s). Here, the function's argument is an input named ```fahrenheit_input```. The name of the argument(s) is arbitrary, and can be anything you like; ideally, its name should be informed by relevant context. Here, the argument/input to the function is a temperature value expressed in degrees Fahrenheit, so the name "fahrenheit_input" describes the nature of this input. 
+* After enclosing the function's arguments within parentheses, we print a right-facing curly brace ```{```, and then define the body of the function (i.e. the recipe), which specifies how we want to transform this input. In particular, we take ```fahrenheit_input```, subtract 32, and then multiply by 5/9, which transform the input to the celsius temperature scale. We'll tell R to assign this transformed value to a new object, named ```celsius_output```. 
+* In the function's final line, ```return(celsius_output)```, we specify the value we want the function to return. Here, we are saying that we want the function to return the value that was assigned to ```celsius_output```. We then close the function by typing a left-facing curly brace below the return statement ```}```.
+* Just as we can assign data or visualizations to objects that allow us to subsequently retrieve the outputs of our code, so too with functions. Here, we'll assign the function we have just return to an object named ```fahrenheit_to_celsius_converter```. 
+
+After running that code, we can use the newly created ```fahrenheit_to_celsius``` function to perform our Fahrenheit to Celsius transformations. Let's say we have a Fahrenheit value of 68, and want to transform it to Celsius: 
+
+```{r}
+fahrenheit_to_celsius_converter(fahrenheit_input=68)
+```
+
+Above, we passed the argument "fahrenheit_input=68" to the ```fahrenheit_to_celsius_converter``` function that we created; the function then took this value (68), plugged it into "fahrenheit_input" within the function and assigned the resulting value to "celsius_output"; it then returned the value of "celsius_output" (20) back to us. 
+
+Let's try another one: 
+
+```{r}
+fahrenheit_to_celsius_converter(fahrenheit_input=22)
+```
+
+In short, we can specify any value for the "fahrenheit_input" argument; this value will be substituted for "fahrenheit_input" in the expression ```celsius_output<-(fahrenheit_input-32)*(5/9)```, after which the value of ```celsius_output``` will be returned to us. 
+
+Using this newly created function helps us to avoid manually converting each of our temperature values from the Fahrenheit scale to the Celsius scale; instead of repeating the calculation over and over manually, we could simply plug our Fahrenheit temperature values into the function, and let the function carry out the calculation for us. However, it is still time-consuming to plug our Fahrenheit values into the function one-by-one. For example, let's say we have a vector of Fahrenheit temperature values; below, we'll assign these values to an object named ```fahrenheit_input_vector```: 
+
+```{r}
+fahrenheit_input_vector<-c(45.6, 95.9, 67.8, 43)
+```
+
+If we wanted to convert all of these Fahrenheit values to the Celsius scale, we could do so individually, i.e. 
+
+```{r}
+fahrenheit_to_celsius_converter(fahrenheit_input=45.6)
+```
+
+And so on. 
+
+However, we can also iteratively apply our function to all of these vector elements, and deposit the transformed results into a new vector; we'll assign this new vector to an object named ```celsius_outputs_vector```:
+
+```{r}
+celsius_outputs_vector<-map_dbl(fahrenheit_input_vector, fahrenheit_to_celsius_converter)
+```
+
+The code above passes two elements to the ```map_dbl()``` function, which is a function that can be used to iteratively pass multiple arguments to a function, and return the results as a numeric vector. In the case above, we take ```fahrenheit_input_vector``` (i.e. a vector with the numbers 45.6, 95.9, 67.8, 43), and run each of these numbers through the ```fahrenheit_converter()``` function, and sequentially deposit the transformed result to the newly created ```celsius_outputs_vector()``` object, which looks as follows:
+
+```{r}
+celsius_outputs_vector
+```
+
+In short, the code that reads ```celsius_outputs_vector<-map_dbl(fahrenheit_input_vector, fahrenheit_converter)``` did the following:
+
+1. Pass 45.6 (the first element in the input vector, ```fahrenheit_input_vector```) through the ```fahrenheit_converter()``` function, and place the output (7.555556) as the first element in a new vector of transformed values, named ```celsius_outputs_vector```.
+2. Pass 95.9 (the second element in the input vector, ```fahrenheit_input_vector```) through the ```fahrenheit_converter()``` function, and deposit the output (35.500000) as the second element in ```celsius_outputs_vector```. 
+3. Pass 67.8
+4. Pass 43
+
+
+
+
+In programming languages, functions are typically applied to multiple inputs in an iterative fashion using a construct known as a for-loop, which some of you may already be familiar with. R users also frequently use specialized functions (instead of for-loops) to iterate over elements; this is often faster, or at the very least, makes R scripts more readable. One family of these iterative functions is the "Apply" family of functions. A more recent set of functions that facilitate iteration is part of the *tidyverse*, and is found within the [purrr](https://purrr.tidyverse.org/) package. These functions known as ```map()``` functions, and we will use them here to iteratively apply our functions to multiple inputs (the "map" label might be confusing when working in a GIS setting where you might be making actual maps, i.e. spatial visualizations; however, it should be clear from the context whether we are referring to ```map()``` functions within *purrr*, or to actual maps). 
+
+
+
+```{r}
+celsius_outputs_vector<-map_dbl(fahrenheit_input_vector, fahrenheit_to_celsius_converter)
+```
+
+```{r}
+celsius_outputs_vector
+```
+
+```{r}
+temperature_conversion_dataset<-cbind(fahrenheit_input_vector, celsius_outputs_vector)
+```
+
+```{r}
+temperature_conversion_dataset
+```
+
+```{r}
+celsius_outputs<-map(fahrenheit_input_vector, fahrenheit_to_celsius_converter)
+```
+
+```{r}
+celsius_outputs
+```
+
+```{r}
+celsius_outputs[[2]]
+```
+
+# Scripting tools and spatial joins
+
+```{r}
+CO_aurora_policestops<-read_csv("https://www.dropbox.com/s/u7xqa7dc34hlsfp/co_aurora_2020_04_01.csv?dl=1")
+```
+
+## Calculating stops for census districts
+
+```{r}
+# Define spatial object
+co_aurora_sf<-CO_aurora_policestops %>% 
+                  drop_na(lng) %>% 
+                  st_as_sf(coords=c("lng", "lat"), crs=4326)
+```
+
+```{r}
+# Project "co_aurora_sf"
+co_aurora_sf_project<-co_aurora_sf %>% st_transform(2232)
+```
+
+
+```{r, message=F, warning=F, results=F}
+CO_tracts<-get_decennial(geography = "tract",
+                         state="CO",
+                         variables = "P001001",
+                         year = 2010,
+                         geometry=TRUE) %>% 
+  st_transform(2232)
+```
+
+```{r}
+# map points
+tm_shape(CO_tracts)+
+  tm_polygons()+
+tm_shape(co_aurora_sf_project)+
+  tm_dots()
+```
+
+```{r}
+# execute join
+stops_tracts_join<-st_join(co_aurora_sf_project, CO_tracts)
+```
+
+```{r}
+# extract stops/tract
+stop_per_tract<-stops_tracts_join %>% 
+  group_by(GEOID, NAME) %>% 
+  summarize(n())
+```
+
+```{r}
+stop_per_tract
+```
+
+```{r}
+stop_per_tract_final<-stop_per_tract %>% 
+                      rename(traffic_stops="n()")
+```
+
+## Write a function that generalizes this workflow for any geography
+
+```{r}
+traffic_stop_geography<-function(desired_geography){
+
+geography_extract<-get_decennial(geography = desired_geography,
+                                   state="CO",
+                                   variables = "P001001",
+                                   year = 2010,
+                                   geometry=TRUE) %>% 
+                          st_transform(2232)
+  
+stop_geography_join<-st_join(co_aurora_sf_project, geography_extract)
+
+stops_per_geography<-stop_geography_join %>% 
+                            group_by(GEOID, NAME) %>% 
+                            summarize(n()) %>% 
+                            rename(traffic_stops="n()")
+
+stops_per_geography_df<-as.data.frame(stops_per_geography) %>% 
+                          dplyr::select(-geometry)
+
+return(stops_per_geography_df)
+}
+```
+
+```{r}
+county_subdivision_stops<-traffic_stop_geography(desired_geography="county subdivision")
+```
+
+## Iteratively apply the function to multiple input geographies
+
+```{r}
+desired_geography_inputs<-c("county", "tract", "zcta")
+```
+
+```{r}
+geography_stop_list<-map(desired_geography_inputs, traffic_stop_geography)
+```
+
+```{r}
+geography_stop_list[[1]]
+```
+
+```{r}
+traffic_stops_tract<-geography_stop_list[[2]]
+```
+
+```{r}
+traffic_stops_tract
+```
+
+```{r}
+geography_stop_list %>% pluck(3)
+```
+
+```{r}
+names(geography_stop_list)<-desired_geography_inputs
+```
+
+```{r}
+geography_stop_list
+```
+
+```{r}
+geography_stop_list[["county"]]
+```
+
+```{r}
+geography_stop_list[[1]]
+```
+
+## Iteratively write out the generated CSV files to disk
+
+```{r}
+output_csv<-function(files, name){
+  filename<-paste0(name, ".csv")
+  write_csv(files, filename)
+}
+```
+
+```{r}
+# Test function
+output_csv(county_subdivision_stops, "county_subdivision")
+```
+
+
+```{r}
+walk2(geography_stop_list, desired_geography_inputs, .f=output_csv)
+```
+
+# Automating Map Creation
+
+```{r}
+country_boundaries<-ne_countries(scale="medium", returnclass="sf") %>% 
+                       filter(iso_a3 !="ATA")
+```
+
+```{r}
+tm_shape(country_boundaries)+
+  tm_polygons()
+```
+
+```{r}
+trade_gdp_2010_2018<-WDI(country="all", # specifies we want data for all countries available
+                                indicator="NE.TRD.GNFS.ZS", # specifies code for desired indicator
+                                start=2010, # Start year for data series
+                                end=2018, # End year for data series
+                                extra=T) # returns
+```
+
+
+```{r}
+trade_gdp_2015<-
+  trade_gdp_2010_2018 %>%  # Establishes object to be modified
+  filter(year=="2015") %>% # Subsets observations where the "year" variable equals "2015"
+  rename(trade_gdp_2015=NE.TRD.GNFS.ZS)
+```
+
+
+```{r}
+trade_2015_spatial<-full_join(country_boundaries, trade_gdp_2015,
+                                    by=c("iso_a3"="iso3c"))
+```
+
+```{r}
+tm_shape(trade_2015_spatial)+
+  tm_polygons(col="trade_gdp_2015",
+              n=7,
+              style="quantile",
+              palette="YlOrBr",
+              title="Trade as a % of GDP,\n2015",
+              textNA="No Data")+
+    tm_layout(legend.outside=T,
+              legend.outside.position = "bottom",
+              main.title="Crossnational Variation in Commercial Integration, 2015",
+              main.title.size=1,
+              main.title.position="center",
+              inner.margins=c(0.06,0.10,0.10,0.08), # Sets margins to create whitespace
+              frame=FALSE,
+              attr.outside = TRUE)+ # Places credits section outside map
+   tm_credits("Map Author: Aditya Ranganath\nData Source: World Bank\nDevelopment Indicators (WDI)", position=c(0.78,0), size=0.38) # Specifies content, position, size of credits
+```
+
+
+```{r}
+wdi_map_maker<-function(wdi_variable_code, start_year, end_year, 
+                        legend.title, main_map_title){
+country_boundaries<-ne_countries(scale="medium", returnclass="sf") %>% 
+                       filter(iso_a3 !="ATA")
+  
+wdi_extract<-WDI(country="all",
+              indicator=wdi_variable_code,
+              start=start_year,
+              end=end_year,
+              extra=T)
+
+spatial_object_tomap<-inner_join(country_boundaries, wdi_extract,
+                                    by=c("iso_a3"="iso3c"))
+final_map<-tm_shape(spatial_object_tomap)+
+  tm_polygons(col=wdi_variable_code,
+              n=7,
+              style="quantile",
+              palette="YlOrBr",
+              title=legend.title,
+              textNA="No Data")+
+    tm_layout(legend.outside=T,
+              legend.outside.position = "bottom",
+              main.title=main_map_title,
+              main.title.size=1,
+              main.title.position="center",
+              inner.margins=c(0.06,0.10,0.10,0.08), # Sets margins to create whitespace
+              frame=FALSE,
+              attr.outside = TRUE)+ # Places credits section outside map
+   tm_credits("Map Author: Aditya Ranganath\nData Source: World Bank\nDevelopment Indicators (WDI)", position=c(0.78,0), size=0.38) # Specifies content, position, size of credits
+return(final_map)
+}
+```
+
+
+```{r}
+wdi_map_maker(wdi_variable_code="BG.GSR.NFSV.GD.ZS", start_year=2017, end_year=2017, 
+                        legend.title="Services Trade (% of GDP)", main_map_title="Service Market Integration, 2017")
+```
+
+
+```{r}
+wdi_map_maker(wdi_variable_code="GC.TAX.TOTL.GD.ZS", start_year=2017, end_year=2017, 
+                        legend.title="Taxes (% of GDP)", main_map_title="Government Taxes as a Share of GDP, 2017")
+```
+
+
+```{r}
+input_list<-list(wdi_variable_code=c("BG.GSR.NFSV.GD.ZS", "GC.TAX.TOTL.GD.ZS"),
+                 start_year=c(2017, 2017),
+                 end_year=c(2017, 2017),
+                 legend.title=c("Services Trade (% of GDP)", "Taxes (%GDP)"),
+                 main_map_title=c("Service Market Integration, 2017", "Government Taxes as a Share of GDP, 2017")) 
+```
+
+```{r}
+map_list<-pmap(input_list, wdi_map_maker)
+```
+
+```{r}
+map_list
+```
+
+
+```{r}
+map_list[[1]]
+```
+
+```{r}
+map_list[[2]]
+```
+
+```{r}
+names(map_list)<-input_list$wdi_variable_code
+```
+
+```{r}
+map_list
+```
+
+```{r}
+map_list[["BG.GSR.NFSV.GD.ZS"]]
+```
+
+```{r}
+map_list[["GC.TAX.TOTL.GD.ZS"]]
+```
+
+```{r}
+map_list %>% pluck("GC.TAX.TOTL.GD.ZS")
+```
+
+## Functions and iteration with raster data
+
+```{r, echo=-1}
+setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class4/scripting_data")
+
+# Read in NYC 2019 Raster
+nyc_pop_2019<-raster("nyc_2019_pop.tif")
+
+# Read in NYC subway stop data
+nyc_subway_stops<-st_read("stops_nyc_subway_may2019.shp")
+
+# Read in NYC borough data
+nyc_boroughs<-st_read("nyu_2451_34490.shp")
+
+# Create 500m subway buffers
+nyc_subway_500m_buffer<-st_buffer(nyc_subway_stops, 1640.42)
+
+# Dissolve buffers
+nyc_subway_500m_buffer_dissolved<-nyc_subway_500m_buffer %>% 
+                                    group_by() %>% 
+                                    summarise()
+
+# Transform CRS of "nyc_subway_500m_buffer_dissolved" to match "nyc_pop_2019"
+nyc_subway_500m_buffer_dissolved_4326<-nyc_subway_500m_buffer_dissolved %>% 
+                                        st_transform(4326)
+
+# Calculate population in buffer zone ("nyc_subway_500m_buffer_dissolved_4326") based on "nyc_2019_population" raster
+nyc_pop_within_buffer<-exact_extract(nyc_pop_2019, nyc_subway_500m_buffer_dissolved_4326, fun="sum")
+
+# Extract total NYC population
+nyc_borough_4326<-nyc_boroughs %>% st_transform(4326)
+nyc_pop<-sum(exact_extract(nyc_pop_2019, nyc_borough_4326, fun="sum" ))
+
+# Percentage Inside Buffer
+pct_inside<-(nyc_pop_within_buffer/nyc_pop)*100
+
+# Calculate Percentage Outside Buffer
+pct_outside_buffer<-100-pct_inside
+
+# Print "pct_outside_buffer"
+pct_outside_buffer
+```
+
+
+
+
+
+
