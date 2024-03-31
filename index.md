@@ -7,10 +7,10 @@ seo:
   name: Just the Class
 ---
 
-# ARSC 5040: GIS Methods and Tools
+# ARSC 5040: GIS Methods and Tools Mini-Course
 
-Spring 2022, University of Colorado Boulder\
-Thursdays, 3:00-5:30 PM MST
+Spring 2024 (April 4-May 2), University of Colorado Boulder\
+Thursdays, 1:00-3:30 PM MST
 
 ## Instructor
 
