@@ -43,8 +43,8 @@ MODIStsp(
   out_folder = "vegetation",
   selprod = "Vegetation_Indexes_16Days_1Km (M*D13A2)",
   bandsel = "NDVI",
-  user = "aranganath24_gis",
-  password = "EarthdataCUB2022",
+  user = "aranganath24",
+  password = "EarthdataCUB2024%",
   start_date = "2020.07.03",
   end_date = "2020.07.03",
   output_proj = 4326,
@@ -55,3 +55,6 @@ MODIStsp(
 )
 
 
+
+
+https://urs.earthdata.nasa.gov/users/new

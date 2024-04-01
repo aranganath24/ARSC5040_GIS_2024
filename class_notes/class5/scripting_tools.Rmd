@@ -1,7 +1,7 @@
 ---
 title: "Scripting Tools for GIS"
 author: "Aditya Ranganath"
-date: "4/10/2022"
+date: "4/1/2024"
 output: 
   html_document:
     toc: yes
@@ -33,6 +33,10 @@ library(DT)
 
 ```{r, echo=F, warning=F, message=F}
 tmap_mode("plot")
+```
+
+```{r}
+sf_use_s2(use_s2 = F)
 ```
 
 # Introduction
@@ -645,7 +649,7 @@ trade_gdp_2015<-WDI(country="all",
                rename(trade_gdp_2015=NE.TRD.GNFS.ZS)
 
 # Joins "trade_gdp_2015" object to "country_boundaries" object, based on 3-digit ISO code, and assigns joined dataset to new object named "trade_2015_spatial"
-trade_2015_spatial<-full_join(country_boundaries, trade_gdp_2015,
+trade_2015_spatial<-inner_join(country_boundaries, trade_gdp_2015,
                                     by=c("iso_a3"="iso3c"))
 
 # Uses tmap package to create map based on "trade_gdp_2015" column in "trade_2015_spatial" object and assigns result to object named "trade_2015"
@@ -684,7 +688,7 @@ trade_gdp_2015<-WDI(country="all",
                rename(trade_gdp_2015=NE.TRD.GNFS.ZS)
 
 # Joins "trade_gdp_2015" object to "country_boundaries" object, based on 3-digit ISO code, and assigns joined dataset to new object named "trade_2015_spatial"
-trade_2015_spatial<-full_join(country_boundaries, trade_gdp_2015,
+trade_2015_spatial<-inner_join(country_boundaries, trade_gdp_2015,
                                     by=c("iso_a3"="iso3c"))
 
 # Uses tmap package to create map based on "trade_gdp_2015" column in "trade_2015_spatial" object and assigns result to object named "trade_2015"

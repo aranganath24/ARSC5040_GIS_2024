@@ -31,7 +31,7 @@ We will primarily work in R Studio, which is a development environment for the o
 
 If you don't already have R and R Studio installed on your computers, please install both applications (which are free of charge) before the start of the first class. You can find instructions on how to install R and R Studio on this [page](https://datacarpentry.org/r-socialsci/setup.html); make sure to follow the instructions that correspond to your operating system. The course does not require any previous experience with R/R Studio, and if you are new to R, rest assured that it is fairly intuitive and you will be able to pick things up as we go. However, if you would like a brief primer on working in R Studio, this [tutorial](https://datacarpentry.org/r-intro-geospatial/), which takes about 4 hours to complete, would be a good place to start. 
 
-In Class 4, we will introduce you to [Google Earth Engine](https://earthengine.google.com/). GEE is free for academic researchers and students, but requires registration, and this process can take up to a week. Please start the registration process well in advance of Class 4 (April 25), so that you have access to the platform by the start of that class. To register, go to the website for the Earth Engine [code editor](https://code.earthengine.google.com/), sign in with a Gmail account, and follow the instructions. The registration process will likely go faster if you register using the Gmail account tied to your CU-Boulder email address, rather than a personal Gmail account (since this will allow Google to quickly verify that you are affiliated with an educational institution).
+In Class 4, we will briefly introduce you to [Google Earth Engine](https://earthengine.google.com/). GEE is free for academic researchers and students, but requires registration, and this process can take up to a week. Please start the registration process well in advance of Class 4 (April 25), so that you have access to the platform by the start of that class. To register, go to the website for the Earth Engine [code editor](https://code.earthengine.google.com/), sign in with a Gmail account, and follow the instructions. The registration process will likely go faster if you register using the Gmail account tied to your CU-Boulder email address, rather than a personal Gmail account (since this will allow Google to quickly verify that you are affiliated with an educational institution).
 
 ## Communication and Office Hours
 
@@ -44,8 +44,8 @@ The following is a brief outline of our five class modules. Please click on the 
 * [Class One](class1.md) (April 4): Basic concepts; spatial thinking; mapping data
 * [Class Two](class2.md) (April 11): Vector data and geoprocessing
 * [Class Three](class3.md) (April 18): Raster data
-* [Class Four](class4.md) (April 25): Geospatial data ethics; Remote sensing and Google Earth Engine
-* [Class Five](class5.md) (May 2): Research Design and Wrap Up; Presentations
+* [Class Four](class4.md) (April 25): Geospatial data ethics; Geospatial data management; Remote sensing and Google Earth Engine
+* [Class Five](class5.md) (May 2): Research Design; GIS scripting; Presentations and Wrap-Up
 
 ## Readings
 
