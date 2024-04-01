@@ -1,7 +1,7 @@
 ---
 title: "Raster Visualization and Analysis"
 author: "Aditya Ranganath"
-date: "4/12/2022"
+date: "3/31/2024"
 output: 
   html_document:
     toc: yes
@@ -29,6 +29,11 @@ library(tmap)
 
 ```{r, echo=F, warning=F}
 library(DT) 
+```
+
+
+```{r}
+sf_use_s2(use_s2 = F)
 ```
 
 # Introduction
@@ -104,7 +109,7 @@ Now that we've created the data frame, we can generate a histogram that visualiz
 # Plot histogram of cell-level population
 ggplot()+
   geom_histogram(data=nyc_2019_population_df, 
-                 aes(nyc_2019_pop), 
+                 aes(usa_ppp_2019), 
                  bins=10)
 ```
 
@@ -285,7 +290,7 @@ tm_shape(nyc_boroughs_4326)+
 
 As always, we can open up the attribute table of a vector layer by passing the name of the object to the ```View()``` function. For example:
 
-```{r}
+```{r, eval=F}
 # Opens attribute table of "nyc_boroughs_4326" in R Studio Data Viewer
 View(nyc_boroughs_4326)
 ```
@@ -530,7 +535,7 @@ nyc_boroughs_population_zonal
 
 To make it easier to interpret these numbers, let's remind ourselves about what the attribute table for ```nyc_boroughs_4326``` looks like:
 
-```{r}
+```{r, eval=F}
 View(nyc_boroughs_4326)
 ```
 
@@ -554,7 +559,7 @@ If we want to add this information to the ```nyc_boroughs_4326``` dataset, we ca
 nyc_2019_boroughs_population<-cbind(nyc_boroughs_4326, nyc_boroughs_population_zonal )
 ```
 
-```{r}
+```{r, eval=F}
 View(nyc_2019_boroughs_population)
 ```
 
