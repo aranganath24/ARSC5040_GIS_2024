@@ -1,7 +1,7 @@
 ---
 title: "Geoprocessing and Vector Data Analysis"
 author: "Aditya Ranganath"
-date: "3/31/2022"
+date: "3/31/2024"
 output:
   html_document:
     toc: yes
@@ -28,6 +28,10 @@ library(units)
 
 ```{r, echo=F, warning=F}
 library(DT) 
+```
+
+```{r}
+sf_use_s2(use_s2 = F)
 ```
 
 # Layering Data 
@@ -57,7 +61,7 @@ worldbank_project_locations<-read_csv("https://www.dropbox.com/sh/6yue5opad2uhqv
 
 Go ahead and open up the dataset by passing the name of the object tin the data viewer, and have a look:
 
-```{r}
+```{r, eval=FALSE}
 # Opens "worldbank_project_locations" in data viewer
 View(worldbank_project_locations)
 ```
@@ -231,7 +235,7 @@ Malawi_constituencies<-st_read("MAA.shp")
 
 Go ahead and view this spatial dataset's attribute table, using the ```View()``` function:
 
-```{r}
+```{r, eval=F}
 # opens attribute table of "Malawi_constituencies"
 View(Malawi_constituencies)
 ```
@@ -325,7 +329,7 @@ malawi_projects_constituencies_spatialjoin<-st_join(malawi_foreignaid_sites_proj
 
 Let's see what this dataset looks like:
 
-```{r}
+```{r, eval=F}
 View(malawi_projects_constituencies_spatialjoin)
 ```
 
@@ -351,7 +355,7 @@ malawi_constituencies_projects_spatialjoin<-st_join(Malawi_constituencies_projec
 
 Let's open up the dataset, and note the difference compared to ```malawi_projects_constituencies_spatialjoin```:
 
-```{r}
+```{r, eval=F}
 View(malawi_constituencies_projects_spatialjoin)
 ```
 
@@ -381,7 +385,7 @@ project_sites_per_constituency<-malawi_projects_constituencies_spatialjoin %>%
 
 And, when we view this newly generated dataset, it looks something like this:
 
-```{r}
+```{r, eval=F}
 View(project_sites_per_constituency)
 ```
 
@@ -418,7 +422,7 @@ Now, let's implement the table join (using "ID" as the join field), and assign t
 malawi_constituencies_projects_spatial<-full_join(Malawi_constituencies_projected, project_sites_per_constituency_df, by="ID")
 ```
 
-```{r}
+```{r, eval=F}
 View(malawi_constituencies_projects_spatial)
 ```
 
@@ -446,7 +450,7 @@ malawi_constituencies_projects_spatial<-malawi_constituencies_projects_spatial %
 
 Now, if we open up the dataset, everything should look in order:
 
-```{r}
+```{r, eval=F}
 View(malawi_constituencies_projects_spatial)
 ```
 
@@ -623,7 +627,7 @@ continental_usa_dissolve<-continental_USA_regions %>%
 
 Let's take a look at the dataset:
 
-```{r}
+```{r, eval=F}
 # Views attribute table of regional dataset
 View(continental_usa_dissolve)
 ```
@@ -946,7 +950,7 @@ colnames(boulder_hospital_distancematrix)<-boulder_hospitals$NAME
 
 Now, let's take a look at our distance Matrix, which provides information on the pairwise Euclidean distances between all of the hospitals in the dataset. 
 
-```{r}
+```{r, eval=F}
 View(boulder_hospital_distancematrix)
 ```
 
@@ -1014,7 +1018,7 @@ colnames(boulder_hospital_firstation_distancematrix)<-boulder_fire_stations_proj
 
 Now, let's open up our matrix: 
 
-```{r}
+```{r, eval=F}
 View(boulder_hospital_firstation_distancematrix)
 ```
 
@@ -1066,7 +1070,7 @@ FIRESTATION_closest_hospital<-as.data.frame(FIRESTATION_closest_hospital)
 
 Let's view these datasets:
 
-```{r}
+```{r, eval=F}
 View(HOSPITAL_closest_fire_station)
 ```
 
@@ -1082,7 +1086,7 @@ HOSPITAL_closest_fire_station %>% datatable(extensions=c("Scroller", "FixedColum
 ))
 ```
 
-```{r}
+```{r, eval=F}
 View(FIRESTATION_closest_hospital)
 ```
 
@@ -1295,8 +1299,4 @@ fire_hospital_intersection_area_sqmiles
 We can see that 15.83 sq miles within Boulder County is within 1 mile of both a fire station AND a hospital
 
 As an exercise, see if you can figure out the area within Boulder County that is within 1 mile of a fire station OR a hospital. 
-
-```{r}
-
-```
 
