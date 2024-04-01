@@ -60,7 +60,7 @@ doi: [https://doi.org/10.1177/0738894216659843](https://doi.org/10.1177/07388942
 
 ## Assignment
 
-Choose **ONE** of the following options. Please make sure to document your steps (i.e. comment your code), and provide any relevant maps or datasets you create. 
+Choose **ONE** of the following options, and submit the assignment before the start of Class 4 (April 25). Please make sure to document your steps (i.e. comment your code), and provide any relevant maps or datasets you create. 
 
 *Option 1*
 

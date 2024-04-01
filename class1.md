@@ -49,7 +49,7 @@ doi: [https://doi.org/10.1146/annurev-polisci-031710-112604](https://doi.org/10.
 
 ## Assignment
 
-Due by the beginning of next class (April 7) via email. 
+Due by the beginning of next class (April 11) via email. 
 
 Please make a choropleth map that shows how a variable you are interested in varies across a given set of geographic units. You are welcome to hew closely to the class tutorial, and map a World Bank WDI variable of your choice. However, you are also encouraged to move in different directions, and create a choropleth map that is relevant to one of your research interests. If you are looking for a spatial dataset to which you can join the tabular data you want to map, feel free to let me know and I can try to help you. 
 

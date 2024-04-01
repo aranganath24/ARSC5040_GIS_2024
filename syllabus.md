@@ -45,13 +45,13 @@ The following is a brief outline of our five class modules. Please click on the 
 * [Class Two](class2.md) (April 11): Vector data and geoprocessing
 * [Class Three](class3.md) (April 18): Raster data
 * [Class Four](class4.md) (April 25): Geospatial data ethics; Remote sensing and Google Earth Engine
-* [Class Five](class5.md) (April 2): Research Design and Wrap Up; Presentations
+* [Class Five](class5.md) (May 2): Research Design and Wrap Up; Presentations
 
 ## Readings
 
 For class-specific readings, please see the the dedicated page for the relevant class, which you can access by clicking on the tabs to the left. Please note that in some cases, optional readings are provided. In addition, during some weeks, you have considerable choice in what to read. Please read the instructions carefully, so that you can manage your time effectively. 
 
-All readings are available as PDF files at this [link](https://www.dropbox.com/sh/0a19e5h4np8pdkv/AADPipaDofb8GQsXPeQr63APa?dl=0). The password will be distributed in class; please do not share it with anyone outside the class. 
+All readings are available as PDF files at this [link](https://www.dropbox.com/scl/fo/iufgn8r1hmwnosab5ktl0/h?rlkey=nevfpzz7rlnnpr56ms42smbnb&dl=0). The password will be distributed in class; please do not share it with anyone outside the class. 
 
 ## Assignments
 

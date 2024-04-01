@@ -61,7 +61,7 @@ doi: [https://doi.org/10.1017/S0003055413000464](https://doi.org/10.1017/S000305
 
 ## Assignment
 
-Please choose **one** of the options below and turn it in before the start of Class 3. 
+Please choose **one** of the options below and turn it in before the start of Class 3 (April 18th). 
 
 *Option 1*
 

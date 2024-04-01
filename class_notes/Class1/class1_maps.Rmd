@@ -1,7 +1,7 @@
 ---
 title: "Choropleth Maps in R Studio"
 author: "Aditya Ranganath"
-date: "3/26/2022"
+date: "3/31/2024"
 output:
   html_document:
     toc: yes
@@ -73,6 +73,10 @@ Note that the codeblocks in this tutorial usually have comments, prefaced by a h
 library(DT) 
 ```
 
+```{r}
+sf_use_s2(use_s2 = F)
+```
+
 # Load Required Data
 
 Now that we've taken care of these preliminary steps, let's go ahead and load our data into R Studio. Below, we'll first load in a spatial dataset of world boundaries, and then read in our World Bank dataset using the *WDI* package.
@@ -114,7 +118,7 @@ Note the two arguments we pass to the ne_countries function: the "scale" argumen
 
 Now that we have our spatial dataset loaded into our R environment and assigned to ```country_boundaries```, let's open up this dataset and see what it looks like. The best way to view a dataset in R studio is to pass the name of the relevant object to the ```View()``` function, which will open up the dataset in R Studio's built-in data viewer.
 
-```{r}
+```{r, eval=F}
 # View "country_boundaries" data in R Studio Data Viewer
 View(country_boundaries)
 ```
@@ -260,7 +264,7 @@ WDI_variables<-WDIsearch()
 
 Now, let's view the extracted information in the R Studio data viewer by calling the ```View()``` function:
 
-```{r}
+```{r, eval=F}
 # Views data assigned to "WDI_variables" in data viewer
 View(WDI_variables)
 ```
@@ -291,7 +295,7 @@ trade_gdp_2010_2018<-WDI(country="all", # specifies we want data for all countri
 
 At this point, country-level data on trade as a percentage of GDP, for each year between 2010 and 2018, has been has been extracted via the World Bank API and assigned to ```trade_gdp_2010_2018```. Let's see what the data looks like:
 
-```{r}
+```{r, eval=F}
 View(trade_gdp_2010_2018)
 ```
 
@@ -341,7 +345,7 @@ How do we join different datasets together? Associating two datasets into one la
 
 ```{r}
 # Joins "trade_gdp_2015" to "country_boundaries" using 3-digit ISO codes; these ISO codes are contained in a column named "iso_a3" in "country_boundaries", and "iso3c" in "trade_gdp_2015"; the product of the join is assigned to a new object that is named "trade_2015_spatial"
-trade_2015_spatial<-full_join(country_boundaries, trade_gdp_2015,
+trade_2015_spatial<-inner_join(country_boundaries, trade_gdp_2015,
                                     by=c("iso_a3"="iso3c"))
 ```
 
@@ -358,7 +362,7 @@ In the code above, we use the ```full_join()``` function to join ```trade_gdp_20
 
 Let's now view ```trade_2015_spatial```:
 
-```{r}
+```{r, eval=F}
 View(trade_2015_spatial)
 ```
 
@@ -653,7 +657,7 @@ trade_gdp_2010_2015<-trade_gdp_2010_2018 %>%
 
 Let's take a look at ```trade_gdp_2010_2015```:
 
-```{r}
+```{r, eval=F}
 View(trade_gdp_2010_2015)
 ```
 
@@ -683,7 +687,7 @@ trade_gdp_2010_2015_wide<-trade_gdp_2010_2015_wide %>%
 
 Let's confirm that the data has been successfully reshaped:
 
-```{r}
+```{r, eval=F}
 View(trade_gdp_2010_2015_wide)
 ```
 
@@ -731,7 +735,7 @@ trade_gdp_2010_2015_wide_spatial<-trade_gdp_2010_2015_wide_spatial %>%
 
 Let's now take a look at ```trade_gdp_2010_2015_wide_spatial```:
 
-```{r}
+```{r, eval=F}
 View(trade_gdp_2010_2015_wide_spatial)
 ```
 
@@ -760,7 +764,7 @@ mean_trade<-trade_gdp_2010_2018 %>%
 
 Let's see what it looks like:
 
-```{r}
+```{r, eval=F}
 View(mean_trade)
 ```
 
@@ -790,7 +794,7 @@ mean_trade_spatial<-mean_trade_spatial %>% relocate(name_long, trade_2010_2018_m
 
 Let's take a look at ```mean_trade_spatial```:
 
-```{r}
+```{r, eval=F}
 View(mean_trade_spatial)
 ```
 
