@@ -58,6 +58,7 @@ doi: [https://doi.org/10.1017/S0003055413000464](https://doi.org/10.1017/S000305
 * [Guide to geocoding tools](https://guides.lib.berkeley.edu/gis/geocoding), from UC-Berkeley; note that some of these resources may not be available at CU-Boulder, but many of them are available to the public. 
 * [sf package cheatsheet](https://github.com/rstudio/cheatsheets/blob/main/sf.pdf)
 * [R coordinate systems cheatsheet](https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf)
+* [Scale and Projections](https://open.lib.umn.edu/mapping/chapter/3-scale-and-projections/) by Laura Matson and Melinda Kernik
 
 ## Assignment
 

@@ -41,11 +41,13 @@ I am available by email, and encourage you to contact me in between classes if y
 
 The following is a brief outline of our five class modules. Please click on the relevant link below (or to the left) to view more details on the relevant module's dedicated page:
 
-* [Class One](class1.md) (April 4): Basic concepts; spatial thinking; mapping data
+* [Class One](class1.md) (April 4): Basic concepts; spatial thinking; choropleth maps
 * [Class Two](class2.md) (April 11): Vector data and geoprocessing
-* [Class Three](class3.md) (April 18): Raster data
+* [Class Three](class3.md) (April 18): Raster data and analysis; integrating vector and raster data
 * [Class Four](class4.md) (April 25): Geospatial data ethics; Geospatial data management; Remote sensing and Google Earth Engine
-* [Class Five](class5.md) (May 2): Research Design; GIS scripting; Presentations and Wrap-Up
+* [Class Five](class5.md) (May 2): Research Design; GIS scripting and automation in R; Lightning-talk presentations and wrap-up
+
+We will do our best to stick to this schedule, but we might need to make some adjustments as we go; if this is required, I will be grateful for your flexibility. These adjustments will be communicated in class and through email. 
 
 ## Readings
 
@@ -69,7 +71,7 @@ Assignments are graded Pass/Fail.
 
 ## Final project
 
-In addition to the assignments, you must submit a final project, which is due by **Monday, May 6, at 5:00 PM**. On our final day of class (**May 2nd**), you will give a brief (~7 minute) "lightning talk" on your project-in-progress, which will allow us to all learn from each other (and perhaps help you identify opportunities for future collaboration with your classmates). 
+In addition to the assignments, you must submit a final project, which is due by **Monday, May 6, by 5:00 PM**. On our final day of class (**May 2nd**), you will give a brief (~7 minute) "lightning talk" on your project-in-progress, which will allow us to all learn from each other (and perhaps help you identify opportunities for future collaboration with your classmates). You are encouraged to discuss your project with me before your class presentation/lightning talk; I am happy to offer broad conceptual advice, suggest ideas, help you choose between different potential project ideas, and help to implement your project ideas in R. 
 
 See below for various project options. The goal of the projects is to give you an opportunity to make progress on a project that will yield some tangible benefit to you in the future (i.e. a publication, a lesson plan, a dataset etc.). 
 
@@ -106,6 +108,10 @@ Final grades will be determined as follows.
 * Assignments (30%)
 * Attendance and Class participation (30%)
 * Final Project and Lightning Talk Presentation (40%)
+
+## Office Hours
+
+My office hours will be on Tuesdays from 4:00-5:00 PM. These regularly scheduled office hours will be hosted on Zoom, and I will distribute the Zoom link via email after the first day of class. If you would like to meet outside of this time, please set up an appointment by emailing me. I would be happy to meet with you virtually on Zoom, or in-person on campus. 
 
 ## Classroom Behavior
 
