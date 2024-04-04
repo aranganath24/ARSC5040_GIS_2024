@@ -4,7 +4,7 @@ title: Class One
 nav_order: 1
 ---
 
-# Class One: Basic concepts; spatial thinking; mapping data
+# Class One: Basic concepts; spatial thinking; choropleth maps
 {:.no_toc}
 
 ## Table of contents

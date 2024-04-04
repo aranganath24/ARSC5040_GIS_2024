@@ -4,7 +4,7 @@ title: Class Three
 nav_order: 3
 ---
 
-# Class Three: Raster (gridded) data and its applications
+# Class Three: Raster data and analysis; integrating vector and raster data
 {:.no_toc}
 
 ## Table of contents

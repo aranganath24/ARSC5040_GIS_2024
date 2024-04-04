@@ -4,7 +4,7 @@ title: Class Five
 nav_order: 5
 ---
 
-# Class Five: GIS and Research Design, Class Presentations, and Conclusion
+# Class Five: Research Design; GIS scripting and automation in R; Lightning-talk presentations and wrap-up
 {:.no_toc}
 
 ## Table of contents
