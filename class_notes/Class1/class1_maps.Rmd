@@ -73,6 +73,8 @@ Note that the codeblocks in this tutorial usually have comments, prefaced by a h
 library(DT) 
 ```
 
+Finally, before proceeding, we will use the following code to disable spherical geometries within the sf package, which will allow us to map our data with the *tmap* package. 
+
 ```{r}
 sf_use_s2(use_s2 = F)
 ```
