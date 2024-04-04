@@ -109,7 +109,7 @@ trade_gdp_2015<-
   rename(trade_gdp_2015=NE.TRD.GNFS.ZS) # renames column containing WDI variable
 
 # Views "trade_gdp_2015" in data viewer
-trade_gdp_2015
+View(trade_gdp_2015)
 
 # Joins "trade_gdp_2015" to "country_boundaries" using 3-digit ISO codes; these ISO codes are contained in a column named "iso_a3" in "country_boundaries", and "iso3c" in "trade_gdp_2015"; the product of the join is assigned to a new object that is named "trade_2015_spatial"
 trade_2015_spatial<-inner_join(country_boundaries, trade_gdp_2015,
@@ -135,7 +135,6 @@ tm_shape(trade_2015_spatial)+ # specifies spatial object
 
 
 # changes color palette, number of breaks, and legend position
-tmap_mode("plot")
 tm_shape(trade_2015_spatial)+
   tm_polygons(col="trade_gdp_2015",
               n=7,
@@ -146,7 +145,6 @@ tm_shape(trade_2015_spatial)+
 
 
 # removes bounding box
-tmap_mode("plot")
 tm_shape(trade_2015_spatial)+
   tm_polygons(col="trade_gdp_2015",
               n=7,
@@ -160,7 +158,6 @@ tm_shape(trade_2015_spatial)+
 
 
 # adds main title for map
-tmap_mode("plot")
 tm_shape(trade_2015_spatial)+
   tm_polygons(col="trade_gdp_2015",
               n=7,
