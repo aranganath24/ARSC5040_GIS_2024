@@ -41,6 +41,7 @@ doi: [https://doi.org/10.1146/annurev-polisci-031710-112604](https://doi.org/10.
 ## Class Notes/Tutorial
 
 * [Class 1 Tutorial](class_notes/Class1/class1_maps.html)
+* [Class 1 Slides](class_notes/Class1/Class1Presentation.pdf)
 
 ## Useful resources
 
