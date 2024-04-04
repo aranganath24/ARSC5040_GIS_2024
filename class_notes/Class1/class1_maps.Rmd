@@ -76,6 +76,7 @@ library(DT)
 Finally, before proceeding, we will use the following code to disable spherical geometries within the sf package, which will allow us to map our data with the *tmap* package. 
 
 ```{r}
+# disable spherical geometries
 sf_use_s2(use_s2 = F)
 ```
 
@@ -182,6 +183,7 @@ tm_shape(country_boundaries)+
 Just as we can assign datasets or numeric values to objects, so too with maps. For example, let's say we want to assign the orange world map we generated above to an object named ```world_map_orange```:
 
 ```{r}
+# assigns dark orange world map to object named "world_map_orange"
 world_map_orange<-tm_shape(country_boundaries)+
                       tm_polygons("darkorange")
 ```
@@ -246,6 +248,7 @@ Two things may require additional elaboration:
 Now, let's go ahead an map the revised ```country_boundaries``` object:
 
 ```{r}
+# maps updated "country_boundaries" object
 tm_shape(country_boundaries)+
   tm_polygons()
 ```
@@ -287,7 +290,7 @@ Now that you've extracted this table of variable names and codes, scroll through
 In this example, let's say we're interested in mapping trade as a percentage of GDP (i.e. the value of a country's exports + imports divided by its GDP), which is a useful summary measure that captures the importance of international trade to a country's economy. Based on the ```WDI_variables``` table we generated, we can see that the variable code for this variable is **NE.TRD.GNFS.ZS**. We'll use this variable code within the ```WDI``` function to extract the "trade as a % of GDP" indicator for a given time frame. Here, we'll specify our time frame as 2010-2018. We'll assign the extracted data to a new object named ```trade_gdp_2010_2018```:
 
 ```{r}
-# Extracts WDI indicator that we want and assigns the resulting data to an object named "trade_gdp_2018_2018"
+# Extracts WDI indicator that we want and assigns the resulting data to an object named "trade_gdp_2010_2018"
 trade_gdp_2010_2018<-WDI(country="all", # specifies we want data for all countries available
                                 indicator="NE.TRD.GNFS.ZS", # specifies code for desired indicator
                                 start=2010, # Start year for data series
@@ -298,6 +301,7 @@ trade_gdp_2010_2018<-WDI(country="all", # specifies we want data for all countri
 At this point, country-level data on trade as a percentage of GDP, for each year between 2010 and 2018, has been has been extracted via the World Bank API and assigned to ```trade_gdp_2010_2018```. Let's see what the data looks like:
 
 ```{r, eval=F}
+# View "trade_gdp_2010_2018" in R Studio data viewer
 View(trade_gdp_2010_2018)
 ```
 
@@ -424,6 +428,7 @@ This is a nice start, but the map of course needs refinement. Perhaps the most g
 
 ```{r, fig.asp=0.5, warning=F, echo=-1, message=F}
 tmap_mode("plot")
+# changes color palette, number of breaks, and legend position
 tm_shape(trade_2015_spatial)+
   tm_polygons(col="trade_gdp_2015",
               n=7,
@@ -829,6 +834,7 @@ Now, let's export this map using the following code:
 
 ```{r, echo=-1, warning=F}
 setwd("/Users/adra7980/Documents/gis_class_scratch")
+# exports map assigned to "trade_map_2015_custom_breaks" object to working directory as PDF file
 tmap_save(tm=trade_map_2015_custom_breaks, 
           filename="trade_gdp_custom.pdf", 
           width=1920, 
