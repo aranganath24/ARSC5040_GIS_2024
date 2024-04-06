@@ -35,7 +35,7 @@ In Class 4, we will briefly introduce you to [Google Earth Engine](https://earth
 
 ## Communication and Office Hours
 
-I am available by email, and encourage you to contact me in between classes if you have questions about the course material or problem sets/assignments. I will also hold office hours (on Zoom) on Tuesdays and Fridays from 4:00 to 5:30 pm. If you would like to meet, but these times are not compatible with your schedule, please email me, and we can set up an appointment. Please note that I do not check email during the weekends. 
+I am available by email, and encourage you to contact me in between classes if you have questions about the course material or problem sets/assignments. I will also hold Office Hours (on Zoom) on Tuesdays from 4:00 to 5:00 pm. I will distribute the Zoom link for Office Hours via email. If you would like to meet, but that time is not compatible with your schedule, please email me, and we can set up an appointment and meet either online or in-person on campus (depending on your preference). Please note that I do not check email during the weekends. 
 
 ## Topics/Modules
 
@@ -108,10 +108,6 @@ Final grades will be determined as follows.
 * Assignments (30%)
 * Attendance and Class participation (30%)
 * Final Project and Lightning Talk Presentation (40%)
-
-## Office Hours
-
-My office hours will be on Tuesdays from 4:00-5:00 PM. These regularly scheduled office hours will be hosted on Zoom, and I will distribute the Zoom link via email after the first day of class. If you would like to meet outside of this time, please set up an appointment by emailing me. I would be happy to meet with you virtually on Zoom, or in-person on campus. 
 
 ## Classroom Behavior
 
