@@ -28,18 +28,20 @@ For more on principles of cartographic design, a good place to start is this acc
 
 # Preliminaries
 
+## Install packages
+
 R is an open-source programming language for statistical computing that allows users to carry out a wide range of data analysis and visualization tasks (among other things). One of the big advantages of using R is that it has a very large user community among social scientists and statisticians, who frequently publish R packages. One might think of packages as workbooks of sorts, which contain a well-integrated set of R functions, scripts, data, and documentation; these “workbooks” are designed to facilitate certain tasks or implement given procedures. These packages are then shared with the broader community, and at this point, anyone who needs to accomplish the tasks to which the package addresses itself can use the package in the context of their own projects. The ability to use published packages considerably simplifies the work of applied social scientists using R; it means that they rarely have to write code entirely from scratch, and can build on the code that others have published in the form of packages. This allows applied researchers to focus on substantive problems, without having to get too bogged down in complicated programming tasks.
 
 In the context of this tutorial, generating choropleth maps based on the World Development Indicators (WDI) data would be relatively complex if we had to write all our code from scratch. However, because we are able to make use of mapping and visualization packages written by other researchers, the task is considerably simpler, and will not require any complicated programming.
 
 In order to process our data and make our maps, we will use a variety of packages. They are:
 
-* *WDI*: It is possible to download our WDI variable of choice directly from the World Bank's WDI [website](https://datatopics.worldbank.org/world-development-indicators/) (see the "Access Data" section), but there is an R package, entitled *WDI*, that allows users to directly query and extract WDI data without leaving R. Since this is more convenient than downloading the dataset externally and loading it into R, we will use the *WDI* package to extract the WDI series of our choice. 
-* sf*: The sf package allows us to work with spatially explicit data in R. In particular, it allows us to work with "sf" objects. "sf" stands for "simple features", and is a data structure that is able to store and display geospatial vector data. Vector data (along with raster) is one of the two main types of GIS data (along with raster data), and we'll discuss it in more detail next class. 
+* *WDI*: It is possible to download our WDI variable of choice directly from the World Bank's WDI [website](https://datatopics.worldbank.org/world-development-indicators/) (see the "Access Data" section), but there is an R package, entitled *WDI*, that allows users to directly query and extract WDI data without leaving R. Since this is more convenient than downloading the dataset and then loading it into R, we will use the *WDI* package to extract the WDI series of our choice. 
+* *sf*: The sf package allows us to work with spatially explicit data in R. In particular, it allows us to work with "sf" objects. "sf" stands for "simple features", and is a data structure that is able to store and display geospatial vector data. Vector data is one of the two main types of GIS data (along with raster data), and we'll discuss it in more detail next class. 
 * *tmap*: The *tmap* package will allow us to create and customize our map. It has become one of the major R mapping packages in use today. There are other package that facilitate mapping in R. One prominent alternative to *tmap*, which many of you may be familiar with, is *ggplot2*. However, while *tmap* uses very similar syntax to *ggplot2*, the former is a dedicated mapping package, while the latter is a more general-purpose visualization package. In my experience, *tmap* is slightly more intuitive and user-friendly, so we will use it instead of *ggplot2* in this tutorial.
 * *rnaturalearth* and *rnaturalearthdata*:  In order to visualize our data on a world map, we need a spatial dataset of the world’s country boundaries. One way to get such a dataset is to download it from a public repository, and then load it into R Studio. However, these packages allow us to load a spatial dataset of world boundaries into R Studio as sf objects without having to actually download anything, which effectively saves us a few steps in the workflow.
-* *tidyverse*: The *tidyverse* is a suite of data-science packages (*ggplot2*, mentioned above, is actually a part of the tidyverse) that provide useful functions to implement common data science/data analysis tasks. We'll use some *tidyverse* packages to clean up our data, subset data implement table joins etc. 
-* *grid*: The *grid* package allows us to customize the layout of our maps, and in particular, make inset maps (an inset map is a smaller map embedded within the frame of the main map; it can be used to contextualize a given map, or to provide a "zoomed in" view of a particularly important part of the main map, or a part of the main map that is difficult to see). 
+* *tidyverse*: The *tidyverse* is a suite of data-science packages (*ggplot2*, mentioned above, is actually a part of the tidyverse) that provide useful functions to implement common data science/data analysis tasks. We'll use some *tidyverse* packages to clean up our data, subset data, implement table joins etc. 
+* *grid*: The *grid* package allows us to customize the layout of our maps, and in particular, make inset maps (an inset map is a smaller map embedded within the frame of the main map; it can be used to contextualize a given map, or to provide a "zoomed in" view of a particularly important part of the main map, or a part of the main map that is difficult to see). If you recently downloaded R and R Studio, you will not need to install the *grid* package separately, since it now comes preinstalled when you download R.  
 
 To install a package in R, pass the name of the package (within quotation marks) to the ```install.packages()``` function. For example, let's say you don't have *tmap* installed. You can install it with the following:
 
@@ -51,6 +53,8 @@ install.packages("tmap")
 A function is essentially a programming construct that takes a specified input, runs this input (called an “argument”) through a set of procedures, and returns an output. In the code block above, the name of the package we wanted to install (here, “tmap”) was enclosed within quotation marks and passed as an argument to ```install.packages```; this effectively downloaded the *tmap* package to your computer. 
 
 Repeat that process for any packages you don't have installed. 
+
+## Load libraries
 
 After all the packages are downloaded, we must load them into memory. We can think of the process of loading installed packages into a current R environment as analogous to opening up an application on your phone or computer after it has been installed (even after an application has been installed, you can’t use it until you open it!). To load (i.e. “open”) an R package, we pass the name of the package we want to load as an argument to the ```library()``` function. Below, we load all of the required packages into memory: 
 
@@ -65,7 +69,7 @@ library(tidyverse)
 library(grid)
 ```
 
-At this point, the packages are loaded and ready to go! One important thing to note regarding the installation and loading of packages is that we only have to install packages once; after a package is installed, there is no need to subsequently reinstall it. However, we must load the packages we need (using the library function) every time we open a new R session. In other words, if we were to close R Studio at this point and open it up later, we would **not** need to install these packages again, but **would** need to load the packages again (3.5).
+At this point, the packages are loaded and ready to go! One important thing to note regarding the installation and loading of packages is that we only have to install packages once; after a package is installed, there is no need to subsequently reinstall it, except in particular circumstances (for instance, if you update or reinstall R on your computer). However, we must load the packages we need (using the library function) every time we open a new R session. In other words, if we were to close R Studio at this point and open it up later, we would **not** need to install these packages again, but **would** need to load the packages again (3.5).
 
 Note that the codeblocks in this tutorial usually have comments, prefaced by a hash (“#”). When writing code in R (or any other command-line interface) it is good practice to preface one’s code with brief comments that describe what a block of code is doing. Writing these comments can allow someone else (or your future self) to read and quickly understand the code more easily than otherwise might be the case. The hash before the comment effectively tells R that the subsequent text is a comment, and should be ignored when running a script If one does not preface the comment with a hash, R wouldn’t know to ignore the comment, and would throw an error message.
 
@@ -80,18 +84,16 @@ Finally, before proceeding, we will use the following code to disable spherical 
 sf_use_s2(use_s2 = F)
 ```
 
-# Load Required Data
+## Object assignment
 
-Now that we've taken care of these preliminary steps, let's go ahead and load our data into R Studio. Below, we'll first load in a spatial dataset of world boundaries, and then read in our World Bank dataset using the *WDI* package.
-
-Before proceeding, however, it is useful to briefly consider the concept of object asssignment, which will make the subsequent sections easier to follow. Consider the following example:
+Before proceeding it is useful to briefly consider the concept of object asssignment, which will make the subsequent sections easier to follow. Consider the following example:
 
 ```{r}
 # assign value 5 to new object named x
 x<-5
 ```
 
-In the code above, we used R's assignment operator (```<-```, i.e. a left-facing arrow) to assign value 5 to an object named “x.” Now that an object named “x” has been created and assigned the value 5, printing “x” in our console (or printing “x” in our script and running it) will return the value 5:
+In the code above, we used R's assignment operator (```<-```, i.e. a left-facing arrow) to assign the value 5 to an object named “x.” Now that an object named “x” has been created and assigned the value 5, printing “x” in our console (or printing “x” in our script and running it) will return the value 5:
 
 ```{r}
 # Print value assigned to object "x"
@@ -100,11 +102,13 @@ x
 
 More generally, the process of assignment effectively equates the output created by the code on the right side of the assignment operator (```<-```) to an object with a name that is specified on the left side of the assignment operator. Whenever we want to look at the value assigned to an object (i.e. the output created by the code to the right side of the assignment operator), we simply print the name of the object in the R console (or print the name and run it within a script).
 
-While the example above was very simple, we can assign virtually any R code, and by extension, the data structure(s) generated by that code (such as datasets, maps, graphs) to an R object. Indeed, we’ll use the basic principle of object assignment introduced above to assign the datasets we'll import below to new objects. Note that object names are arbitrary and could be virtually anything, but it is good practice for object names to describe their contents. If this is new, it will begin to make more sense as we go. 
+While the example above was very simple, we can assign virtually any R code, and by extension, the data structure(s) generated by that code (such as datasets, maps, graphs) to an R object. Indeed, we’ll use the basic principle of object assignment introduced above to assign the datasets we'll import below to new objects. Note that object names are arbitrary and could be virtually anything, but it is good practice for object names to describe their contents. If the concept of object assignment is new, it will begin to make more sense as we go. 
 
-## Load and process the spatial dataset of country boundaries
+Now that we've taken care of these preliminary steps, let's go ahead and load our data into R Studio. Below, we'll first load in a spatial dataset of world boundaries, and then read in our World Bank dataset using the *WDI* package
 
-## Load the spatial dataset of country boundaries into R and assign to new object
+# Load, explore, and process the spatial dataset of country boundaries
+
+## Load the spatial dataset of country boundaries into R and assign it to a new object
 
 When working with spatial data in R, we will sometimes want to import data that is stored on our computer. There are several functions in the sf package that will allow us to easily import saved or downloaded spatial data into R; the most commonly used ```sf``` package function to load saved spatial vector data into R is the ```st_read()``` function. For more details, please consult the ```st_read()``` function's documentation by typing ```?st_read()```. 
 
@@ -117,9 +121,9 @@ country_boundaries<-ne_countries(scale="medium", returnclass="sf")
 
 Note the two arguments we pass to the ne_countries function: the "scale" argument specifies that we want to use a medium scale when rendering the map (the other options are ‘small’ and ‘large’), while the "returnclass" argument specifies that we want the spatial dataset as an sf object. 
 
-### Explore the spatial dataset
+## Explore the spatial dataset
 
-Now that we have our spatial dataset loaded into our R environment and assigned to ```country_boundaries```, let's open up this dataset and see what it looks like. The best way to view a dataset in R studio is to pass the name of the relevant object to the ```View()``` function, which will open up the dataset in R Studio's built-in data viewer.
+Now that we have our spatial dataset of country boundaries loaded into our R environment and assigned to the new ```country_boundaries``` object, let's open up this dataset and see what it looks like. The best way to view a dataset in R studio is to pass the name of the relevant object to the ```View()``` function, which will open up the dataset in R Studio's built-in data viewer.
 
 ```{r, eval=F}
 # View "country_boundaries" data in R Studio Data Viewer
@@ -141,7 +145,7 @@ country_boundaries_view %>% datatable(extensions=c("Scroller", "FixedColumns"), 
 ))
 ```
 
-By scrolling across the dataset, you'll note that each row corresponds to a country, and that there are many columns that correspond to various country-level attributes. The crucial column, however, which makes this a spatial dataset (as opposed to merely a tabular one), is the information contained in a column called “geometry”. This column contains geographic coordinate information that essentially defines a polygon for each country in the dataset. Note that the “geometry” column is likely one of the last columns in dataset, so you may have to scroll a bit to find it.
+By scrolling across the dataset, you'll note that each row corresponds to a country, and that there are many columns that correspond to various country-level attributes. The crucial column, however, which makes this a spatial dataset (as opposed to merely a tabular one), is the information contained in the column labeled “geometry”. This column contains geographic coordinate information that essentially defines a polygon for each country in the dataset. Note that the “geometry” column is likely one of the last columns in dataset, so you may have to scroll a bit to find it.
 
 To observe the information in the "geometry" column more clearly, we can extract that specific column. The dollar sign (```$```) is the R operator that allows us to extract a specified column; below, we are extracting the "geometry" column from the dataset assigned to the ```country_boundaries``` object:
 
@@ -152,9 +156,9 @@ country_boundaries$geometry
 
 Note that extracting the "geometry" column prints some useful metadata; it tells us that the dataset has 241 features, and that it represents spatial information as polygons (geometry type: MULTIPOLYGON). It also provides information on the datasets bounding box ("bbox") and coordinate reference system ("CRS"). We'll unpack this information a bit more next class, but for now, what is important to notice is that the "geometry" column is comprised of multiple geographic coordinates for each row; we can use this information in the “geometry” column to draw georeferenced polygons for each row in the spatial dataset, which will yield a world map! 
 
-### Use information from the "geometry" column to render a map
+## Use information from the "geometry" column to render a map
 
-To translate the information in the "geometry" column of the dataset into a cartographic representation, we’ll use the *tmap* package. In particular, we’ll use the ```tm_shape``` and ```tm_polygons``` functions from *tmap*, which are connected by a plus sign (+). The argument passed to the ```tm_shape``` function is the name of the object associated with the spatial dataset (```country_boundaries```, defined above). In addition, the tm_polygons function indicates that the spatial data is to be represented using polygons (as opposed to alternatives such as lines or points), and does not require any arguments (we'll add some arguments in just a bit). When we type in and run the following code from our script, the result is a map that is rendered based on the information in the “geometry” column of country_boundaries:
+To translate the information in the "geometry" column of the dataset into a cartographic representation, we’ll use the *tmap* package. In particular, we’ll use the ```tm_shape``` and ```tm_polygons``` functions from *tmap*, which are connected by a plus sign (+). The argument passed to the ```tm_shape``` function is the name of the object associated with the spatial dataset (```country_boundaries```, defined above). In addition, the tm_polygons function indicates that the spatial data is to be represented using polygons (as opposed to alternatives such as lines or points), and does not require any arguments (we'll add some optional arguments to customize the map's appearance in just a bit). When we type in and run the following code from our script, the result is a map that is rendered based on the information in the “geometry” column of country_boundaries:
 
 ```{r, fig.asp=0.5}
 # maps geographic features (i.e. countries) of "country_boundaries" as polygons using tmap package functions
@@ -175,7 +179,7 @@ tm_shape(country_boundaries)+
 Or, say we prefer the color associated with the label "cadetblue2":
 
 ```{r, fig.asp=0.5}
-# Maps country polygons from "country_boundaries" in "cyan1"
+# Maps country polygons from "country_boundaries" in "cadetblue2"
 tm_shape(country_boundaries)+
   tm_polygons("cadetblue2")
 ```
@@ -195,7 +199,7 @@ Now, whenever we want to bring up that particular map, we can simply print the n
 world_map_orange
 ```
 
-### Make an interactive map
+## Make an interactive map
 
 One of the nice things about *tmap* is that it allows us to toggle back and forth between static print maps, and dynamic interactive maps that allow users to zoom in/out, pan around, view attribute characteristics etc. All you have to do to generate an interactive map is use the ```tmap_mode()``` function to shift into "view" mode with the following:
 
@@ -227,9 +231,9 @@ Now, our *tmap* code will once again yield a static representation of the spatia
 world_map_orange
 ```
 
-### Editing spatial datasets
+## Edit spatial datasets
 
-We can edit spatial datasets in R Studio with relative ease, using commonly-used R packages. Let’s say, for example, that we don’t want Antarctica to appear on our map (since Antarctica typically does not appear on political maps of the world).
+We can edit spatial datasets in R Studio with relative ease, using functions from commonly-used data science packages from the *tidyverse*. Let’s say, for example, that we don’t want Antarctica to appear on our map (since Antarctica typically does not appear on political maps of the world).
 
 To delete Antarctica from the map, we first need to delete the row that corresponds to Antarctica in ```country_boundaries```. We can do so with the following code:
 
@@ -245,7 +249,7 @@ Two things may require additional elaboration:
 * First is the pipe, the symbol that looks like this: ```%>%```. The pipe operator essentially takes the output of the code on its left, and then use that output as an input to the code on its right. Here, the pipe takes the ```country_boundaries``` spatial object on its left, and then feeds this data into the ```filter()``` function on its right. In other words, the pipe operator links the code on its two sides, and establishes that the data to be “filtered” within the filter function is ```country_boundaries```.
 * The ```filter()``` function is a function from the *dplyr* package that allows one to select rows from a dataset using specified criteria. In our case, we want to select all rows from the dataset that are not Antarctica. The argument passed to the filter function, ```iso_a3 !="ATA"```, is essentially saying “return any records where the”iso_a3” variable (i.e. the 3 digit ISO country code) in the attribute table is NOT equal to “ATA” (Antarctica’s code). Note that != is R syntax for “not equal to”. If we were to instead type filter(iso_a3=="ATA), the function would only select the Antarctica row from the dataset and discard everything else.
 
-Now, let's go ahead an map the revised ```country_boundaries``` object:
+Now, let's go ahead and map the revised ```country_boundaries``` object:
 
 ```{r}
 # maps updated "country_boundaries" object
@@ -256,11 +260,11 @@ tm_shape(country_boundaries)+
 Notice that Antarctica is no longer mapped, since the Antarctica record is no longer in the 
 ```country_boundaries``` object that contains the underlying data. 
 
-## Use the *WDI* package to extract development indicator to be mapped
+# Use the *WDI* package to extract the development indicator to be mapped
 
-Now that we've loaded our spatial dataset into R Studio and become acquainted with the information it contains, let's turn to the process of extracting development indicator data using the *WDI* package. We'll extract an indicator we're interested in mapping; then, below, we'll join this indicator to our spatial dataset (```country_boundaries```) based on a common field. Once the WDI data is in our spatial dataset, we can represent country-level variation in the WDI indicator on the associated map. 
+Now that we've loaded our spatial dataset into R Studio and have become acquainted with the information it contains, let's turn to the process of extracting development indicator data using the *WDI* package. We'll extract an indicator we're interested in mapping; then, below, we'll join this indicator to our spatial dataset (```country_boundaries```) based on a common field. Once the WDI data is in our spatial dataset, we can display country-level variation in the WDI indicator on the associated map. 
 
-Let's first get a sense of what variables are available as part of the World Bank Development Indicators data series. We can extract variables in the series, along with their associated codes, using the ```WDIsearch()``` function. Below, we don't pass any arguments to ```WDIsearch```, so it will return a table containing *all* of the variables in the development indicator data series. We'll assign this table to a new object named ```WDI_variables```:
+Let's first get a sense of what variables are available as part of the World Bank Development Indicators data series. We can extract variables in the series, along with their associated variable codes, using the ```WDIsearch()``` function. Below, we don't pass any arguments to ```WDIsearch```, so it will return a table containing *all* of the variables in the development indicator data series. We'll assign this table to a new object named ```WDI_variables```:
 
 ```{r}
 # Extracts variable names and codes for development indicator series, and assigns it to a new object named "WDI_variables"
@@ -285,9 +289,9 @@ WDI_variables %>% datatable(extensions=c("Scroller", "FixedColumns"), options = 
 ))
 ```
 
-Now that you've extracted this table of variable names and codes, scroll through and decide which one you'd like to represent on a world map. 
+Now that you've extracted this table of variable names and codes, you can scroll through and decide which one you'd like to represent on a world map. 
 
-In this example, let's say we're interested in mapping trade as a percentage of GDP (i.e. the value of a country's exports + imports divided by its GDP), which is a useful summary measure that captures the importance of international trade to a country's economy. Based on the ```WDI_variables``` table we generated, we can see that the variable code for this variable is **NE.TRD.GNFS.ZS**. We'll use this variable code within the ```WDI``` function to extract the "trade as a % of GDP" indicator for a given time frame. Here, we'll specify our time frame as 2010-2018. We'll assign the extracted data to a new object named ```trade_gdp_2010_2018```:
+In this example, let's say we're interested in mapping trade as a percentage of GDP (i.e. the value of the sum of a country's exports and imports divided by its GDP), which is a useful summary measure that captures the importance of international trade to a country's economy. Based on the ```WDI_variables``` table we generated, we can see that the variable code for this variable is **NE.TRD.GNFS.ZS**. We'll use this variable code within the ```WDI``` function to extract the "trade as a % of GDP" indicator for a given time frame. Here, we'll specify our time frame as 2010-2018. We'll assign the extracted data to a new object named ```trade_gdp_2010_2018```:
 
 ```{r}
 # Extracts WDI indicator that we want and assigns the resulting data to an object named "trade_gdp_2010_2018"
@@ -316,7 +320,7 @@ trade_gdp_2010_2018 %>% datatable(extensions=c("Scroller", "FixedColumns"), opti
 ))
 ```
 
-### Filter and Rename the WDI Data
+## Filter and Rename the WDI Data
 
 We'll make use of the multiple years worth of data later, but for now, let's say we only want to map the 2015 values for our variable of interest. Let's make life easier by generating a new dataset that only contains 2015 observations; we'll also rename (using the ```rename()``` function) the awkwardly named "NE.TRD.GNFS.ZS" column (which contains our variable of interest) to "trade_pct_GDP_2015", which is slightly more descriptive. We'll assign this new dataset to an object named "trade_gdp_2015":
 
@@ -359,10 +363,10 @@ trade_2015_spatial<-inner_join(country_boundaries, trade_gdp_2015,
 trade_2015_spatial<-trade_2015_spatial %>% relocate(name_long, trade_gdp_2015)
 ```
 
-In the code above, we use the ```full_join()``` function to join ```trade_gdp_2015``` to ```country_boundaries```. The full_join function keeps all rows (i.e. observations) from both datasets, even if one dataset has observations that another one does not (and vice-versa). For more information on different join options, explore the documentation by inspecting the function’s documentation ```(?full_join```). Let's unpack the code which implements the join a bit more: 
+In the code above, we use the ```inner_join()``` function to join ```trade_gdp_2015``` to ```country_boundaries```. The ```inner_join``` function keeps all rows (i.e. observations) that are contained in both datasets (while dropping observations that are in one dataset but not the other). For more information on different join options, explore the documentation by inspecting the function’s documentation (```?inner_join()```). Let's unpack the code which implements the join a bit more: 
 
-* The first argument to the ```full_join()``` function is ```country_boundaries```, which is of course our spatial dataset.
-* The second argument, ```trade_gdp_2015``` is the tabular dataset containing information on trade as a percentage of GDP from the year 2015, which we extracted from the World Development indicators using the *WDI* package (i.e. the data we ultimately want to map). It’s worth noting that when we are joining a tabular dataset to a spatial dataset with a view towards displaying the information contained in th tabular data on a map, the spatial dataset should be listed before the tabular dataset. If we reverse this order (i.e. join the spatial dataset to the tabular dataset rather than the other way around), we’ll have to take some additional steps to get the joined dataset ready to map, and this is best avoided.
+* The first argument to the ```inner_join()``` function is ```country_boundaries```, which is of course our spatial dataset.
+* The second argument, ```trade_gdp_2015``` is the tabular dataset containing information on trade as a percentage of GDP from the year 2015, which we extracted from the World Development indicators using the *WDI* package (i.e. the data we ultimately want to map). It’s worth noting that when we are joining a tabular dataset to a spatial dataset with a view towards displaying the information contained in the tabular data on a map, the spatial dataset should be listed before the tabular dataset. If we reverse this order (i.e. join the spatial dataset to the tabular dataset rather than the other way around), we’ll have to take some additional steps to get the joined dataset ready to map, and this is best avoided.
 * The third argument specifies the join fields, i.e. the fields within the datasets that contain the common variable that can be used to correlate the records in the two different datasets and weld them together. In our case, the join variable is of course the 3-digit ISO country code. The argument that reads ``` by=c("iso_a3"="iso3c")``` indicates that we want to join the datasets based on the set of country identifiers given by the 3-digit ISO codes; because the name of the column containing the 3-digit codes is different in the two datasets, the expression in the parentheses ```"iso_a3"="iso3c"``` simply indicates that the column named “iso_a3” (in the spatial dataset) and the column named "iso3c" (in the tabular dataset) are equivalent to each other, and are to be used as the join fields. If they didn’t have different names–for example, if the ISO codes were in a column named “iso” in both datasets–we could simply have written ```by=iso``` to specify the join column.
 * Finally, we take our newly created dataset, which adds the data we want to map our original spatial dataset (```country_boundaries```), and assign this value to a new object, named ```trade_2015_spatial```. 
 
@@ -388,9 +392,9 @@ trade_2015_spatial_relocate %>% datatable(extensions=c("Scroller", "FixedColumns
 ))
 ```
 
-Note that we now have the variable we want to map ("trade_gdp_2015") inside a spatial dataset (note the "geometry" column next to "trade_gdp_2015"), we're ready to map our WDI data. 
+Note that we now have the variable we want to map ("trade_gdp_2015") inside a spatial dataset (note the "geometry" column next to "trade_gdp_2015"). We're now ready to map our WDI data. 
 
-# Displaying country-level variation in the WDI indicator on a map
+# Display country-level variation in the WDI indicator on a map
 
 ## Make a preliminary map
 
@@ -405,10 +409,10 @@ tm_shape(trade_2015_spatial)+ # specifies spatial object
               palette="BuGn") # sets color palette
 ```
 
-In the code above we first use the ```tm_shape()``` function in *tmap* to specify the name of the sf object that we want to map; here, that is ```trade_2015_spatial```. We then add a "+" sign (recall from above that *tmap* functions are chained together using a "+"), and then call the ```tm_polygons()``` function, which we also encountered before. This time, we supply some new arguments to ```tm_polygons```. Let's consider them in turn:
+In the code above we first use the ```tm_shape()``` function in *tmap* to specify the name of the sf object that we want to map; here, that is ```trade_2015_spatial```. We then add a "+" sign (recall from above that *tmap* functions are chained together using a "+"), and then call the ```tm_polygons()``` function, which we also encountered before. This time, we supply some new arguments to ```tm_polygons()```. Let's consider them in turn:
 
 * ```col="trade_gdp_2015"``` specifies the name of the column in the spatial dataset (which has been specified as an argument to the tm_shape function) that contains the data we’d like to map.
-* ```n=8``` specifies that we want the data to be partitioned into 5 break points, while ```style="jenks"``` indicates that we want to set break points in the data distribution using the Jenks Natural Breaks Classification; to see other options for partitioning your data, see the function’s documentation using ```?tm_polygons()```. For more information on the Jenks Natural Breaks Classification, as well as other data partition methods, see [here](https://www.axismaps.com/guide/data-classification).
+* ```n=5``` specifies that we want the data to be partitioned into 5 break points, while ```style="jenks"``` indicates that we want to set break points in the data distribution using the Jenks Natural Breaks Classification; to see other options for partitioning your data, see the function’s documentation using ```?tm_polygons()```. For more information on the Jenks Natural Breaks Classification, as well as other data partition methods, see [here](https://www.axismaps.com/guide/data-classification).
 * ```palette="BuGn"``` specifies the color scheme that we want to use to represent the data.  “BuGn” refers to a blue-green color gradient, which the map uses to represent country-level variation in trade as a share of GDP in 2015. For other palette options, and the associated palette codes, please refer again to the [R Color Cheat Sheet](https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf).
 
 It's easy to experiment with different parameters in the arguments to ```tm_polygons()```. For instance, let's say we want to try out a map with 7 break points, with the data partitioned according to the "quantile" classification system, and a yellow to brown color palette ("YlOrBr"):
@@ -422,9 +426,9 @@ tm_shape(trade_2015_spatial)+ # specifies spatial object
               palette="YlOrBr") # sets color palette
 ```
 
-## Refining maps
+## Refine map appearance
 
-This is a nice start, but the map of course needs refinement. Perhaps the most glaring issue is the placement of the legend, which is superimposed on the map itself, which leads to a situation in which the legend and map mutually obscure each other. Let's take the previous map, and make just a few changes that address this issue. In particular, we'll call a new function, called ```tm_layout()```, which allows us to customize the map's layout in various ways. Within this function, we'll specify ```legend.outside=T```, which places the legend outside the map's bounding box (i.e. the rectangular frame which surrounds it), and ```legend.outside.position="bottom"```, which sets the particular location of the legend outside the bounding box: 
+This is a nice start, but the map of course needs refinement. Perhaps the most glaring issue is the placement of the legend, which is superimposed on the map itself, leading to a situation in which the legend and map mutually obscure each other. Let's take the previous map, and make just a few changes that address this issue. In particular, we'll call a new function, called ```tm_layout()```, which allows us to customize the map's layout in various ways. Within this function, we'll specify ```legend.outside=T```, which places the legend outside the map's bounding box (i.e. the rectangular frame which surrounds it), and ```legend.outside.position="bottom"```, which sets the particular location of the legend outside the bounding box: 
 
 ```{r, fig.asp=0.5, warning=F, echo=-1, message=F}
 tmap_mode("plot")
@@ -517,13 +521,14 @@ tm_shape(trade_2015_spatial)+
    tm_credits("Map Author: Aditya Ranganath\nData Source: World Bank\nDevelopment Indicators (WDI)", position=c(0.78,0), size=0.38) # Specifies content, position, size of credits
 ```
 
-In the code that generated the map above, ```attr.outside=TRUE```, within the ```tm_layout()``` function, while the arguments to the ```tm_credits()``` function specify the text of the map credits, the position of the map credits, and the text size of the map credits. The best approach to deciding where to position the credits, and how large to make them, is trial and error. 
+In the code that generated the map above, ```attr.outside=TRUE```, within the ```tm_layout()``` function, along with the arguments to the ```tm_credits()``` function, specify the text of the map credits, the position of the map credits, and the text size of the map credits. The best approach to deciding where to position the credits, and how large to make them, is trial and error. 
 
 Recall from before that we can always assign our maps to objects, which allows us to conveniently store and refer back to them when needed. Now that we have our map code more or less done (though it's worth emphasizing that you can do a lot more to customize and shape the appearance of the map to your liking using many *tmap* functions and arguments that we haven't discussed here, but that you should explore!), let's assign the map code above to an object, which we'll call ```trade_map_2015```:
 
 
 ```{r, echo=-1, warning=F, message=F}
 tmap_mode("plot")
+# assigns map to "trade_map_2015" object
 trade_map_2015<-
 tm_shape(trade_2015_spatial)+
   tm_polygons(col="trade_gdp_2015",
@@ -575,7 +580,7 @@ tmap_mode("plot")
 
 ## Inset maps 
 
-An inset map is a smaller map embedded within a larger map; it can serve a variety of purposes. For instance, if the map is a large scale map (covers a relatively small area in a lot of detail, i.e. a small region, city etc.), an inset map can help to provide context for where the mapped area is with respect to some larger geographic area. In the case of small scale maps, which display a large geographic area (as in world maps of the type we've developed here), an inset map can "zoom in" on an important geographic zone that might be of importance, and which requires emphasis. For example, let's say we want to make an inset map of the Southeast Asia region (a region where international trade seems particularly important). 
+An inset map is a smaller map embedded within a larger map; it can serve a variety of purposes. For instance, if the map is a large scale map (covers a relatively small area in a lot of detail, i.e. a small region, city etc.), an inset map can help to provide context for where the mapped area is with respect to some larger geographic area. In the case of small scale maps, which display a large geographic area (as in world maps of the type we've developed here), an inset map can "zoom in" on an important geographic zone that might be of importance, and which requires emphasis. For example, let's say we want to make an inset map of the Southeast Asia region (a region where international trade seems particularly important) that is embedded within the larger world map we created above. 
 
 Before making our inset map, let's first how to set our own legend breaks; this is helpful in making inset maps, since it can ensure that the inset map and the main map are using the same legend breaks, which can help with interpretation and avoid confusion.
 
@@ -600,7 +605,7 @@ tm_shape(trade_2015_spatial)+
    tm_credits("Map Author: Aditya Ranganath\nData Source: World Bank\nDevelopment Indicators (WDI)", position=c(0.4,0), size=0.38) 
 ```
 
-To avoid confusion, it's worth noting that in tmap, upper bounds in the legend are exclusive, while lower bounds are inclusive (for example, a hypothetical country with trade as a % of GDP equal to exactly 25 would be in the 25-50 category, not in the 0-25 category).  
+To avoid confusion, it's worth noting that in *tmap*, upper bounds in the legend are exclusive, while lower bounds are inclusive (for example, a hypothetical country with trade as a % of GDP equal to exactly 25 would be in the 25-50 category, not in the 0-25 category).  
 Let's quickly view the map we just created:
 
 ```{r}
@@ -646,13 +651,13 @@ print(sea_map, viewport(0.8, 0.27, width = 0.35, height = 0.35))
 
 In the code above, we first print the name of the object that contains the main map (i.e. the world map). The second line adds the Southeast Asia inset map to the main map, in a given location, and at a given size, which are specified by arguments passed to the ```viewport()``` function. To get your inset map in the location and size you want, make sure to play around with those coordinates within ```viewport()```. 
 
-# Extensions: generating and mapping derivative variables 
+# Extensions: generate and map derivative variables 
 
-In the exercise above, we simply mapped a variable extracted from WDI, namely, trade as a percentage of GDP for the year 2015. Sometimes, we may need to do a bit of processing work on our initial data, and map some derivative data to get a better sense of what we're studying. For instead, what if we wanted to create a map of the percentage point difference in trade as a percentage of GDP between 2015 and 2010 (i.e. trade as a % of GDP in 2015 minus trade as a % of GDP in 2010)? Or, what if we instead wanted to make a map of the average value of trade as a percentage of GDP from 2010-2018 (all the years in our sample)? The various data processing and preparation functions of the ```tidyverse``` make it relatively easy to carry out such tasks, so that we can map what we want to map. 
+In the exercise above, we simply mapped a variable extracted from WDI, namely, trade as a percentage of GDP for the year 2015. Sometimes, we may need to do a bit of processing work on our initial data, and map some derivative data to get a better sense of what we're studying. For instead, what if we wanted to create a map of the percentage point difference in trade as a percentage of GDP from 2010 to 2015 (i.e. trade as a % of GDP in 2015 minus trade as a % of GDP in 2010)? Or, what if we instead wanted to make a map of the average value of trade as a percentage of GDP from 2010-2018 (all the years in our sample)? The various data processing and preparation functions of the ```tidyverse``` make it relatively easy to carry out such tasks, so that we can map the precise values that we want to map. 
 
-## Mapping change
+## Map change
 
-Let's consider temporal comparisons first. Let's say we want to map the percentage point difference in trade as a % of GDP between 2015 and 2010. Let's see how to generate this variable, and get it ready for mapping.
+Let's consider temporal comparisons first. Let's say we want to map the percentage point difference in trade as a percentage of GDP from 2010 to 2015. Let's see how to generate this variable, and get it ready for mapping.
 
 First, we'll return to the ```trade_gdp_2010_2018``` object and extract our years of interest: 2015 and 2010. We'll assign the newly subsetted data to a new object named ```trade_gdp_2010_2015```:
 
@@ -718,7 +723,7 @@ trade_gdp_2010_2015_wide<-trade_gdp_2010_2015_wide %>%
                             rename("trade_gdp_2010"="2010")
 ```
 
-Now, let's create a new variable, named "2015_2010_pctpt_difference", that calculates the percentage point difference in the trade share of GDP between 2015 and and 2010. We can create a new variable using existing variables with the ```mutate()``` function; we'll add this new variable to the existing dataset associated with "trade_gdp_2010_2015_wide": 
+Now, let's create a new variable, named "2015_2010_pctpt_difference", that calculates the percentage point difference in the trade share of GDP across these years. We can create a new variable using existing variables with the ```mutate()``` function; we'll add this new variable to the existing dataset associated with "trade_gdp_2010_2015_wide": 
 
 ```{r}
 # Creates new variable, named "2015_2010_pctpt_difference", that is computed as the difference between "trade_gdp_2015" and "trade_gdp_2010"; this new variable is added to "trade_gdp_2010_2015_wide"
@@ -727,11 +732,11 @@ trade_gdp_2010_2015_wide<-
    mutate("2015_2010_pctpt_difference"=(trade_gdp_2015-trade_gdp_2010))
 ```
 
-Now that we have our data prepared, let's join ```trade_gdp_2010_2015_wide``` to our spatial dataset (```country_boundaries```), using the now-familiar ```full_join()``` function. We'll assign the product of the join to a new object named ```trade_gdp_2010_2015_wide_spatial```:
+Now that we have our data prepared, let's join ```trade_gdp_2010_2015_wide``` to our spatial dataset (```country_boundaries```), using the now-familiar ```inner_join()``` function. We'll assign the product of the join to a new object named ```trade_gdp_2010_2015_wide_spatial```:
 
 ```{r}
 # Joins "trade_gdp_2010_2015_wide" to "country_boundaries" and assigns the joined dataset to a new object named "trade_gdp_2010_2015_wide_spatial"
-trade_gdp_2010_2015_wide_spatial<-full_join(country_boundaries, trade_gdp_2010_2015_wide,
+trade_gdp_2010_2015_wide_spatial<-inner_join(country_boundaries, trade_gdp_2010_2015_wide,
                                     by=c("iso_a3"="iso3c"))
 ```
 
@@ -757,9 +762,9 @@ trade_gdp_2010_2015_wide_spatial %>% datatable(extensions=c("Scroller", "FixedCo
 ))
 ```
 
-You'll notice we now have the percentage point difference in the trade share of GDP (between 2015 and 2010), stored in "2015_2010_pctpt_difference", within a spatial dataset. That variable is now ready to be mapped, using the *tmap* functions we learned earlier. As an exercise, see if you can make a map based on "2015_2010_pctpt_difference". 
+You'll notice we now have the percentage point difference in the trade share of GDP (from 2010 to 2015), stored in "2015_2010_pctpt_difference", within a spatial dataset. That variable is now ready to be mapped, using the *tmap* functions we learned earlier. As an exercise, see if you can make a map based on the "2015_2010_pctpt_difference" variable. 
 
-## Mapping average values
+## Map average values
 
 Instead of mapping individual years, let's say we want to map the average value of trade as a percentage of GDP across all the years in the original ```trade_gdp_2010_2018``` dataset (which may help smooth out fluctuations in the data). To do so, let's first generate a new dataset that contains the 2010-2018 average for our variable of interest, for each country in the dataset. We can use the ```group_by()``` and ```summarize()``` functions to do so. In the code below, we take our existing  ```trade_gdp_2010_2018``` object, and then group this dataset by the "iso3c" variable (```group_by(iso3c)```); this essentially establishes that we want to treat all observations with the same "iso3c" code (which uniquely identifies countries) as a group. The next line of code, ``` summarize(trade_2010_2018_mean=mean(NE.TRD.GNFS.ZS, na.rm=T)``` defines a new variable, named "trade_2010_2018_mean", which is calculated by taking the average of trade as a percentage of GDP for each of our country-level groups. In other words, the information in the newly defined "trade_2010_2018_mean" variable is the country-level average of trade as a share of GDP across all years in the dataset. This new dataset is assigned to a new object, named ```mean_trade()```.
 
@@ -818,7 +823,7 @@ mean_trade_spatial %>% datatable(extensions=c("Scroller", "FixedColumns"), optio
 
 Notice that ```trade_2010_2018_mean``` is now in a spatial object, and ready to be mapped. Again, as an exercise, you should try to map this variable using the *tmap* functions we learned about earlier. 
 
-# Exporting maps
+# Export and save maps
 
 Finally, once we have made our map(s) in R Studio, and everything looks satisfactory, we'll want to export them, so that they can be shared, embedded in papers etc.
 
@@ -842,7 +847,6 @@ tmap_save(tm=trade_map_2015_custom_breaks,
 ```
 
 Above, the first argument to ```tmap_save``` is the name of the map object we want to export (```trade_map_2015_custom_breaks```), the second argument is the file name we want to use for the exported file (along with the desired extension), and the "width" and "height" arguments specify the dimensions of the exported map. When this code is run, the map is exported to your working directory. Note that if we wanted our map as an image file, we could have simply specified a different file extension (i.e. .png instead of .pdf). It's best to experiment with different parameters for the "width" and "height" arguments until you get the exported map looking the way you want. There are other potential arguments to ```tmap_save()``` that allow you to further customize your exported map; we won't review them here, but you can learn more by looking at the function's documentation by typing```?tmap_save()```. 
-
 If you want to export a map with an inset, you will need to specify the name of the inset map object, and the viewport specifications. 
 
 Recall the inset map we created earlier, of Southeast Asia:
