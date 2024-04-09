@@ -1300,3 +1300,4 @@ We can see that 15.83 sq miles within Boulder County is within 1 mile of both a 
 
 As an exercise, see if you can figure out the area within Boulder County that is within 1 mile of a fire station OR a hospital. 
 
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>
