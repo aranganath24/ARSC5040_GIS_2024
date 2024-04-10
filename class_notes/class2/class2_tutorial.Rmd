@@ -14,6 +14,10 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Preliminaries
+
+Please load the following libraries (and install the packages that you have not yet installed using the ```install.packages() function). 
+
 ```{r, message=F, warning=F}
 library(sf)
 library(tmap)
@@ -30,7 +34,10 @@ library(units)
 library(DT) 
 ```
 
+In addition, please turn off spherical geometries within the ```sf()``` package using the syntax we learned in the previous lesson: 
+
 ```{r}
+# turn off spherical geometries
 sf_use_s2(use_s2 = F)
 ```
 
@@ -891,7 +898,7 @@ tm_shape(CO_epa_boulder_points_cleaned)+
 
 Note that the points falling out of Boulder have been removed. 
 
-# Distance and Area
+# Distance and Area Calculations
 
 Distance and area are important geographic concepts that are often relevant when studying social phenomena. This section reviews some basic GIS tools to extract information about these spatial variables. 
 
@@ -1188,8 +1195,7 @@ Open the attribute table to confirm that the changes have been made (```View(bou
 boulder_tract_areas
 ```
 
-
-# Distance Buffers
+# Generating Distance Buffers
 
 Let's now return to our hospitals and fire stations:
 
