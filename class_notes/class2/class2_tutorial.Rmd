@@ -89,7 +89,7 @@ worldbank_project_locations %>% datatable(extensions=c("Scroller", "FixedColumns
 ))
 ```
 
-You'll see that there is a "latitude" field and a "longitude" field, which together define each World Bank project's location on the Earth's surface, based on the WGS1984 coordinate system (i.e. the coordinate system used by GPS devices, and often the default coordinate system for GIS datasets). However, the dataset itself is not yet a spatial object; it's actually a regular data frame, which we can confirm with the following:   
+You'll see that there is a "latitude" field and a "longitude" field, which together define each World Bank project's location on the Earth's surface, based on the WGS1984 geographic coordinate system (i.e. the coordinate reference system used by GPS devices, and often the default coordinate reference system for GIS datasets). However, the dataset itself is not yet a spatial object; it's actually a regular data frame, which we can confirm with the following:   
 
 ```{r}
 # Finds class of "worldbank_project_locations"
@@ -325,7 +325,7 @@ tm_shape(malawi_foreignaid_sites)+
 
 Now, let's say that we want to precisely calculate the total number of foreign aid project sites within each constituency. This is the sort of information that a spatial join can help uncover; even though our datasets do not have a common field that can be used to implement a traditional table join, a spatial join can leverage information about the relative spatial locations of our objects of interest, and yield explicit information about which constituency each project site is located in. 
 
-To implement a spatial join, it is extremely important that the two datasets share the same CRS. Because of the libraries that *sf* uses to implement this procedure, it will throw a warning if you attempt a spatial join with datasets in an unprojected coordinate system (like EPSG: 4326), but it is usually safe to ignore (provided your polygons don't cover the North Pole or South Pole) provided the coordinate systems are the same. However, just to get some practice in reprojecting data, let's project our datasets into a projected coordinate system appropriate for Malawai; taking this step would be essential if we planned to do distance or area calculations with the dataset (for example, calculating the number of projects per square km). A bit of research uncovers that the coordinate reference system associated with EPSG: 20936 would be appropriate for Malawi (see [here](https://epsg.io/20936)) so let's project both our datasets into this coordinate reference system.  
+To implement a spatial join, it is extremely important that the two datasets share the same CRS. Because of the libraries that *sf* uses to implement this procedure, it will throw a warning if you attempt a spatial join with datasets in an unprojected geographic coordinate system (like EPSG: 4326), but it is usually safe to ignore (provided your polygons don't cover the North Pole or South Pole) provided the coordinate systems are the same. However, just to get some practice in reprojecting data, let's project our datasets into a projected coordinate system appropriate for Malawai; taking this step would be essential if we planned to do distance or area calculations with the dataset (for example, calculating the number of projects per square km). A bit of research uncovers that the projected coordinate reference system associated with EPSG: 20936 would be appropriate for Malawi (see [here](https://epsg.io/20936)) so let's project both our datasets into this coordinate reference system.  
 
 First, we'll project ```Malawi_constituencies``` into EPSG:20936 and assign the reprojected spatial dataset to a new object named ```Malawi_constituencies_projected```:
 
@@ -841,7 +841,7 @@ CO_epa_boulder_geocoded_census<-CO_epa_boulder %>%
 CO_epa_boulder_geocoded_census<-read_csv("class_notes/class2/data/geocoded_dataset.csv")
 ```
 
-If you open the dataset, you'll note that we now have lat/long information that can be used to create a spatial object. It's not possible to create a spatial object using a data frame with "NA" values in the lat/long fields, so we'll drop these rows using ```drop_na(long)```. The code that reads ```  st_as_sf(coords=c("long", "lat"), crs=4269)``` creates the spatial object using the lat/long information; note the ```crs=4269```; usually, the lat/long coordinates returned by geocoders are in WGS84 (i.e. EPSG=4326), but the Census geocoder returns coordinates using NAD83, which corresponds to the CRS with EPSG=4269. 
+If you open the dataset, you'll note that we now have lat/long information that can be used to create a spatial object. It's not possible to create a spatial object using a data frame with "NA" values in the lat/long fields, so we'll drop these rows using ```drop_na(long)```. The code that reads ```  st_as_sf(coords=c("long", "lat"), crs=4269)``` creates the spatial object using the lat/long information; note the ```crs=4269```; usually, the lat/long coordinates returned by geocoders are in WGS84 (i.e. EPSG=4326), but the Census geocoder returns coordinates using NAD83, which corresponds to the geographic CRS with EPSG=4269. 
 
 ```{r}
 # Creates spatial obejct from "CO_epa_boulder_geocoded_census"
@@ -1024,7 +1024,7 @@ setwd("class_notes/class2/data/fire_stations")
 boulder_fire_stations<-st_read("Fire_Stations.shp")
 ```
 
-Let's reproject the fire station data into EPSG:2231 (the projection appropriate for Boulder) and assign the reprojected data to an object named ```boulder_fire_stations_projected```:
+Let's reproject the fire station data into EPSG:2231 (the projected coordinate system appropriate for Boulder) and assign the reprojected data to an object named ```boulder_fire_stations_projected```:
 
 ```{r}
 # reprojects "boulder_fire_stations" object into CRS associated with EPSG: 2231, and assigns the reprojected data to a new object named "boulder_fire_stations_projected"

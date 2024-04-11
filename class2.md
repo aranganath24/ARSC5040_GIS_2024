@@ -51,6 +51,7 @@ doi: [https://doi.org/10.1017/S0003055413000464](https://doi.org/10.1017/S000305
 ## Class Notes/Tutorial
 
 * [Class 2 Tutorial](class_notes/class2/class2_tutorial.html)
+* [Class 2 Slides](class_notes/class2/Class2Presentation.pdf)
 
 ## Useful resources
 
