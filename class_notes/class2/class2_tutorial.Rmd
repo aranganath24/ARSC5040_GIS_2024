@@ -16,9 +16,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Preliminaries
 
-Please load the following libraries (and install the packages that you have not yet installed using the ```install.packages() function). 
+Please load the following libraries. Remember to first install those packages you have not yet installed using the ```install.packages()``` function. 
 
 ```{r, message=F, warning=F}
+# load libraries
 library(sf)
 library(tmap)
 library(rnaturalearth)
@@ -45,7 +46,7 @@ We will use a variety of datasets, from a variety of different sources, in this 
 
 # Layering Data 
 
-One of the most powerful features of GIS software is the ability to layer different spatial datasets on top of each other, which can help us to visualize spatial relationships. To see how this works, let's layer two vector layers on top of each other The first layer is a polygon dataset of the world's country boundaries, which you will recall from last class. Let's extract this dataset and visualize it below:
+Recall, from last class, that one of the most powerful features of GIS software is the ability to layer different spatial datasets on top of each other, which can help us to visualize spatial relationships. To see how this works, let's layer two vector layers on top of each other The first layer is a polygon dataset of the world's country boundaries, which you will recall from last class. Let's extract this dataset and visualize it below:
 
 ```{r, fig.asp=0.5}
 # Extracts spatial dataset of country polygons from "rnaturalearth" package and assigns it to an object named "country_boundaries"
@@ -57,8 +58,7 @@ tm_shape(country_boundaries)+
   tm_polygons()
 ```
 
-Now, let's take another vector dataset, and layer it over these polygons. In particular, we'll work with a global dataset of World Bank foreign aid projects, available through the AidData Project, available at 
-[https://www.aiddata.org/data/world-bank-geocoded-research-release-level-1-v1-4-2](https://www.aiddata.org/data/world-bank-geocoded-research-release-level-1-v1-4-2). 
+Now, let's take another vector dataset, and layer it over these polygons. In particular, we'll work with a global dataset of World Bank foreign aid projects, available through the AidData Project, available at [https://www.aiddata.org/data/world-bank-geocoded-research-release-level-1-v1-4-2](https://www.aiddata.org/data/world-bank-geocoded-research-release-level-1-v1-4-2). 
 
 To save time, I preprocessed the data beforehand, and you can find the version that we'll work with on this [page](https://www.dropbox.com/sh/6yue5opad2uhqvs/AABu7S4R_w6B_dnbt7Yqi_qQa?dl=0) (to create this dataset, I merged the "locations.csv" file into the "projects.csv" file using "project_id" as the join variable; all of these data are available on the dataset's AidData page cited above). 
 
@@ -103,7 +103,7 @@ In order to turn this regular, tabular dataset into a spatial data object that w
 worldbank_locations_spatial<-st_as_sf(worldbank_project_locations, coords=c("longitude", "latitude"), crs=4326)
 ```
 
-We can confirm that ```worldbank_locations_spatial``` is indeed a spatial object with the following:
+We can confirm that ```worldbank_locations_spatial``` is indeed a spatial ("sf") object with the following:
 
 ```{r}
 # Prints data class of "worldbank_locations_spatial"
@@ -120,7 +120,7 @@ tm_shape(worldbank_locations_spatial)+
 
 We can now see the distribution of projects, scattered across the developing world. Above, we plotted the WB project location spatial dataset by itself. Now, let's view our point dataset in relation to our polygon dataset of world country boundaries (```country_boundaries```). 
 
-Before plotting the two datasets together, however, it's important to always make sure that they're in the same coordinate reference system; if they are in different coordinate reference system, the resulting visual display (and any subsequent calculations we perform using these datasets) will be inaccurate, since they use different frames of reference. Here, we are in good shape, since we already explicitly defined the CRS for ```worldbank_locations_spatial```. And, with respect to  ```country_boundaries```, note the metadata when we print the object name in our console:
+Before plotting the two datasets together, however, it's important to always make sure that they're in the same coordinate reference system; if they are in different coordinate reference systems, the resulting visual display (and any subsequent calculations we perform using these datasets) will be inaccurate, since they use different frames of reference. Here, we are in good shape, since we already explicitly defined the CRS for ```worldbank_locations_spatial```. And, with respect to  ```country_boundaries```, note the metadata when we print the object name in our console:
 
 ```{r, eval=F}
 # Prints metadata associated with "country_boundaries"
@@ -147,7 +147,7 @@ country_boundaries<-st_transform(country_boundaries, crs=st_crs(worldbank_locati
 
 Above, instead of explicitly setting the CRS, we use the ```st_crs()``` function to extract the CRS of ```worldbank_locations_spatial```, and then attach this CRS to ```country_boundaries``` via the ```st_transform``` function. 
 
-Having confirmed that both of our vector datasets are in the same CRS, we can go ahead and plot them together using *tmap*. The syntax required to plot different datasets in relation to each other is simple; we can essentially connect the syntax we already used to create our individual plots together using a "+" sign. That is, we can plot our polygons (representing countries) with the following:
+Having confirmed that both of our vector datasets are in the same CRS, we can go ahead and plot them together using *tmap*. The syntax required to plot different datasets in relation to each other is simple; we can essentially connect the syntax we already used to connect our individual plots together using a "+" sign. That is, we can plot our polygons (representing countries) with the following:
 
 ```{r, fig.asp=0.5}
 # plots country boundary polygons
@@ -173,7 +173,7 @@ tm_shape(worldbank_locations_spatial)+
   tm_dots()
 ```
 
-Note that order matters. We can think of each spatial representation as its own layer, with layers added on top of each other. So, in the code above, the ```country_boundaries``` layer is the first layer, and the ```worldbank_locations_spatial``` is the second layer added on top of the first. If we were to reverse the order, our country polygons would obscure most of our points (assuming that the polygons are not made transparent): 
+Note that order matters. We can think of each spatial representation as its own layer, with layers added on top of each other. So, in the code above, the ```country_boundaries``` layer is the first (bottom-most) layer, and the ```worldbank_locations_spatial``` is the second layer that is superimposed on top of the first. If we were to reverse the order, our country polygons would obscure most of our points (assuming that the polygons are not made transparent): 
 
 ```{r, fig.asp=0.5}
 tm_shape(worldbank_locations_spatial)+
@@ -235,7 +235,7 @@ worldmap_projects
 
 # Spatial joins
 
-The ability to juxtapose different datasets together, and develop a visual representation of how they relate to each other, is powerful in and of itself. Often, however, we want to get a more precise quantitative sense of how different vector datasets are related. One of the most powerful (yet still relatively simple) GIS techniques used to formally bring together different vector datasets and extract information about their relationship is known as the spatial join. A spatial join is a  procedure that allows you to link datasets based on the relative spatial locations of their observations, even in the absence of a common field (of the sort that could facilitate a table join). In other words, a spatial join allows you to join datasets based on shared location attributes, even when those datasets don’t have a common field that can be used to carry out a conventional table join (akin to the one we carried out in our previous class, when we joined datasets together based on their shared 3-digit ISO code). 
+The ability to juxtapose different datasets together, and develop a visual representation of how they relate to each other, is powerful in and of itself. Often, however, we want to get a more precise quantitative sense of how different vector datasets are related. One of the most powerful (yet still relatively simple) GIS techniques used to formally bring together different vector datasets and extract information about their relationship is known as the spatial join. A spatial join is a  procedure that allows one to link datasets based on the relative spatial locations of their observations, even in the absence of a common field (of the sort that could facilitate a table join). In other words, a spatial join allows you to join datasets based on shared location attributes, even when those datasets don’t have a common field that can be used to carry out a conventional table join (akin to the one we carried out in our previous class, when we joined datasets together based on their shared 3-digit ISO code). 
 
 This section will motivate the concept of a spatial join using an applied example that uses the foreign aid data introduced above (```worldbank_locations_spatial```). In addition to this data, we'll also bring in a new dataset, a polygon vector dataset that delineates constituency boundaries in the African country of Malawi. The data is available in this GIS data [repository](https://geo.nyu.edu/catalog/stanford-hs879xj7186), hosted at NYU (although the data itself is from Stanford and openly licensed). Please go ahead and download the shapefile to your working directory by clicking the blue "Original Shapefile" button. A shapefile is a file format that is commonly used to store geospatial vector datasets. 
 
@@ -313,7 +313,7 @@ tm_shape(malawi_foreignaid_sites)+
 tmap_mode("plot")
 ```
 
-When plotting point data, it is often the case that many observations are in exactly the same location; because these points overlap perfectly (and hence show up as only a single point), it can be difficult to identify large point clusters. One quick way to address this issue is to "jitter", or add a small degree or arbitrary noise to our points before displaying them; this will help salient clustering phenomena stand out:
+When plotting point data, it is often the case that many observations are in exactly the same location; because these points overlap perfectly (and hence show up as only a single point), it can be difficult to identify large point clusters. One quick way to address this issue is to "jitter", or add a small degree or arbitrary noise to our points, before displaying them; this will help salient clustering patterns stand out:
 
 ```{r}
 # Jitters project locations
@@ -325,7 +325,7 @@ tm_shape(malawi_foreignaid_sites)+
 
 Now, let's say that we want to precisely calculate the total number of foreign aid project sites within each constituency. This is the sort of information that a spatial join can help uncover; even though our datasets do not have a common field that can be used to implement a traditional table join, a spatial join can leverage information about the relative spatial locations of our objects of interest, and yield explicit information about which constituency each project site is located in. 
 
-To implement a spatial join, it is extremely important that the two datasets share the same CRS. Because of the libraries that *sf* uses to implement this procedure, it will throw a warning if you attempt a spatial join with datasets in an unprojected coordinate system (like EPSG: 4326), but it is usually safe to ignore (provided your polygons don't cover the North Pole or South Pole) provided the coordinate systems are the same. However, just to get some practice in reprojecting data, let's project our datasets into a projected coordinate system appropriate for Malawai; taking this step would be essential if we planned to do distance or area calculations with the dataset (for example, calculating the number of projects per square km). A bit of research uncovers that the CRS associated with EPSG: 20936 would be appropriate for Malawi (see [here](https://epsg.io/20936)) so let's project both our datasets into this projection. 
+To implement a spatial join, it is extremely important that the two datasets share the same CRS. Because of the libraries that *sf* uses to implement this procedure, it will throw a warning if you attempt a spatial join with datasets in an unprojected coordinate system (like EPSG: 4326), but it is usually safe to ignore (provided your polygons don't cover the North Pole or South Pole) provided the coordinate systems are the same. However, just to get some practice in reprojecting data, let's project our datasets into a projected coordinate system appropriate for Malawai; taking this step would be essential if we planned to do distance or area calculations with the dataset (for example, calculating the number of projects per square km). A bit of research uncovers that the coordinate reference system associated with EPSG: 20936 would be appropriate for Malawi (see [here](https://epsg.io/20936)) so let's project both our datasets into this coordinate reference system.  
 
 First, we'll project ```Malawi_constituencies``` into EPSG:20936 and assign the reprojected spatial dataset to a new object named ```Malawi_constituencies_projected```:
 
@@ -367,7 +367,7 @@ malawi_projects_constituencies_spatialjoin %>% datatable(extensions=c("Scroller"
 
 If you scroll across the table, you'll notice that for every project, we now have information about its location with respect to Malawi constituencies (given by the "ID" variable right after the "geometry" column; in effect, these IDs identify 4th level administrative districts); this is information we did not have before, and which we could not have ascertained through a regular table join, but which we were able to acquire through the implementation of the spatial join. 
 
-If we reverse the order of the join, using ```Malawi_constituencies_projected``` as the "main" dataset to which we join ```malawi_foreignaid_sites_projected```, the product of the join will look slightly different. Instead of a project-level dataset with constituency information attached to each project, we will instead have a constituency-level dataset with information about each project associated with a constituency (if a constituency is associated with more than one project, there will be more than one row for that constituency). To make this more concrete, let's reverse the join, and see what the product looks like. Below, we call the same ```st_join()``` function, but reverse the order of the arguments, such that ```Malawi_constituencies_projected``` is first, and ```malawi_foreignaid_sites_projected``` is second. We'll assign the product of this join to a new object named ```malawi_constituencies_projects_spatialjoin```: 
+If we reverse the order of the join, using ```Malawi_constituencies_projected``` as the "main" dataset to which we join ```malawi_foreignaid_sites_projected```, the product of the join will look slightly different. Instead of a project-level dataset with constituency information appended to each project, we will instead have a constituency-level dataset with information about each project associated with a constituency (if a constituency is associated with more than one project, there will be more than one row for that constituency). To make this more concrete, let's reverse the join, and see what the product looks like. Below, we call the same ```st_join()``` function, but reverse the order of the arguments, such that ```Malawi_constituencies_projected``` is first, and ```malawi_foreignaid_sites_projected``` is second. We'll assign the product of this join to a new object named ```malawi_constituencies_projects_spatialjoin```: 
 
 ```{r}
 # Spatially joins "malawi_foreignaid_sites_projected" to "Malawi_constituencies_projected" and assigns the joined dataset to "malawi_constituencies_projects_spatialjoin"
@@ -391,7 +391,7 @@ malawi_constituencies_projects_spatialjoin %>% datatable(extensions=c("Scroller"
 ))
 ```
 
-The direction of the spatial join is largely determined by the context of the problem, or question, that is under investigation; there is no "right" direction (here, spatially joining ```malawi_foreignaid_sites_projected``` to ```Malawi_constituencies_projected``` is just as valid as the inverse operation of spatially joining  ```Malawi_constituencies_projected``` to ```malawi_foreignaid_sites_projected```; which option makes more sense will depend on the question one is trying to answer)
+The direction of the spatial join is largely determined by the context of the problem, or question, that is under investigation; there is no "right" direction (here, spatially joining ```malawi_foreignaid_sites_projected``` to ```Malawi_constituencies_projected``` is just as valid as the inverse operation of spatially joining  ```Malawi_constituencies_projected``` to ```malawi_foreignaid_sites_projected```; the appropriate option depends on the question one is trying to answer). 
 
 Recall that our goal was to extract information about the number of World Bank project sites within each constituency; to do so, we'll work with ```malawi_projects_constituencies_spatialjoin```.
 
@@ -463,7 +463,7 @@ If you scroll across the dataset, you'll notice we now have a field, named "sum_
 You may notice that many of the observations have "NA" values, indicating that there were no projects in these constituencies. It may be useful to replace these "NAs" with "0", since that would be a more accurate representation in this case. To do so, we can use the `replace_na``` function. Below, we'll also relocate the "total_unique_projects" to the front of the dataset
 
 ```{r}
-# Takes "malawi_constituencies_projects_spatial", replaces "na" values for "sum_projects" column to zero, and relocates ID and "sum_projects" to the front of the dataset
+# Takes "malawi_constituencies_projects_spatial", replaces "na" values for "sum_projects" column with zero values, and relocates ID and "sum_projects" to the front of the dataset using the "relocate" function
 malawi_constituencies_projects_spatial<-malawi_constituencies_projects_spatial %>% 
                                         replace_na(list(sum_projects=0)) %>% 
                                         relocate(ID, sum_projects)
@@ -581,7 +581,7 @@ tm_shape(CO_NM_combined)+
 
 It is often useful to transform vector datasets by dissolving their internal boundaries, which effectively allows us to visualize or analyze data at different scales. To see how this works, let's transform a state-level polygon dataset of continental US states into a regional dataset by dissolving state boundaries. 
 
-Let's first extract a state-level spatial dataset of population (based on the 2010 decennialc census) using *tidycensus*, project it into a projected coordinate reference system ([https://epsg.io/5070-1252](https://epsg.io/5070-1252), and assign it to an object named ```usa_state_boundaries```:
+Let's first extract a state-level spatial dataset of population (based on the 2010 decennial census) using *tidycensus*, project it into a projected coordinate reference system ([https://epsg.io/5070-1252](https://epsg.io/5070-1252), and assign it to an object named ```usa_state_boundaries```:
 
 ```{r, message=F, results=F, warning=F}
 # extracts state population data and state boundaries from 2010 census
@@ -639,10 +639,10 @@ continental_USA_regions<-continental_USA %>%
     (GEOID=="06"|GEOID=="32"|GEOID=="41"|GEOID=="53")~"Far West"))
 ```
 
-Now that we've added a categorical region variable to ```continental_USA_regions``` (which you can confirm by opening up the dataset with the ```View()``` function), let's now collapse the ```continental_USA_regions``` by region, using the ```group_by()``` and ```summarise()``` functions; we'll assigned this collapsed (i.e. "dissolved") dataset to a new object named ```continental_usa_dissolve```:
+Now that we've added a categorical region variable to ```continental_USA_regions``` (which you can confirm by opening up the dataset with the ```View()``` function), let's now collapse the ```continental_USA_regions``` by region, using the ```group_by()``` and ```summarise()``` functions; we'll assign this collapsed (i.e. "dissolved") dataset to a new object named ```continental_usa_dissolve```:
 
 ```{r}
-# Dissolves by region
+# Dissolves state boundaries by regional groupings and assigns the result to a new object named "continental_usa_dissolve"
 continental_usa_dissolve<-continental_USA_regions %>% 
                               group_by(region) %>% 
                               summarise()
@@ -698,7 +698,7 @@ tm_shape(arbitrary_bounding_box)+
   tm_polygons(alpha=0, lwd=5)
 ```
 
-Let's say we want to use this bounding box as a "cookie cutter", and carve out the exact area of ```continental_USA_regions``` that overlaps with the bounding box; to extract the exact extent of ```continental_USA_regions``` that is covered by ```arbitrary_bounding_box```, we can use the ```st_intersection()``` tool; below, we'll assign the product of the ```st_intersection(continental_USA_regions, arbitrary_bounding_box)``` to a new object named ```states_bounding_box_intersection```:
+Let's say we want to use this bounding box as a "cookie cutter", and carve out the exact area of ```continental_USA_regions``` that overlaps with the bounding box; to extract the exact extent of ```continental_USA_regions``` that is covered by ```arbitrary_bounding_box```, we can use the ```st_intersection()``` tool; below, we'll assign the product of  ```st_intersection(continental_USA_regions, arbitrary_bounding_box)``` to a new object named ```states_bounding_box_intersection```:
 
 ```{r}
 # Extracts intersection of "continental_USA_regions" and "arbitrary_bounding_box" and assigns to object named "states_bounding_box_intersection"
@@ -730,7 +730,7 @@ tm_shape(states_bounding_box_intersect)+
   tm_polygons()
 ```
 
-Note the difference from the earlier plot; instead of using the bounding box as a cookie cutter, it returns all of the polygons that intersect with the bounding box. 
+Note the difference from the earlier plot; instead of using the bounding box as a cookie cutter, it returns the full extent of all the polygons that intersect with the bounding box. 
 
 ## Finding the union between vector datasets
 
@@ -841,7 +841,7 @@ CO_epa_boulder_geocoded_census<-CO_epa_boulder %>%
 CO_epa_boulder_geocoded_census<-read_csv("class_notes/class2/data/geocoded_dataset.csv")
 ```
 
-If you open the dataset, you'll note that we now have lat/long information that can be used to create a spatial object. It's not possible to create a spatial object using a data frame with NA values in the lat/long fields, so we'll drop these rows using ```drop_na(long)```. The code that reads ```  st_as_sf(coords=c("long", "lat"), crs=4269)``` creates the spatial object using the lat/long information; note the ```crs=4269```; usually, the lat/long coordinates returned by geocoders are in WGS84 (i.e. EPSG=4326), but the Census geocoder returns coordinates using NAD83, which corresponds to the CRS with EPSG=4269. 
+If you open the dataset, you'll note that we now have lat/long information that can be used to create a spatial object. It's not possible to create a spatial object using a data frame with "NA" values in the lat/long fields, so we'll drop these rows using ```drop_na(long)```. The code that reads ```  st_as_sf(coords=c("long", "lat"), crs=4269)``` creates the spatial object using the lat/long information; note the ```crs=4269```; usually, the lat/long coordinates returned by geocoders are in WGS84 (i.e. EPSG=4326), but the Census geocoder returns coordinates using NAD83, which corresponds to the CRS with EPSG=4269. 
 
 ```{r}
 # Creates spatial obejct from "CO_epa_boulder_geocoded_census"
@@ -882,13 +882,14 @@ boulder_county<-CO_counties %>%
 Now, let's plot ```CO_epa_boulder_points``` against ```boulder_county```:
 
 ```{r}
+# plots "CO_epa_boulder_points" against the backdrop of Boulder county polygon
 tm_shape(boulder_county)+
   tm_polygons()+
 tm_shape(CO_epa_boulder_points)+
   tm_dots("orange")
 ```
 
-You'll notice that some of the locations fall outside of the area delimited by the Boulder county polygon; this could be due to error of various kinds. Instead of diagnosing it, let's just say you want to clip out the points outside of Boulder. 
+You'll notice that some of the locations fall outside of the area delimited by the Boulder county polygon; this could be due to error of various kinds. Instead of diagnosing it, let's just say we want to clip out the points outside of Boulder. 
 
 First, let's project both of our datasets into a projection that is more suited to Boulder County, since we'll eventually perform some spatial calculations on this data, and it is important to be in a projected coordinate system for these purposes. The projection we'll use is associated with the EPSG code 2221; see more information [here](https://epsg.io/2231). We'll assign both reprojected datasets to new objects, as below:
 
@@ -910,6 +911,7 @@ CO_epa_boulder_points_cleaned<-
 Now, let's map this new object: 
 
 ```{r}
+# maps cleaned dataset of Boulder county EPA sites against Boulder County polygon
 tm_shape(boulder_county_projected)+
   tm_polygons()+
 tm_shape(CO_epa_boulder_points_cleaned)+
@@ -943,6 +945,7 @@ hospital_points<-st_read(dsn="CAI_Hospitals.shp")
 Now that the point layer of hospitals has been read into R and assigned to the ```hospital_points()``` object, go ahead and view the data's attributes using the ```View()``` function. Then, let's plot the hospital locations against the backdrop of Colorado counties:
 
 ```{r}
+# Plots hospital locations against backdrop of Colorado counties
 tm_shape(CO_counties)+
   tm_polygons()+
 tm_shape(hospital_points)+
@@ -952,6 +955,7 @@ tm_shape(hospital_points)+
 If we'd like to confine our analysis to Boulder, let's extract the Boulder hospital observations based on the Boulder county code (08013), and then project those observations into the Boulder projection using ```st_transform()```. We'll assign the new dataset of Boulder hospitals to an object named ```boulder_hospitals```: 
 
 ```{r}
+# Extracts hospitals in Boulder and assigns these observations to a new object named "boulder_hospitals"
 boulder_hospitals<-hospital_points %>% 
                     filter(STCTYFIPS=="08013") %>% 
                     st_transform(2231)
@@ -960,21 +964,26 @@ boulder_hospitals<-hospital_points %>%
 Let's go ahead and plot the Boulder hospital data:
 
 ```{r}
+# Plots Boulder hospitals against the backdrop of Boulder county
 tm_shape(boulder_county_projected)+
   tm_polygons()+
 tm_shape(boulder_hospitals)+
   tm_dots()
 ```
 
-Now, let's say we want to calculate the Euclidean distance between all of the hospitals. We can use the ```st_distance()``` function to generate a distance matrix. We'll assign the matrix to an object named ```boulder_hospital_distancematrix```:
+Now, let's say we want to calculate the Euclidean distance between all of the hospitals in Boulder. We can use the ```st_distance()``` function to generate a distance matrix. We'll assign the matrix to an object named ```boulder_hospital_distancematrix```:
 
 ```{r}
+# Generates a distance matrix that contains information on the pairwise Euclidean distances between all of Boulder's hospitals and assigns the matrix to a new object named "boulder_hospital_distancematrix"
 boulder_hospital_distancematrix<-st_distance(boulder_hospitals)
 ```
 
-To make things easier to interpret, we'll assign names to the Matrix rows and columns:
+To make things easier to interpret, we'll label the matrix's rows and columns with the actual names of the corresponding hospitals (rather than index numbers). 
+
 ```{r}
+# extracts names of Boulder hospitals and uses those names as row labels
 rownames(boulder_hospital_distancematrix)<-boulder_hospitals$NAME
+# extracts names of Boulder hospitals and uses those names as column labels
 colnames(boulder_hospital_distancematrix)<-boulder_hospitals$NAME
 ```
 
@@ -999,21 +1008,26 @@ boulder_hospital_distancematrix %>% datatable(extensions=c("Scroller", "FixedCol
 We can easily use this matrix to extract quantities of interest. For example, let's say we want to extract the distance between "Longmont United Hospital" and "Boulder Community Hospital". We can do so with the following: 
 
 ```{r}
+# Uses data in "boulder_hospital_distancematrix" to extract distance between Longmont United Hospital and Boulder Community Hospital
 boulder_hospital_distancematrix["Longmont United Hospital", "Boulder Community Hospital"]
 ```
 
+Note that the unit of analysis is in feet, which corresponds to the unit of analysis used by the coordinate reference system of our data. 
+
 ## Extracting distances between features in different datasets
 
-We can also extract information about distances between points in different datasets. To see this, let's bring in another dataset, on the location of Boulder County fire stations, which is available on the Boulder County GIS Data website [here](https://opendata-bouldercounty.hub.arcgis.com/datasets/bouldercounty::fire-stations/about). Go ahead and read this data into R Studio, and assign it to an object named ```boulder_fire_stations```:
+We can also extract information about distances between points in different datasets. To see this, let's bring in another dataset, which contains information on the location of Boulder County fire stations, which is available on the Boulder County GIS Data website [here](https://opendata-bouldercounty.hub.arcgis.com/datasets/bouldercounty::fire-stations/about). Go ahead and download this data into your working directory, read this point layer of fire stations R Studio, and assign it to an object named ```boulder_fire_stations```:
 
 ```{r, echo=-1}
 setwd("class_notes/class2/data/fire_stations")
+# Reads in point layer of Boulder fire stations and assigns it to a new object named "boulder_fire_stations"
 boulder_fire_stations<-st_read("Fire_Stations.shp")
 ```
 
-Let's reproject the fire station data into EPSG:2231, and assign the reprojected data to an object named ```boulder_fire_stations_projected```:
+Let's reproject the fire station data into EPSG:2231 (the projection appropriate for Boulder) and assign the reprojected data to an object named ```boulder_fire_stations_projected```:
 
 ```{r}
+# reprojects "boulder_fire_stations" object into CRS associated with EPSG: 2231, and assigns the reprojected data to a new object named "boulder_fire_stations_projected"
 boulder_fire_stations_projected<-boulder_fire_stations %>%  
                                     st_transform(2231)
 ```
@@ -1021,6 +1035,7 @@ boulder_fire_stations_projected<-boulder_fire_stations %>%
 We can plot our fire stations and hospitals (in different colors) against the backdrop of the Boulder county polygon:
 
 ```{r}
+# plots "boulder_fire_stations_projected" in red, "boulder_hospitals" in blue, against the backdrop of Boulder County, and assigns this plot to a new object named "firestations_hospitals"
 firestations_hospitals<-
   tm_shape(boulder_county_projected)+
   tm_polygons()+
@@ -1029,12 +1044,14 @@ tm_shape(boulder_fire_stations_projected)+
 tm_shape(boulder_hospitals)+
   tm_dots("blue", size=0.1)
 
+# prints "firestations_hospitals" plot
 firestations_hospitals
 ```
 
-Now, if we want to extract a distance matrix that contains the Euclidean distances between each of the hospitals in Boulder, and each of the fire stations, we can pass the names of the relevant objects to ```st_join```. We'll assign the matrix to an object named ```boulder_hospital_firstation_distancematrix```: 
+Now, if we want to extract a distance matrix that contains the pairwise Euclidean distances between Boulder's hospitals and its fire stations, we can pass the names of the relevant objects to ```st_distance```. We'll assign the matrix to an object named ```boulder_hospital_firstation_distancematrix```: 
 
 ```{r}
+# Generates a distance matrix between Boulder's hospitals and fire stations and assigns it to a new object named "boulder_hospital_firstation_distancematrix"
 boulder_hospital_firstation_distancematrix<-
   st_distance(boulder_hospitals, boulder_fire_stations_projected)
 ```
@@ -1042,7 +1059,9 @@ boulder_hospital_firstation_distancematrix<-
 For ease of interpretation, we'll name the Matrix rows after the hospital names, and the matrix columns after the fire station names: 
 
 ```{r}
+# Extracts Boulder hospital names and assigns them as row labels
 rownames(boulder_hospital_firstation_distancematrix)<-boulder_hospitals$NAME
+# Extracts Boulder fire station names and assigns them as column labels
 colnames(boulder_hospital_firstation_distancematrix)<-boulder_fire_stations_projected$Station_Na
 ```
 
@@ -1067,34 +1086,38 @@ boulder_hospital_firstation_distancematrix %>% datatable(extensions=c("Scroller"
 We can use the same notation to extract information from the distance matrix. Let's say we want to find the distance between "Boulder Medical Center" and "Nederland Station 2": 
 
 ```{r}
+# Uses "boulder_hospital_firstation_distancematrix" to find distance between Boulder Medical Center (hospital) and "Nederland Station 2" (fire station)
 boulder_hospital_firstation_distancematrix["Boulder Medical Center", "Nederland Station 2"]
 ```
 
 With a bit of data wrangling, we can also extract more complicated information. For example, let's say we want to find out the distance of the closest fire station to each hospital, and then find out the distance of the closest hospital to each fire station. The easiest way to do this is to first turn the matrix into a data frame:
 
 ```{r}
+# transforms "boulder_hospital_firstation_distancematrix" into a data frame and assigns the result to a new object named "boulder_hospital_firstation_distancematrix_df"
 boulder_hospital_firstation_distancematrix_df<-as.data.frame(boulder_hospital_firstation_distancematrix)
 ```
 
 Then, to find the smallest value for each row (which will yield the distance to the closest fire station for each hospital), we can use the following:
 
 ```{r}
-# distance to closest fire station for each hospital
+# creates a vector containing distances to closest fire station for each hospital and assigns the result to a new object named "HOSPITAL_closest_fire_station"
 HOSPITAL_closest_fire_station<-apply(boulder_hospital_firstation_distancematrix_df, 1, FUN=min)
 ```
 
 ```{r, echo=T}
+# transforms "HOSPITAL_closest_fire_station" vector into a data frame
 HOSPITAL_closest_fire_station<-as.data.frame(HOSPITAL_closest_fire_station)
 ```
 
 To find the smallest value for each column (which yields the distance to the closest hospital for each fire station), we can use the following:
 
 ```{r}
-# distance to closest hospital for each fire station
+# creates a vector containing distances to closest hospital for each fire station and assigns the result to a new object named "FIRESTATION_closest_hospital"
 FIRESTATION_closest_hospital<-apply(boulder_hospital_firstation_distancematrix_df, 2, FUN=min)
 ```
 
 ```{r}
+# transforms "FIRESTATION_closest_hospital" vector into a data frame
 FIRESTATION_closest_hospital<-as.data.frame(FIRESTATION_closest_hospital)
 ```
 
@@ -1138,26 +1161,41 @@ Now, let's turn to the process of extracting information about the areas delinea
 We can extract areas using the ```st_area()``` function. For example, let's say we want to find the area of Boulder County; we can simply pass the projected Boulder County polygon to ```st_area(). Below, we'll assign this value to the object named ```boulder_area```:
 
 ```{r}
-# extracts area of Boulder county
+# extracts area of Boulder county in square feet and assigns the value to new object named "boulder_area"
 boulder_area<-st_area(boulder_county_projected)
 ```
 
 Now, let's print the value assigned to ```boulder_area```: 
 
 ```{r}
+# prints value of "boulder_area"
 boulder_area
 ```
 
 Note that the units will always be in the units associated with the data's projection (in this case, feet). This is a bit unwieldy, however; let's say we want the area in kilometers squared. To change the units, we can use the ```set_units()``` function, and specify the polygon whose area we want to measure, and our desired units. Here, we'll assign that value to ```boulder_area_km```:
 
 ```{r}
+# changes units of "boulder_area" object to square kilometers and assigns the result to a new object named "boulder_area_km"
 boulder_area_km<-set_units(boulder_area, "km^2")
 ```
 
 To print the area in kilometers^2, simply print the area of the object name:
 
 ```{r}
+# prints value of "boulder_area_km"
 boulder_area_km
+```
+
+Let's say we want the area of Boulder in square miles:
+
+```{r}
+# changes units of "boulder_area" to square miles and assigns the result to "boulder_area_sqmiles"
+boulder_area_sqmiles<-set_units(boulder_area, "mi^2")
+```
+
+```{r}
+# prints value of "boulder_area_sqmiles"
+boulder_area_sqmiles
 ```
 
 Let's now take a more involved example. Let's say we want to find the areas of all the census tracts that intersect with Boulder County. 
@@ -1202,13 +1240,16 @@ Now, take a look at the attribute table using ```View(boulder_tracts)```. Let's 
 # Turn off scientific notation
 options(scipen = 100)
 
+# calculates area of Boulder census tracts and assigns the resulting dataset to a new object named "boulder_tract_areas"
 boulder_tract_areas<-boulder_tracts %>% 
                       mutate(area=st_area(boulder_tracts))
 
 ```
 
 Let's say we want to change our units to kilometers^2; we can do so with the following:
+
 ```{r}
+# Changes unit of analysis of census tract areas in "boulder_tract_areas" to square kilometers
 units(boulder_tract_areas$area)<-"km^2"
 ```
 
@@ -1220,21 +1261,24 @@ boulder_tract_areas
 
 # Generating Distance Buffers
 
-Let's now return to our hospitals and fire stations:
+A distance buffer delimits the area around a geographic feature that is within a specified distance. To see how we can create and use such buffers, let's first return to our hospitals and fire stations:
 
 ```{r}
+# prints "firestations_hospitals" plot
 firestations_hospitals
 ```
 
-Let's say we want to create a buffer, with a radius of one mile, for each of the hospitals; we can do so by passing ```boulder_hospitals``` to the ```st_buffer()``` function, and specifying the distance using the "dist" argument (since the dataset's units are in feet, we express the one mile radius in feet). We'll assign these buffers to a new object named ```hospital_buffers```:
+Let's say we want to create a buffer, with a radius of one mile, for each of the hospitals; in other words, we want to delimit areas that are within one mile of each of our hospitals. To do so, we can pass ```boulder_hospitals``` to the ```st_buffer()``` function, and then specify the desired distance using the "dist" argument (since the dataset's units are in feet, we express the one mile radius in feet). We'll assign these buffers to a new object named ```hospital_buffers```:
 
 ```{r}
+# Creates one mile distance buffers around Boulder hospitals, and assigns the result to a new object named "hospital_buffers" 
 hospital_buffers<-st_buffer(boulder_hospitals, dist=5280)
 ```
 
 Now, let's plot these buffers, along with the underlying points. The function used to plot buffers is ```tm_borders()```:
 
 ```{r}
+# Plots Boulder hospitals and one mile distance buffers for Boulder hospitals against the backdrop of Boulder county
 tm_shape(boulder_county_projected)+
   tm_polygons()+
 tm_shape(boulder_hospitals)+
@@ -1243,15 +1287,17 @@ tm_shape(hospital_buffers)+
   tm_borders(alpha=0.5, "blue", lwd=3)
 ```
 
-Now, let's create one mile buffers for our fire stations and assign it to an object named ```fire_station_buffers```:
+Now, let's create one mile buffers for our fire stations to delimit areas within one mile of a fire station; we'll assign the result to a new object named ```fire_station_buffers```:
 
 ```{r}
+# generates one mile buffers for fire stations in "boulder_fire_stations_projected" dataset and assigns the result to "fire_station_buffers"
 fire_station_buffers<-st_buffer(boulder_fire_stations_projected, dist=5280)
 ```
 
-Let's now plot our first station buffers, along with the underlying points:
+Let's now plot our fire station buffers, along with the underlying points:
 
 ```{r}
+# Generates a plot of fire stations, and their associated one mile buffers, against the backdrop of Boulder county
 tm_shape(boulder_county_projected)+
   tm_polygons()+
 tm_shape(boulder_fire_stations_projected)+
@@ -1263,6 +1309,7 @@ tm_shape(fire_station_buffers)+
 We can plot both sets of buffers with the following:
 
 ```{r}
+# Generates a plot of fire stations, hospitals, and their associated buffers against the backdrop of Boulder county
 tm_shape(boulder_county_projected)+
   tm_polygons()+
 tm_shape(boulder_fire_stations_projected)+
@@ -1275,15 +1322,17 @@ tm_shape(hospital_buffers)+
   tm_borders(alpha=0.5, "blue", lwd=3)
 ```
 
-Now that we have our buffers, we can do some interesting visualization and analysis. For example, let's say we want to visually represent the geographic areas in Boulder county that are within one mile of a hospital AND within one mile of a fire station. To do so, let's compute the intersection between our buffers and assign it to an object named ```hospital_firestation_intersection```:
+Now that we have our buffers, we can do some interesting visualization and analysis. For example, let's say we want to visually represent the geographic areas in Boulder county that are within one mile of a hospital AND within one mile of a fire station, and calculate the percentage of Boulder County's land area that is within one mile of both a hospital and a fire station. To do so, let's first compute the intersection between our buffers and assign it to an object named ```hospital_firestation_intersection```:
 
 ```{r}
+# calculates the intersection of "hospital_buffers" and "fire_station_buffers" and assigns the result to a new object named "hospital_firestation_intersection"
 hospital_firestation_intersection<-st_intersection(hospital_buffers, fire_station_buffers)
 ```
 
 Let's plot this object: 
 
 ```{r}
+# Plots "hospital_firestation_intersection" (i.e. the area in Boulder county within one mile of a hospital and fire station) against the backdrop of Boulder County
 tm_shape(boulder_county_projected)+
   tm_polygons()+
 tm_shape(hospital_firestation_intersection)+
@@ -1293,6 +1342,7 @@ tm_shape(hospital_firestation_intersection)+
 Then, let's dissolve the borders so we have a cleaner image, and assign it to an object named ```hospital_firestation_intersection_dissolve```:
 
 ```{r}
+# Dissolves borders of "hospital_firestation_intersection" and assigns the object to "hospital_firestation_intersection_dissolve"
 hospital_firestation_intersection_dissolve<-hospital_firestation_intersection %>% 
                                             group_by() %>% 
                                             summarise()
@@ -1301,6 +1351,7 @@ hospital_firestation_intersection_dissolve<-hospital_firestation_intersection %>
 Let's view this area: 
 
 ```{r}
+# Creates plot of "hospital_firestation_intersection_dissolve" against backdrop of Boulder County
 tm_shape(boulder_county_projected)+
   tm_polygons()+
 tm_shape(hospital_firestation_intersection_dissolve)+
@@ -1310,6 +1361,7 @@ tm_shape(hospital_firestation_intersection_dissolve)+
 We can also find the area of this intersection:
 
 ```{r}
+# Extracts area of "hospital_firestation_intersection_dissolve" and assigns value to "fire_hospital_intersection_area"
 fire_hospital_intersection_area<-st_area(hospital_firestation_intersection_dissolve)
 ```
 
@@ -1319,16 +1371,18 @@ Let's print this area:
 fire_hospital_intersection_area
 ```
 
-Let's say we want to express the area in square miles. To do so, let's pass ```fire_hospital_intersection_area``` to the ```set_units()``` function:
+Since we want to represent this area in square miles, let's pass ```fire_hospital_intersection_area``` to the ```set_units()``` function:
 
 ```{r}
+# changes units of "fire_hospital_intersection_area" to square miles and assigns the resulting the value to an object named "fire_hospital_intersection_area_sqmiles"
 fire_hospital_intersection_area_sqmiles<-set_units(fire_hospital_intersection_area, "miles^2")
 
+# prints value of "fire_hospital_intersection_area_sqmiles"
 fire_hospital_intersection_area_sqmiles
 ```
 
-We can see that 15.83 sq miles within Boulder County is within 1 mile of both a fire station AND a hospital
+We can see that 15.83 sq miles of land area in Boulder County is within 1 mile of both a fire station AND a hospital. Recall that we learned from an earlier calculation that Boulder County is roughly 740 square miles. So, it follows that roughly 2.26% of Boulder County is within both a fire station and a hospital. 
 
-As an exercise, see if you can figure out the area within Boulder County that is within 1 mile of a fire station OR a hospital. 
+As an exercise, see if you can figure out the percentage of land area within Boulder County that is within 1 mile of a fire station OR a hospital. 
 
 <div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>
