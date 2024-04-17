@@ -738,4 +738,6 @@ percentage_outside_buffer
 
 So, about 45% of NYC's population in 2019 lived more than 500m from a subway station. Bringing together raster data and vector data in a unified GIS workflow allowed us to answer a non-trivial question in just a few short steps. 
 
+**Acknowledgement**: A previous version of this lesson was first concieved and developed at a workshop that I taught through New York University Libraries' [Department of Data Services](https://library.nyu.edu/departments/data-services/) during a Postdoctoral Fellowship sponsored by the [Council on Library and Information Resources](https://www.clir.org) and [New York University Libraries](https://library.nyu.edu).  
+
 <div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>
