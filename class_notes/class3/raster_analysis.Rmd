@@ -59,7 +59,7 @@ For convenience, all of the data has also been posted to this [page](https://www
 Let's begin by reading in our raster of NYC's 2019 population, using the ```raster``` function from the *raster* package; we'll assign this raster to a new object named ```nyc_2019_population```:
 
 ```{r, echo=-1}
-setwd("class_notes/class3/data/nyc_rasters")
+setwd("class_notes/class3/data/nyc_rasters/raster_update")
 # Reads in 2019 NYC population raster and assigns to object named 
 nyc_2019_population<-raster("nyc_2019_pop.tif")
 ```
@@ -109,7 +109,7 @@ Now that we've created the data frame, we can generate a histogram that visualiz
 # Plot histogram of cell-level population
 ggplot()+
   geom_histogram(data=nyc_2019_population_df, 
-                 aes(usa_ppp_2019), 
+                 aes(nyc_2019_pop), 
                  bins=10)
 ```
 
@@ -267,7 +267,7 @@ In this example, let's say we want to clip our NYC raster to the extent of Manha
 First, let's load in a polygon layer of New York City's 5 boroughs and assign it to an object named ```nyc_boroughs```:
 
 ```{r}
-setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class3/data/nyc_boroughs")
+setwd("class_notes/class3/data/nyc_boroughs")
 nyc_boroughs<-st_read("nyu_2451_34490.shp")
 ```
 
@@ -410,7 +410,7 @@ It is also possible to derive a new raster by mathematically manipulating more t
 
 ```{r, echo=-1}
 # Read in NYC 2009 population raster and assign to object named "nyc_2009_population"
-setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class3/data/nyc_rasters")
+setwd("class_notes/class3/data/nyc_rasters/raster_update")
 nyc_2009_population<-raster("nyc_2009_pop.tif")
 ```
 
@@ -583,6 +583,11 @@ While we used zonal statistics to calculate the population by borough, we can ea
 sum(nyc_boroughs_population_zonal)
 ```
 
+It is advisable to benchmark the results of the Zonal Statistics tool against information from
+another data source (or your own intuitive expectations), just to make sure that things are
+working correctly and something has not got terribly wrong in the calculation (for instance, due
+to missed steps, a misaligned projection, an incorrect input raster etc). Here, the estimated population of NYC in 2019 that is derived using a raster dataset and zonal statistics (8,309,940) is very close to an estimate of the City's 2019 population produced by the [US Census](https://www.nyc.gov/assets/planning/download/pdf/planning-level/nyc-population/new-population/current-populatiion-estimattes.pdf) (8,336,817). We would expect some discrepancy between the official estimate and our raster-based estimate (due, for example, to different models and assumptions, or differences in the time of year in which the measurement was taken). However, the fact that the difference is very small (i.e. less than 0.5%) should give us some confidence that our zonal statistics calculations are working correctly. 
+
 # Raster Analysis: Answering research questions using zonal statistics
 
 The previous example of using zonal statistics to aggregate cell-level data with respect to zones defined by a vector GIS dataset was illustrative, but not particularly compelling. After all, we could easily calculate borough-specific data using existing government data. 
@@ -596,7 +601,7 @@ infrastructure, and fairness and equity. It would be difficult to answer without
 To begin answering this question, let's first read in our point layer of NYC subway stops, and assign the data to an object named ```nyc_subway_stops```:
 
 ```{r, echo=-1}
-setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class3/data/subway_stops")
+setwd("class_notes/class3/data/subway_stops")
 # read in NYC subway stops
 nyc_subway_stops<-st_read("stops_nyc_subway_may2019.shp")
 ```
