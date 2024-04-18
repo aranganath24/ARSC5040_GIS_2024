@@ -50,6 +50,7 @@ doi: [https://doi.org/10.1177/0738894216659843](https://doi.org/10.1177/07388942
 ## Class Notes/Tutorial
 
 * [Class 3 tutorial](class_notes/class3/raster_analysis.html). 
+* [Class 3 Slides](class_notes/class3/Class3Presentation.pdf)
 
 ## Useful resources
 
