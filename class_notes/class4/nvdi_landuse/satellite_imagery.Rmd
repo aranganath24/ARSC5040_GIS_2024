@@ -32,7 +32,7 @@ library(terra)
 library(DT) 
 ```
 
-We will be working with data extracted from NASA's Moderate Resolution Imaging Spectroradiometer (MODIS) program. There are many ways to extract MODIS data, including the R package [MODIStsp](https://docs.ropensci.org/MODIStsp/) and directly from the MODIS [website](https://modis.gsfc.nasa.gov). To save time, the datasets we'll be working with in this tutorial have already been extracted and clipped to the extent of Colorado for you; you can download the data at the following link.
+We will be working with data extracted from NASA's Moderate Resolution Imaging Spectroradiometer (MODIS) program. There are many ways to extract MODIS data, including the R package [MODIStsp](https://docs.ropensci.org/MODIStsp/) and directly from the MODIS [website](https://modis.gsfc.nasa.gov). To save time, the datasets we'll be working with in this tutorial have already been extracted and clipped to the extent of Colorado for you; you can download the data at the following [link](https://www.dropbox.com/scl/fo/vnyex5a30cwb96w7aagje/AHJKxvBjKOW6O0Zrs0wvxwE?rlkey=uhk88zwd77ukjtsx7dbb1j5n8&st=nlmk4a90&dl=0).
 
 # Introduction
 
@@ -50,7 +50,9 @@ setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class
 CO_ndvi<-raster("MYD13A2_NDVI_2020_185.tif")
 ```
 
-Go ahead and print the raster metadata:
+The data were initially retrieved from R's MODIStsp package (mentioned above), and can also be retrieved from this page on [MODIS Vegetation Products](https://modis.gsfc.nasa.gov/data/dataprod/mod13.php). Note that the dataset corresponds to the "Vegetation Indices 16-Day L3 Global 250m" dataset, clipped to the extent of Colorado, for the date July 3rd, 2020 (since we're interested in viewing the spatial distribution of live vegetation in Colorado, it makes sense to pick a day during peak-summer). 
+
+Now, let's go ahead and print the raster metadata:
 
 ```{r}
 # prints "CO_ndvi" metadata
@@ -80,7 +82,6 @@ summary(CO_ndvi_adjusted, maxsamp=ncell(CO_ndvi_adjusted))
 ```
 
 Note the values range from -0.1909 to 0.8979, which is reasonable, given our knowledge of the NDVI index. 
-
 Recall that it's always possible to view a raster's underlying data by converting the raster object to a dataframe. Below, we'll convert ```CO_ndvi_adjusted``` to a dataframe and assign it to a new object named ```CO_ndvi_adjusted_df```:
 
 ```{r}
