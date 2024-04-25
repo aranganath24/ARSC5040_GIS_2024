@@ -1,7 +1,7 @@
 ---
 title: "Remote Sensing, Satellite Imagery, and Google Earth Engine"
 author: "Aditya Ranganath"
-date: "4/17/2022"
+date: "4/25/2024"
 output: ioslides_presentation
 ---
 
@@ -27,7 +27,8 @@ knitr::opts_chunk$set(echo = TRUE)
 2. Some of it is absorbed, and some reflected back into space, where it is recorded by a sensor on a satellite (but could also be a drone, weather balloon etc.)
 
 ```{r, echo=F, out.width='50%', out.height='50%'}
-knitr::include_graphics('/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class4/rs_presentation/rs2.png')
+setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS_2024/class_notes/class4/rs_presentation")
+knitr::include_graphics('rs2.png')
 ```
 
 ## Remote Sensing: Collecting Data, continued
@@ -35,13 +36,15 @@ knitr::include_graphics('/Users/adra7980/Documents/git_repositories/ARSC5040_GIS
 * <font size="3">In other words, various objects have different "spectral signatures", and these different spectral signatures are recorded by the sensor positioned on the satellite. We can use these differing spectral signatures to make inferences about what sort of object is within a given pixel in an image. </font>
 
 ```{r, echo=F, out.width='50%', out.height='50%'}
-knitr::include_graphics('/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class4/rs_presentation/rs1.png')
+setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS_2024/class_notes/class4/rs_presentation")
+knitr::include_graphics('rs1.png')
 ```
 
 ## Remote Sensing: Visualizing spectral signatures
 
 ```{r, echo=F, out.width='50%', out.height='50%'}
-knitr::include_graphics('/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class4/rs_presentation/rs3.png')
+setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS_2024/class_notes/class4/rs_presentation")
+knitr::include_graphics('rs3.png')
 ```
 
 * <font size="3">This diagram is a visual representation of the differing spectral signatures of common objects found on the surface of the earth. </font>
@@ -53,7 +56,8 @@ knitr::include_graphics('/Users/adra7980/Documents/git_repositories/ARSC5040_GIS
 * <font size="3">How could you use raster calculations to generate a new raster that will allow us to infer the amount of live vegetation in a given grid cell? Use the diagram below to inform your answer </font>
 
 ```{r, echo=F, out.width='28%', out.height='28%'}
-knitr::include_graphics('/Users/adra7980/Documents/git_repositories/ARSC5040_GIS/class_notes/class4/rs_presentation/rs4.png')
+setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS_2024/class_notes/class4/rs_presentation")
+knitr::include_graphics('rs4.png')
 ```
 
 ## The Normalized Difference Vegetation Index (NDVI)

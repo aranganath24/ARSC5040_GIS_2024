@@ -56,6 +56,7 @@ doi: [https://doi.org/10.1177/0263775815608851](https://doi.org/10.1177/02637758
 ## Class Notes/Tutorial
 
 * [Class 4 tutorial](class_notes/class4/nvdi_landuse/satellite_imagery.html)
+* [Class 4 Presentation](class_notes/class4/rs_presentation/rs_gee_presentation.html)
 
 ## Useful resources
 
