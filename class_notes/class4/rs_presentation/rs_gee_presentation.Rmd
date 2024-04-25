@@ -55,7 +55,7 @@ knitr::include_graphics('rs3.png')
 * <font size="3">Different bands in a satellite image raster dataset correspond to different regions of the electromagnetic spectrum (these bands correspond to Landsat 7) </font>
 * <font size="3">How could you use raster calculations to generate a new raster that will allow us to infer the amount of live vegetation in a given grid cell? Use the diagram below to inform your answer </font>
 
-```{r, echo=F, out.width='28%', out.height='28%'}
+```{r, echo=F, out.width='25%', out.height='25%'}
 setwd("/Users/adra7980/Documents/git_repositories/ARSC5040_GIS_2024/class_notes/class4/rs_presentation")
 knitr::include_graphics('rs4.png')
 ```
