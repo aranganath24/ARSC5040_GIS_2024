@@ -4,7 +4,7 @@ title: Class Four
 nav_order: 4
 ---
 
-# Class Four: Geospatial data ethics; Geospatial data management; Remote sensing and Google Earth Engine
+# Class Four: Geospatial data ethics; Satellite imagery and remote sensing 
 {:.no_toc}
 
 ## Table of contents
