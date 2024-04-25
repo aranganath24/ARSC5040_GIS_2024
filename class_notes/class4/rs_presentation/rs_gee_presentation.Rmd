@@ -1,5 +1,5 @@
 ---
-title: "Remote Sensing, Satellite Imagery, and Google Earth Engine"
+title: "Geospatial Data Ethics; Remote Sensing, Satellite Imagery, and Google Earth Engine"
 author: "Aditya Ranganath"
 date: "4/25/2024"
 output: ioslides_presentation
@@ -11,9 +11,25 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction and Roadmap
 
+* <font size="6">Geospatial data ethics </font>
 * <font size="6">Overview of basic remote sensing concepts </font>
 * <font size="6">Google Earth Engine and geospatial "big data" </font>
 * <font size="6">Tutorial: Working with satellite imagery products in R and GEE </font>
+
+## Geospatial Data Ethics: Visualization and Analysis
+
+* <font size="3.5">It is easy to manipulate maps (even unintentionally) to support a given narrative or hypothesis (i.e. ["lying with maps"](https://open.lib.umn.edu/mapping/chapter/7-lying-with-maps/)). </font>
+  * <font size="3.2">Choices about classification schemes, data standardization methods, map projections, aggregation units etc. can dramatically influence the conclusions an audience will draw from a map ([Deluca and Nelson](https://open.lib.umn.edu/mapping/chapter/7-lying-with-maps/)). </font>
+  * <font size="3.2">Important to have an understanding of the ways in which maps function as rhetorical devices, and how these choices can affect interpretations, so we can be intentional about these choices, and minimize the possibility of misleading people. </font>
+* <font size="3.5">Maps can potentially convey sensitive information, and lead to disclosure risks </font>
+
+## Geospatial Data Ethics: Privacy and Disclosure Risk
+
+* <font size="3.5">"Whether through the publication of data (including maps) or the direct transfer of data files, the dissemination of data to other researchers poses confidentiality protection prob-
+lems for spatially explicit social survey or census data" ([VanWey, Rindfuss, Gutmann, Entwisle, Balk 2005, 15338](https://www.pnas.org/doi/pdf/10.1073/pnas.0507804102)). </font>
+  * <font size="3.2">When working with geolocated survey datasets or data collected using mobile technology (for example) it can be challenging to balance need to protect individual privacy with the need for granular data for analysis (and the need to share this data with others for the sake of scholarly transparency) </font>
+  * <font size="3.2">Some techniques, such as ["geomasking"](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2952889/) can help researchers to work with and disseminate this data in an ethical manner. </font>
+  * <font size="3.2">If you need to share geolocated data that can potentially identify individuals, but don't want to publicly disseminate it, certain repositories (like [ICPSR](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2952889/) can help facilitate this) </font>
 
 ## Remote Sensing: Overview
 
