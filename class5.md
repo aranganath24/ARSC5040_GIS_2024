@@ -50,7 +50,7 @@ doi: [https://doi.org/10.1177/2053951716661366](https://doi.org/10.1177/20539517
 ## Class Notes/Tutorial
 
 * [Class 5 Presentation slides](class_notes/class5/presentation/class5_presentation.html)
-* **Tutorial on GIS scripting in R** [Will be posted before Class 5]
+* [Tutorial on GIS scripting in R](class_notes/class5/scripting_tools.html) 
 
 ## Useful resources
 
